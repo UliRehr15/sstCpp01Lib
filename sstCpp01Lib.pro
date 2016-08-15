@@ -8,21 +8,26 @@ CONFIG    -= release  # ist DEBUG aktiv
 
 CONFIG    += staticlib
 
-INCLUDEPATH = ./Header
+INCLUDEPATH += ./Header
+INCLUDEPATH += ../sst_str01_lib/Header
+INCLUDEPATH += ../sst_misc01_lib/Header
+INCLUDEPATH += ../sst_rec04_lib/Header
 
-# SOURCES		+= str1_lib1.cpp
-HEADERS		+= ./Header/sstTemplateLib.h
-HEADERS		+= sstTemplateLibInt.h
-SOURCES		+= sstTemplateLib.cpp
+HEADERS		+=  ./Header/sstCpp01Lib.h
+HEADERS		+= sstCpp01LibInt.h
 
-OTHER_FILES += readme.txt
+
+SOURCES		+= sstCpp01Lib.cpp
+
+OTHER_FILES += README.md
 
 debug{
-  TARGET		= sstTemplateLib_d
+  TARGET		= sst_cpp01_lib_d
 }
 release{
-  TARGET		= sstTemplateLib_r
+  TARGET		= sst_cpp01_lib_r
 }
+
 
 DESTDIR     = ../libs
 
