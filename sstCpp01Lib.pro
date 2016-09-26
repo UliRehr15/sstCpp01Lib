@@ -31,3 +31,6 @@ release{
 
 DESTDIR     = ../libs
 
+DISTFILES += \
+    dxftype.def
+

@@ -11,16 +11,14 @@
  * See the COPYING file for more information.
  *
  **********************************************************************/
-// sstCpp01Lib.cpp    15.08.16  Re.    15.08.16  Re.
+// sstCpp01Lib.h    15.08.16  Re.    15.08.16  Re.
 //
 
 #ifndef   _SST_CPP01_LIB_HEADER
 #define   _SST_CPP01_LIB_HEADER
 
 /**
- * @defgroup sstRecord04Lib sstRecord04Lib: cpp sst record library (Version 4)
- *
- * cpp sst record library <BR>
+ * @defgroup sstCpp01Lib sstCpp01Lib: sst cpp code generating library (Version 1)
  *
  */
 
@@ -39,7 +37,7 @@
 *
 * Changed: 01.06.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @author Re.
 *
@@ -63,7 +61,7 @@ typedef enum _sstCpp01_ClassType_enum sstCpp01_ClassType_enum;
 *
 * Changed: 09.08.16  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @author Re.
 *
@@ -105,7 +103,7 @@ class sstCpp01_FilRowCls
 *
 * Changed: 03.07.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @author Re.
 *
@@ -114,7 +112,7 @@ class sstCpp01_FilRowCls
 // ----------------------------------------------------------------------------
 class sstCpp01_ClsTyp_Cls
 {
-  public:   // Öffentliche Funktionen
+  public:   // Ã–ffentliche Funktionen
      sstCpp01_ClsTyp_Cls();  // Konstruktor
      sstCpp01_ClassType_enum eClsVisiTyp;  /**< eClsVisiTyp public, protected or private  */
      sstStr01VarDefCls sClsMem;      /**< sClsMem   */
@@ -128,7 +126,7 @@ class sstCpp01_ClsTyp_Cls
 *
 * Changed: 03.07.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @author Re.
 *
@@ -159,7 +157,7 @@ class sstCpp01_ClsFnc_Cls
 *
 * 12.09.12: Generating Date inserted.  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @author Re.
 *
@@ -168,7 +166,7 @@ class sstCpp01_ClsFnc_Cls
 // ----------------------------------------------------------------------------
 class sstCpp01_Class_Cls
 {
-  public:   // Öffentliche Funktionen
+  public:   // Ã–ffentliche Funktionen
   // sstCpp01_Class_Cls(): ClsTypDsVerw(sstCpp01_ClsTyp_Cls),ClsFncDsVerw(sstCpp01_ClsFnc_Cls),ClsBlcDsVerw(sstMisc01AscRowCls);  // Konstruktor
   sstCpp01_Class_Cls();  // Konstruktor
 //     int GetDate(int iKey, StrDS1_stru *sDateStr);
@@ -204,6 +202,105 @@ class sstCpp01_Class_Cls
      // ----------------------------------------------------------------------------
      int SetDate(int iKey, std::string sDateStr);
      //==============================================================================
+     /**
+     * @brief // Set class name to class object <BR>
+     * iStat = oCppClass.SetClsNam( iKey, &oClsNam);
+     *
+     * @param iKey    [in] For the moment 0
+     * @param oClsNam [in] Set class name
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int SetClsNam(int iKey, std::string oClsNam);
+     //==============================================================================
+     /**
+     * @brief // Set system name to class object <BR>
+     * iStat = oCppClass.SetSysNam( iKey, &oSysNam);
+     *
+     * @param iKey    [in] For the moment 0
+     * @param oSysNam [in] Set system name
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int SetSysNam(int iKey, std::string oSysNam);
+     //==============================================================================
+     /**
+     * @brief // Set group name to class object <BR>
+     * iStat = oCppClass.SetGrpNam( iKey, &oGrpNam);
+     *
+     * @param iKey    [in] For the moment 0
+     * @param oGrpNam [in] Set group name
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int SetGrpNam(int iKey, std::string oGrpNam);
+     //==============================================================================
+     /**
+     * @brief // Get System name <BR>
+     * oSysNamStr = oCppClass.GetSysNam();
+     *
+     * @retval   = string system name
+     */
+     // ----------------------------------------------------------------------------
+     std::string GetSysNam();
+     //==============================================================================
+     /**
+     * @brief // Get group name <BR>
+     * oGrpNamStr = oCppClass.GetGrpNam();
+     *
+     * @retval   = string group name
+     */
+     // ----------------------------------------------------------------------------
+     std::string GetGrpNam();
+     //==============================================================================
+     /**
+     * @brief // Get class name <BR>
+     * oClsNamStr = oCppClass.GetClsNam();
+     *
+     * @retval   = string class name
+     */
+     // ----------------------------------------------------------------------------
+     std::string GetClsNam();
+     //==============================================================================
+     /**
+     * @brief // Get Lib class name <BR>
+     * oLibClsNamStr = oCppClass.GetLibClsNam();
+     *
+     * sysnam + grpnam + clsnam + "Cls"
+     *
+     * @retval   = string generated lib class name
+     */
+     // ----------------------------------------------------------------------------
+     std::string GetLibClsNam();
+     //==============================================================================
+     /**
+     * @brief // write all type defs in class info area of header file <BR>
+     * iStat = oCppClass.HeadWrtTypDefInfo (iKey);
+     *
+     * @param iKey    [in] For the moment 0
+     * @param sHedFil [in] sHedFil
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int HeadWrtTypDefInfo(int                 iKey,
+                           sstMisc01AscFilCls *sHedFil);
+     //==============================================================================
      sstRec04Cls  *ClsTypDsVerw;   /**< table with all type definitions */
      sstRec04Cls  *ClsFncDsVerw;   /**< Table with for all function definitions */
      sstRec04Cls  *ClsBlcDsVerw;   /**< Table with all function inside code rows */
@@ -226,7 +323,7 @@ class sstCpp01_Class_Cls
 *
 * Changed: 29.06.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey:     [in] For the moment 0
 * @param sExpFile: [in] Header or Class file
@@ -254,7 +351,7 @@ int sstCpp01_Fil_wrt_head (int                 iKey,
 *
 * Changed: 29.06.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey      [in]  For the moment 0
 * @param sExpFile  [in]  sExpFile
@@ -280,7 +377,7 @@ int sstCpp01_Hed_WrtCom (int                 iKey,
 *
 * Changed: 29.06.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey      [in]  For the moment 0
 * @param sExpFile  [in]  File
@@ -312,7 +409,7 @@ int sstCpp01_Hed_wrt_def_open (int                  iKey,
 *
 * Changed: 29.06.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey     [in]  For the moment 0
 * @param sExpFile  [in]  File Row
@@ -331,6 +428,10 @@ int sstCpp01_Hed_wrt_def_open (int                  iKey,
 int sstCpp01_Cls_WrtInc (int                   iKey,
                        sstMisc01AscFilCls   *sExpFile,
                        sstCpp01_Class_Cls     *oCppClass);
+//=============================================================================
+int sstCpp01_Hed_wrt_defgroup (int                 iKey,
+                               sstMisc01AscFilCls *sExpFile,
+                               std::string         cGrpNam);
 //==============================================================================
 /**
 * @brief // write end define rows in cpp header file <BR>
@@ -338,7 +439,7 @@ int sstCpp01_Cls_WrtInc (int                   iKey,
 *
 * Changed: 29.06.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey      [in]  For the moment 0
 * @param sExpFile  [in]  File Row
@@ -364,7 +465,7 @@ int sstCpp01_Hed_wrt_def_close (int                 iKey,
 *
 * Changed: 29.06.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey:      [in]  For the moment 0
 * @param sCppHedFil [in]  sCppHedFil
@@ -392,7 +493,7 @@ int sstCpp01_wrt2CppHedFil2 (int                   iKey,
 *
 * Changed: 09.08.16  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey [in] For the moment 0
 * @param sCppHedFil [in] sCppHedFil
@@ -420,7 +521,7 @@ int sstCpp01_wrt2CppClsFil2 (int                   iKey,
 *
 * Changed: 09.08.16  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey         [in] For the moment 0
 * @param oFormatInfo  [in] oFormatInfo
@@ -452,7 +553,7 @@ int sstCpp01_CsvLib_FillBlc_Read (int               iKey,
 *
 * Changed: 16.02.10  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey         [in] For the moment 0
 * @param oFormatInfo  [in] oFormatInfo
@@ -485,7 +586,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
 *
 * Changed: 10.08.16  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey [in] For the moment 0
 * @param oCppClass [in] oCppClass
@@ -510,7 +611,7 @@ int sstCpp01_ClassTab_Open (int iKey, sstCpp01_Class_Cls *oCppClass);
 *
 * Changed: 10.08.16  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01Lib
 *
 * @param iKey [in] For the moment 0
 * @param oCppClass [in] oCppClass
@@ -528,3 +629,4 @@ int sstCpp01_ClassTab_Open (int iKey, sstCpp01_Class_Cls *oCppClass);
 int sstCpp01_ClassTab_Close (int iKey, sstCpp01_Class_Cls *oCppClass);
 
 #endif // SST_REC01_LIB
+

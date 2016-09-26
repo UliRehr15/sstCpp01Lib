@@ -47,7 +47,8 @@ OBJECTS_DIR   = ./
 
 SOURCES       = sstCpp01Lib.cpp 
 OBJECTS       = sstCpp01Lib.o
-DIST          = ../../Qt/5.5/gcc/mkspecs/features/spec_pre.prf \
+DIST          = dxftype.def \
+		../../Qt/5.5/gcc/mkspecs/features/spec_pre.prf \
 		../../Qt/5.5/gcc/mkspecs/common/unix.conf \
 		../../Qt/5.5/gcc/mkspecs/common/linux.conf \
 		../../Qt/5.5/gcc/mkspecs/common/sanitize.conf \

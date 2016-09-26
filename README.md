@@ -3,6 +3,11 @@ sst C++ Code Creating Library
 
 This library should be build with QT 5.5 and qt creator 3.5.1.
 
+Tool sst_generate_csv_lib
+
+Tool generates code for lib sst_str01_lib for import /export of csv data.
+record definition comes from file with type def data.
+
 Structure of coding projects should be:
 
 .. [libs] <BR>
@@ -15,3 +20,4 @@ August 2016, Hanover, Germany, Uli Rehr
 
 Versions <BR>
 20160815: Vers. 1.0: First Check in. <BR>
+20160926: Vers. 1.1: Some improvements for generating sstDxf02Lib Code. <BR>

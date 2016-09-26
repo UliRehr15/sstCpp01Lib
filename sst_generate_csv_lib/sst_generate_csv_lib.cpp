@@ -35,7 +35,6 @@ int main(int argc, char *argv [])
 {
 
   sstMisc01AscFilCls sImpFile;
-  // sstMisc01AscRowCls sFileRow;
   std::string sFileRow;
   sstMisc01FilNamCls oFilNam;
   std::string sDateStr;  // Generating Date
@@ -46,19 +45,19 @@ int main(int argc, char *argv [])
   sstStr01VarDefCls oStrType;
   sstStr01VarDefFncCls oVarDefFnc;
   sstRec04Cls  DsVerw(sizeof(oStrType));
-  // dREC04RECNUMTYP eTypeNum = 0;
   dREC04RECNUMTYP dRecNo = 0;
 
-//  char cFilNam[MAX_PFAD];     // Filename without ending
-//  char cFilNamEnd[MAX_PFAD];  // Filename with ending
-//  char cFilEnd[MAX_PFAD];     // Filename ending
   std::string cFilNam;     // Filename without ending
   std::string cFilNamEnd;  // Filename with ending
   std::string cFilEnd;     // Filename ending
+  sstMisc01PrtFilCls oSstPrt;
 
   int iStat = 0;
   int iStat1 = 0;
 //-----------------------------------------------------------------------------
+
+  // Open Protocol with filename
+  iStat = oSstPrt.SST_PrtAuf ( 1, (char*) "sst_generate_csv_lib.prt");
 
   if (argc <= 1)
   {
@@ -66,33 +65,28 @@ int main(int argc, char *argv [])
     printf("Call sst_generate_csv_lib typelib.def\n");
     printf("\n");
     printf("Programm generates cpp library for csv io from def-file\n");
+
+    oSstPrt.SST_PrtZu(0);
     return 0;
   }
 
-  // CascObjekt öffnen zum Lesen.
-  // strncpy(cFilNamEnd,argv[1],MAX_PFAD);
+  // Open Casc Object for reading
   cFilNamEnd = argv[1];
-  // iStat = casc_fopenRd_c ( 0, &sImpFile, cFilNamEnd);
   iStat = sImpFile.fopenRd( 0, cFilNamEnd.c_str());
   if (iStat < 0)
   {
     printf("Can not open file: %s\n", cFilNamEnd.c_str());
+    oSstPrt.SST_PrtZu(0);
     return -1;
   }
 
   // Split filenamestring to name and ending.
-  // iStat = SST_DatNamEnd ( 0, cFilNamEnd, cFilEnd, cFilNam, MAX_PFAD);
   iStat = oFilNam.SplitExtension( 0, &cFilNamEnd, &cFilEnd, &cFilNam);
 
   // Set Date of all source and header files
-  // iStat = Str1_CopyStr(0, &sDateStr, (char*)"06.07.16");
   sDateStr = "06.07.16";
 
-  // Datensatz-Verwaltung anlegen / öffnen.
-  // iStat = DS1_DsOpen ( 0, &DsVerw, sizeof(oStrType), 100,(char*) "Type_Obj_Dss");
-
   // Eine Zeile aus Ascii-Datei lesen.
-  // iStat1 = casc_rd_line_c ( 1, &sImpFile, &sFileRow);
   iStat1 = sImpFile.Rd_StrDS1( 0, &sFileRow);
 
   while (iStat1 >= 0)
@@ -103,49 +97,78 @@ int main(int argc, char *argv [])
       iStat = 0;
     }
     // Copy string to Str1 structure.
-    // iStat = Str1_CopyStr ( 0, &sFilStr, sFileRow.Txt);
     sFilStr = sFileRow;
 
     // interpret file row as cpp type dataset
     iStat = oVarDefFnc.ReadCSV ( 0, &sFilStr, &sErrTxt, &oStrType);
-    assert(iStat==0);
+    if (iStat < 0)
+    {
+      oSstPrt.SST_PrtWrtInt4( 1,dRecNo+1,(char*)"Row Number: ");
+      oSstPrt.SST_PrtWrtChar(1, (char*)sErrTxt.c_str(),(char*) "Could not interpret: ");
+      oSstPrt.SST_PrtZu(0);
+      return -1;
+    }
+    // assert(iStat==0);
 
     // Weiteren User-Datensatz in Datenspeicher schreiben.
-    // DS1_DsShrNeu ( 0, &DsVerw, &oStrType);
     iStat = DsVerw.WritNew( 0, &oStrType, &dRecNo);
 
+    sFileRow.clear();
+
     // Eine Zeile aus Ascii-Datei lesen.
-    // iStat1 = casc_rd_line_c ( 1, &sImpFile, &sFileRow);
     iStat1 = sImpFile.Rd_StrDS1( 0, &sFileRow);
   }
 
-  // CascObjekt beenden und zugehörige Datei schließen.
-  // iStat = casc_fclose_c ( 0, &sImpFile);
+  // CascObjekt beenden und zugehÑ†rige Datei schlieÐ¯en.
   iStat = sImpFile.fcloseFil(0);
 
-  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
-  // iStat = DS1_DsAnz ( 0, &DsVerw, &eTypeNum);
-  // eTypeNum = DsVerw.count();
-
   // Set Name of system
-  // iStat = Str1Cpy( 0, &sSysNam, oStrType.cSysNam);
   sSysNam = oStrType.Get_SysNam();
 
-  //=============================================================================
-  // Write Type classes to header and class file
-  iStat = sstcsv_FilWrtClsTypOpen ( 0, &DsVerw, sSysNam, sDateStr);
+  int iKey = 2;
 
-  //=============================================================================
-  // Write Function classes to header and class file
-  iStat = sstcsv_FilWrtClsFncOpen ( 0, &DsVerw, sSysNam, sDateStr);
+  switch (iKey) {
+  case 0:
+  { // Write all classes in different code and header files
 
-  // iStat = DS1_DsEnd ( 0, &DsVerw);
+    //=============================================================================
+    // Write Type classes to system header and Typ class file
+    iStat = sstcsv_FilWrtClsTypOpen ( 0, &DsVerw, sSysNam, sDateStr);
+
+    //=============================================================================
+    // Write Function classes to system header and fnc class file
+    iStat = sstcsv_FilWrtClsFncOpen ( 0, &DsVerw, sSysNam, sDateStr);
+  }
+    break;
+  case 1:
+  { // Write all defintions in one header file
+    // write all classes in separate files
+    //=============================================================================
+    // Write Type classes to system header and Typ class file
+    iStat = sstcsv_FilWrtClsTypOpen2 ( 0, &DsVerw, sSysNam, sDateStr);
+
+    //=============================================================================
+    // Write Function classes to system header and fnc class file
+    iStat = sstcsv_FilWrtClsFncOpen2 ( 0, &DsVerw, sSysNam, sDateStr);
+  }
+    break;
+  case 2:
+  {
+    // Write all defintions in one header file
+    // Write typ  and fnc code in one class code file
+    iStat = sstcsv_FilWrtClsFncOpen3 ( 0, &DsVerw, sSysNam, sDateStr);
+  }
+    break;
+  default:
+    break;
+  }
+
+  // Close protocol file
+  oSstPrt.SST_PrtZu(1);
 
   return 0;
 }
 //=============================================================================
-// Complete function description is in headerfile
-//-----------------------------------------------------------------------------
 int sstcsv_FilWrtClsTypOpen (int          iKey,
                              sstRec04Cls *DsVerw,
                              std::string sSysNam,
@@ -188,7 +211,7 @@ int sstcsv_FilWrtClsTypOpen (int          iKey,
   sCppFilNam = sCppFilNam + sGrpNam;
   sCppFilNam = sCppFilNam + ".cpp";
 
-  // CascObjekt öffnen zum Schreiben.
+  // CascObjekt Ñ†ffnen zum Schreiben.
   iStat = sHedFil.fopenWr( 0, sHedFilNam.c_str());
   iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
@@ -218,10 +241,10 @@ int sstcsv_FilWrtClsTypOpen (int          iKey,
 
   //===========================================================================
 
-  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
+  // Die Anzahl der aktuell gespeicherten DatensÐ´tze zurÑŒckgeben.
   eTypeNum = DsVerw->count();
 
-  // Datensatz-Verwaltung anlegen / öffnen.
+  // Datensatz-Verwaltung anlegen / Ñ†ffnen.
   // Open Dss Set 1 for Class Group 2
   // Open Dss Set 2 for Class Group 2
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
@@ -239,7 +262,8 @@ int sstcsv_FilWrtClsTypOpen (int          iKey,
     {
 
       // Write last type class data to class and header file
-      iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &sCppFil, &oCppTypClass);
+      // iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &sCppFil, &oCppTypClass);
+      iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &oCppTypClass);
 
       // save class name for member class
       strncpy(oCppTypClass.cSysNam,oStrType.Get_SysNam().c_str(),dSST_STR01_VAR_NAM_LEN);
@@ -254,7 +278,7 @@ int sstcsv_FilWrtClsTypOpen (int          iKey,
       // Close list of class function definitions
       iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
 
-      // Datensatz-Verwaltung anlegen / öffnen.
+      // Datensatz-Verwaltung anlegen / Ñ†ffnen.
       iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
 
     }
@@ -267,7 +291,8 @@ int sstcsv_FilWrtClsTypOpen (int          iKey,
   }
 
   // Write last class data to files
-  iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &sCppFil, &oCppTypClass);
+  // iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &sCppFil, &oCppTypClass);
+  iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &oCppTypClass);
 
   // Datensatz-Verwaltung beenden.
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
@@ -277,6 +302,193 @@ int sstcsv_FilWrtClsTypOpen (int          iKey,
 
   // Close HedFil object and File inside
   iStat = sCppFil.fcloseFil(0);
+  iStat = sHedFil.fcloseFil(0);
+
+  // Fatal Errors goes to an assert
+  if (iRet < 0)
+  {
+    // Expression (iRet >= 0) has to be fullfilled
+    assert(0);
+  }
+
+  // Small Errors will given back
+  iRet = iStat;
+
+  return iRet;
+}
+//=============================================================================
+int sstcsv_FilWrtClsTypOpen2 (int          iKey,
+                              sstRec04Cls *DsVerw,
+                              std::string sSysNam,
+                              std::string sDateStr)
+//-----------------------------------------------------------------------------
+{
+  std::string sGrpNam;  // Nam of function group, f.e. Typ, Fnc or Dbs
+  std::string sHedFilNam;  // Nam of header file
+  std::string sCppFilNam;  // Nam of cpp file
+  sstMisc01AscFilCls sHedFil;
+  sstMisc01AscFilCls sCppFil;
+
+  sstStr01VarDefCls oStrType;
+  sstStr01VarDefCls oStrTypeAct;  // actual class element
+  sstCpp01_Class_Cls oCppTypClass;  // One Type Class with all Elements, functions and function code blocks
+  sstCpp01_Class_Cls oCppTypBaseClass;  // One Type Class with all Elements, functions and function code blocks
+  sstCpp01_ClsTyp_Cls oCppClsTyp1;  // for type class, extended var type
+  dREC04RECNUMTYP eTypeNum = 0;
+  dREC04RECNUMTYP SatzNr = 0;
+
+  int iRet  = 0;
+  int iStat = 0;
+//-----------------------------------------------------------------------------
+  if ( iKey != 0) return -1;
+
+  // Set Date in typ class
+  iStat = oCppTypClass.SetDate ( 0, sDateStr);
+
+  // Reset values
+  strncpy(oCppTypClass.cClsNam,"",dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppTypClass.cGrpNam,"Typ",dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppTypClass.cSysNam,sSysNam.c_str(),dSST_STR01_VAR_NAM_LEN);
+
+  // Write Type classes to header and class file
+
+  // iStat = Str1Cpy(0, &sGrpNam,(char*)"Typ");
+  sGrpNam = "Typ";
+  sHedFilNam = sSysNam;
+//  sHedFilNam = sHedFilNam + "_";
+//  sHedFilNam = sHedFilNam + sGrpNam;
+  sHedFilNam = sHedFilNam + ".h";
+
+  sCppFilNam = sSysNam;
+  sCppFilNam = sCppFilNam + "_";
+  sCppFilNam = sCppFilNam + sGrpNam;
+  sCppFilNam = sCppFilNam + ".cpp";
+
+  // CascObjekt Ñ†ffnen zum Schreiben.
+  iStat = sHedFil.fopenWr( 0, sHedFilNam.c_str());
+  // iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
+
+  //===========================================================================
+
+  // Starting rows in Header file
+  iStat = oCppTypClass.GetDate ( 0, &sDateStr);
+
+  // write headrows in cpp file
+  iStat = sstCpp01_Fil_wrt_head ( 0, &sHedFil, &sDateStr);
+
+  // Write comment to cpp header file
+  iStat = sstCpp01_Hed_WrtCom ( 0, &sHedFil, &sSysNam);
+
+  // write define open rows in cpp header file
+  iStat = sstCpp01_Hed_wrt_def_open ( 0, &sHedFil, "SST", sSysNam,
+                                      sGrpNam, "");
+
+  // iStat = sstCpp01_Hed_wrt_defgroup(0,&sHedFil, &sGrpNam);
+  iStat = sstCpp01_Hed_wrt_defgroup(0,&sHedFil, oCppTypClass.GetSysNam());
+
+  //===========================================================================
+//  iStat = oCppTypClass.GetDate( 0, &sDateStr);
+
+//  // write headrows in cpp header file
+//  iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
+
+//  // Write comment and includes to cls file
+//  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
+
+  //===========================================================================
+
+  // Datensatz-Verwaltung anlegen / Ã¶ffnen.
+  iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypBaseClass);
+
+  oCppTypBaseClass.SetDate( 0, sDateStr);
+
+  oCppTypBaseClass.SetClsNam(0,"sstDxf01LibTypBase");
+  oCppTypBaseClass.SetSysNam(0,"sstDxf01Lib");
+  oCppTypBaseClass.SetGrpNam(0,"Typ");
+
+  sstStr01VarDefCls oVarUserDef;
+  oVarUserDef.Set_EleNam("sstStr01Cls oCsvCnvt");
+  oVarUserDef.Set_EleInfo("oCsvCnvt Info");
+  oVarUserDef.Set_Type(sstStr01Custom);
+
+  sstCpp01_ClsTyp_Cls oCppVarUserDef;  // for type class, extended var type
+
+  oCppVarUserDef.sClsMem = oVarUserDef;
+  oCppVarUserDef.eClsVisiTyp = myClsPublic;
+
+  iStat = oCppTypBaseClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &SatzNr);
+
+  // Write last type class data to class and header file
+  // iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &sCppFil, &oCppTypBaseClass);
+  iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &oCppTypBaseClass);
+
+  // Datensatz-Verwaltung beenden.
+  iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypBaseClass);
+
+  //===========================================================================
+
+  // Datensatz-Verwaltung anlegen / Ã¶ffnen.
+  iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
+
+  // Die Anzahl der aktuell gespeicherten DatensÐ´tze zurÃ¼ckgeben.
+  eTypeNum = DsVerw->count();
+
+  // write all cpp header files
+  for (dREC04RECNUMTYP ii = 1; ii <= eTypeNum; ii++)
+  {
+
+    // Datensatz an absoluter Position lesen.
+    iStat = DsVerw->Read( 0, ii, &oStrType);
+
+    // if object name is different to actual object name, open new object
+    // size_t dPos = oStrTypeAct.Get_ObjNam().find(oStrType.Get_ObjNam());
+    size_t dPos1 = oStrTypeAct.Get_ObjNam().compare(oStrType.Get_ObjNam());
+    // size_t dPos2 = oStrTypeAct.Get_ObjNam().npos;
+//     if (dPos1 != oStrTypeAct.Get_ObjNam().npos)
+    if (dPos1 != 0)
+    {
+
+      // Write last type class data to class and header file
+      // iStat = sst_WrtClsData_inPipe_toFilesT ( 1, &sHedFil, &sCppFil, &oCppTypClass);
+      iStat = sst_WrtClsData_inPipe_toFilesT ( 1, &sHedFil, &oCppTypClass);
+
+      // save class name for member class
+      strncpy(oCppTypClass.cSysNam,oStrType.Get_SysNam().c_str(),dSST_STR01_VAR_NAM_LEN);
+      strncpy(oCppTypClass.cGrpNam,sGrpNam.c_str(),dSST_STR01_VAR_NAM_LEN);
+      strncpy(oCppTypClass.cClsNam,oCppTypClass.cSysNam,dSST_STR01_VAR_NAM_LEN);
+      strncat(oCppTypClass.cClsNam,oCppTypClass.cGrpNam,dSST_STR01_VAR_NAM_LEN);
+      strncat(oCppTypClass.cClsNam,oStrType.Get_ObjNam().c_str(),dSST_STR01_VAR_NAM_LEN); // Class name plus group name
+
+      oStrTypeAct = oStrType;
+
+      // Close list of class type definitions
+      // Close list of class function definitions
+      iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
+
+      // Datensatz-Verwaltung anlegen / Ñ†ffnen.
+      iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
+
+    }
+
+    // write new type definition to class list
+    oCppClsTyp1.eClsVisiTyp = myClsPublic;
+    oCppClsTyp1.sClsMem = oStrType;
+    iStat = oCppTypClass.ClsTypDsVerw->WritNew( 0, &oCppClsTyp1, &SatzNr);
+
+  }
+
+  // Write last class data to files
+  // iStat = sst_WrtClsData_inPipe_toFilesT ( 1, &sHedFil, &sCppFil, &oCppTypClass);
+  iStat = sst_WrtClsData_inPipe_toFilesT ( 1, &sHedFil, &oCppTypClass);
+
+  // Datensatz-Verwaltung beenden.
+  iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
+
+  // write define end rows in cpp header file
+  // iStat = sstCpp01_Hed_wrt_def_close ( 0, &sHedFil);
+
+  // Close HedFil object and File inside
+  // iStat = sCppFil.fcloseFil(0);
   iStat = sHedFil.fcloseFil(0);
 
   // Fatal Errors goes to an assert
@@ -325,7 +537,8 @@ int sstcsv_FilWrtClsFncOpen (int          iKey,
   strncpy(oCppTypClass.cGrpNam,"Typ",dSST_STR01_VAR_NAM_LEN);
   strncpy(oCppTypClass.cSysNam,sSysNam.c_str(),dSST_STR01_VAR_NAM_LEN);
 
-  sGrpNam = "FncOpen";
+  // sGrpNam = "FncOpen";
+  sGrpNam = "Fnc";
 
   sHedFilNam = sSysNam;
   sHedFilNam = sHedFilNam + "_";
@@ -337,7 +550,7 @@ int sstcsv_FilWrtClsFncOpen (int          iKey,
   sCppFilNam = sCppFilNam + sGrpNam;
   sCppFilNam = sCppFilNam + ".cpp";
 
-  // CascObjekt öffnen zum Schreiben.
+  // CascObjekt Ñ†ffnen zum Schreiben.
   iStat = sHedFil.fopenWr( 0, sHedFilNam.c_str());
   iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
@@ -363,10 +576,10 @@ int sstcsv_FilWrtClsFncOpen (int          iKey,
   iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
 
   //===========================================================================
-  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
+  // Die Anzahl der aktuell gespeicherten DatensÐ´tze zurÑŒckgeben.
   eTypeNum = DsVerw->count();
 
-  // Datensatz-Verwaltung anlegen / öffnen.
+  // Datensatz-Verwaltung anlegen / Ñ†ffnen.
   // Open Dss Set 1 for Class Group 2
   // Open Dss Set 2 for Class Group 2
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
@@ -384,7 +597,8 @@ int sstcsv_FilWrtClsFncOpen (int          iKey,
     {
 
       // Write last type class data to class and header file
-      iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sCppFil, &sGrpNam, &oCppTypClass);
+      // iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sCppFil, &sGrpNam, &oCppTypClass);
+      iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sGrpNam, &oCppTypClass);
 
       // save class name for member class
       strncpy(oCppTypClass.cClsNam,oStrType.Get_ObjNam().c_str(),dSST_STR01_VAR_NAM_LEN);
@@ -397,7 +611,7 @@ int sstcsv_FilWrtClsFncOpen (int          iKey,
       // Close list of class function definitions
       iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
 
-      // Datensatz-Verwaltung anlegen / öffnen.
+      // Datensatz-Verwaltung anlegen / Ñ†ffnen.
       iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
 
     }
@@ -413,7 +627,490 @@ int sstcsv_FilWrtClsFncOpen (int          iKey,
   }
 
   // Write last class data to files
-  iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sCppFil, &sGrpNam, &oCppTypClass);
+  // iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sCppFil, &sGrpNam, &oCppTypClass);
+  iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sGrpNam, &oCppTypClass);
+
+  // Datensatz-Verwaltung beenden.
+  iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
+
+  // write define end rows in cpp header file
+  iStat = sstCpp01_Hed_wrt_def_close ( 0, &sHedFil);
+
+  // Close HedFil object and File inside
+  iStat = sHedFil.fcloseFil(0);
+  iStat = sCppFil.fcloseFil(0);
+
+
+  // Fatal Errors goes to an assert
+  if (iRet < 0)
+  {
+    // Expression (iRet >= 0) has to be fullfilled
+    assert(0);
+  }
+
+  // Small Errors will given back
+  iRet = iStat;
+
+  return iRet;
+}
+//=============================================================================
+int sstcsv_FilWrtClsFncOpen2 (int          iKey,
+                              sstRec04Cls *DsVerw,
+                              std::string sSysNam,
+                              std::string sDateStr)
+//-----------------------------------------------------------------------------
+{
+  std::string sGrpNam;  // Nam of function group, f.e. Typ, Fnc or Dbs
+  std::string sHedFilNam;  // Nam of header file
+  std::string sCppFilNam;  // Nam of cpp file
+  sstMisc01AscFilCls sHedFil;
+  sstMisc01AscFilCls sCppFil;
+
+  sstStr01VarDefCls oStrType;
+  sstStr01VarDefCls oStrTypeAct;  // with GDA_
+  sstCpp01_Class_Cls oCppTypClass;
+  sstCpp01_Class_Cls oCppFncBaseClass;
+  sstCpp01_ClsTyp_Cls oCppClsTyp1;  // for type class
+  dREC04RECNUMTYP eTypeNum = 0;
+  dREC04RECNUMTYP SatzNr = 0;
+
+
+  int iRet  = 0;
+  int iStat = 0;
+//-----------------------------------------------------------------------------
+  if ( iKey != 0) return -1;
+
+  // Set Date in typ class
+  iStat = oCppTypClass.SetDate ( 0, sDateStr);
+
+  // Reset values
+  strncpy(oCppTypClass.cClsNam,"",dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppTypClass.cGrpNam,"Typ",dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppTypClass.cSysNam,sSysNam.c_str(),dSST_STR01_VAR_NAM_LEN);
+
+  // sGrpNam = "FncOpen";
+  sGrpNam = "Fnc";
+
+  sHedFilNam = sSysNam;
+//  sHedFilNam = sHedFilNam + "_";
+//  sHedFilNam = sHedFilNam + sGrpNam;
+  sHedFilNam = sHedFilNam + ".h";
+
+  sCppFilNam = sSysNam;
+  sCppFilNam = sCppFilNam + "_";
+  sCppFilNam = sCppFilNam + sGrpNam;
+  sCppFilNam = sCppFilNam + ".cpp";
+
+  // CascObjekt Ã¶ffnen zum Schreiben.
+  iStat = sHedFil.fopenAppend( 0, sHedFilNam.c_str());
+  // iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
+
+  //===========================================================================
+
+  // write headrows in cpp file
+  // iStat = sstCpp01_Fil_wrt_head ( 0, &sHedFil, &sDateStr);
+
+  // Write comment to cpp header file
+  // iStat = sstCpp01_Hed_WrtCom ( 0, &sHedFil, &sSysNam);
+
+  // write define open rows in cpp header file
+  // iStat = sstCpp01_Hed_wrt_def_open ( 0, &sHedFil, "SST", sSysNam,
+  //                                   sGrpNam, "");
+
+  //===========================================================================
+//  iStat = oCppTypClass.GetDate( 0, &sDateStr);
+
+//  // write headrows in cpp header file
+//  iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
+
+//  // Write comment and includes to cls file
+//  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
+
+  //===========================================================================c
+  // Datensatz-Verwaltung anlegen / Ã¶ffnen.
+  iStat = sstCpp01_ClassTab_Open ( 0, &oCppFncBaseClass);
+
+  oCppFncBaseClass.SetDate( 0, sDateStr);
+
+  oCppFncBaseClass.SetClsNam(0,"sstDxf01LibFncBase");
+  oCppFncBaseClass.SetSysNam(0,"sstDxf01Lib");
+  oCppFncBaseClass.SetGrpNam(0,"Typ");
+
+  sstStr01VarDefCls oVarUserDef;
+  oVarUserDef.Set_EleNam("sstStr01Cls oCsvCnvt");
+  oVarUserDef.Set_EleInfo("oCsvCnvt Info");
+  oVarUserDef.Set_Type(sstStr01Custom);
+
+  sstCpp01_ClsTyp_Cls oCppVarUserDef;  // for type class, extended var type
+
+  oCppVarUserDef.sClsMem = oVarUserDef;
+  oCppVarUserDef.eClsVisiTyp = myClsPublic;
+
+  iStat = oCppFncBaseClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &SatzNr);
+
+  // Write last type class data to class and header file
+  // iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &sCppFil, &oCppFncBaseClass);
+  iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &oCppFncBaseClass);
+
+  // Datensatz-Verwaltung beenden.
+  iStat = sstCpp01_ClassTab_Close ( 0, &oCppFncBaseClass);
+  //===========================================================================
+
+  // Die Anzahl der aktuell gespeicherten DatensÐ´tze zurÑŒckgeben.
+  eTypeNum = DsVerw->count();
+
+  // Datensatz-Verwaltung anlegen / Ñ†ffnen.
+  // Open Dss Set 1 for Class Group 2
+  // Open Dss Set 2 for Class Group 2
+  iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
+
+  // write all cpp header files
+  for (dREC04RECNUMTYP ii = 1; ii <= eTypeNum; ii++)
+  {
+
+    // Datensatz an absoluter Position lesen.
+    iStat = DsVerw->Read( 0, ii, &oStrType);
+
+    // if object name is different to actual object name, open new object
+    // size_t dStrPos = oStrTypeAct.Get_ObjNam().find(oStrType.Get_ObjNam());
+    size_t dStrPos = oStrTypeAct.Get_ObjNam().compare(oStrType.Get_ObjNam());
+    // if (dStrPos == oStrType.Get_ObjNam().npos)
+    if (dStrPos != 0)
+    {
+
+      // Write last type class data to class and header file
+      // iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sCppFil, &sGrpNam, &oCppTypClass);
+      iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sGrpNam, &oCppTypClass);
+
+      // save class name for member class
+      strncpy(oCppTypClass.cClsNam,oStrType.Get_ObjNam().c_str(),dSST_STR01_VAR_NAM_LEN);
+      strncpy(oCppTypClass.cGrpNam,"Typ",dSST_STR01_VAR_NAM_LEN);
+      strncpy(oCppTypClass.cSysNam,oStrType.Get_SysNam().c_str(),dSST_STR01_VAR_NAM_LEN);
+
+      oStrTypeAct = oStrType;
+
+      // Close list of class type definitions
+      // Close list of class function definitions
+      iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
+
+      // Datensatz-Verwaltung anlegen / Ñ†ffnen.
+      iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
+
+    }
+
+    // write new type definition to class list
+    oCppClsTyp1.eClsVisiTyp = myClsPublic;
+    oCppClsTyp1.sClsMem = oStrType;
+
+    // SatzNr = DS1_DsShrNeu ( 0, &oCppTypClass.ClsTypDsVerw, &oCppClsTyp1);
+    iStat = oCppTypClass.ClsTypDsVerw->WritNew( 0, &oCppClsTyp1, &SatzNr);
+
+
+  }
+
+  // Write last class data to files
+  // iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sCppFil, &sGrpNam, &oCppTypClass);
+  iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sGrpNam, &oCppTypClass);
+
+  // Datensatz-Verwaltung beenden.
+  iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
+
+  // write define end rows in cpp header file
+  iStat = sstCpp01_Hed_wrt_def_close ( 0, &sHedFil);
+
+  // Close HedFil object and File inside
+  iStat = sHedFil.fcloseFil(0);
+  // iStat = sCppFil.fcloseFil(0);
+
+
+  // Fatal Errors goes to an assert
+  if (iRet < 0)
+  {
+    // Expression (iRet >= 0) has to be fullfilled
+    assert(0);
+  }
+
+  // Small Errors will given back
+  iRet = iStat;
+
+  return iRet;
+}
+//=============================================================================
+int sstcsv_FilWrtClsFncOpen3 (int          iKey,
+                              sstRec04Cls *DsVerw,
+                              std::string sSysNam,
+                              std::string sDateStr)
+//-----------------------------------------------------------------------------
+{
+  std::string sGrpNam;  // Nam of function group, f.e. Typ, Fnc or Dbs
+  std::string sHedFilNam;  // Nam of header file
+  std::string sCppFilNam;  // Nam of cpp file
+  sstMisc01AscFilCls sHedFil;
+  sstMisc01AscFilCls sCppFil;
+
+  sstStr01VarDefCls oStrType;
+  sstStr01VarDefCls oStrTypeAct;  // with GDA_
+  sstCpp01_Class_Cls oCppTypClass;
+  sstCpp01_Class_Cls oCppTypBaseClass;
+  sstCpp01_Class_Cls oCppFncBaseClass;
+  sstCpp01_ClsTyp_Cls oCppClsTyp1;  // for type class
+  dREC04RECNUMTYP eTypeNum = 0;
+  dREC04RECNUMTYP SatzNr = 0;
+
+
+  int iRet  = 0;
+  int iStat = 0;
+//-----------------------------------------------------------------------------
+  if ( iKey != 0) return -1;
+
+  // Set Date in typ class
+  iStat = oCppTypClass.SetDate ( 0, sDateStr);
+
+  // Reset values
+  strncpy(oCppTypClass.cClsNam,"",dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppTypClass.cGrpNam,"Typ",dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppTypClass.cSysNam,sSysNam.c_str(),dSST_STR01_VAR_NAM_LEN);
+
+  // sGrpNam = "FncOpen";
+  sGrpNam = "Fnc";
+
+  sHedFilNam = sSysNam;
+//  sHedFilNam = sHedFilNam + "_";
+  sHedFilNam = sHedFilNam + "Lib";
+  sHedFilNam = sHedFilNam + ".h";
+
+  sCppFilNam = sSysNam;
+  sCppFilNam = sCppFilNam + "_";
+  sCppFilNam = sCppFilNam + sGrpNam;
+  sCppFilNam = sCppFilNam + ".cpp";
+
+  // CascObjekt Ã¶ffnen zum Schreiben.
+  iStat = sHedFil.fopenWr( 0, sHedFilNam.c_str());
+  // iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
+
+  //===========================================================================
+
+   // write headrows in cpp file
+   iStat = sstCpp01_Fil_wrt_head ( 0, &sHedFil, &sDateStr);
+
+   // Write comment to cpp header file
+   iStat = sstCpp01_Hed_WrtCom ( 0, &sHedFil, &sSysNam);
+
+   // write define open rows in cpp header file
+   iStat = sstCpp01_Hed_wrt_def_open ( 0, &sHedFil, "SST", sSysNam,
+                                     sGrpNam, "");
+
+   // write doxygen def group to header file
+   iStat = sstCpp01_Hed_wrt_defgroup(0,&sHedFil, oCppTypClass.GetSysNam());
+
+   //===========================================================================
+//  iStat = oCppTypClass.GetDate( 0, &sDateStr);
+
+//  // write headrows in cpp header file
+//  iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
+
+//  // Write comment and includes to cls file
+//  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
+
+  //===========================================================================
+  // write type base class.
+  sCppFilNam = sSysNam;
+  // sCppFilNam = sCppFilNam + "_";
+  // sCppFilNam = sCppFilNam + sGrpNam;
+  sCppFilNam = sCppFilNam + "Base";
+  sCppFilNam = sCppFilNam + ".cpp";
+
+  iStat = sCppFil.fcloseFil(0);
+   iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
+
+  iStat = oCppTypClass.GetDate( 0, &sDateStr);
+
+  // write headrows in cpp header file
+  iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
+
+  // Write comment and includes to cls file
+  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
+
+  iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypBaseClass);
+
+  oCppTypBaseClass.SetDate( 0, sDateStr);
+
+  // oCppTypBaseClass.SetClsNam(0,"sstDxf01LibTypBase");
+  oCppTypBaseClass.SetClsNam(0,"Base");
+  // oCppTypBaseClass.SetSysNam(0,"sstDxf01Lib");
+  oCppTypBaseClass.SetSysNam( 0, sSysNam);
+  oCppTypBaseClass.SetGrpNam(0,"Typ");
+
+//  sstStr01VarDefCls oVarUserDef;
+//  oVarUserDef.Set_EleNam("sstStr01Cls oCsvCnvt");
+//  oVarUserDef.Set_EleInfo("oCsvCnvt Info");
+//  oVarUserDef.Set_Type(sstStr01Custom);
+
+//  sstCpp01_ClsTyp_Cls oCppVarUserDef;  // for type class, extended var type
+
+//  oCppVarUserDef.sClsMem = oVarUserDef;
+//  oCppVarUserDef.eClsVisiTyp = myClsPublic;
+
+//  iStat = oCppTypBaseClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &SatzNr);
+
+  // Write last type class data to class and header file
+  iStat = sst_WrtClsData_inPipe_toFilesT2 ( 0, &sHedFil, &sCppFil, "Typ", &oCppTypBaseClass);
+  // iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &oCppTypBaseClass);
+
+  // Datensatz-Verwaltung beenden.
+  // iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypBaseClass);
+  // iStat = sCppFil.fcloseFil(0);
+
+  //===========================================================================c
+  // Write Fnc base class.
+  sCppFilNam = sSysNam;
+  sCppFilNam = sCppFilNam + "_";
+  sCppFilNam = sCppFilNam + sGrpNam;
+  sCppFilNam = sCppFilNam + ".cpp";
+
+   // iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
+
+  iStat = oCppTypClass.GetDate( 0, &sDateStr);
+
+  // write headrows in cpp header file
+  // iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
+
+  // Write comment and includes to cls file
+  // iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
+
+  iStat = sstCpp01_ClassTab_Open ( 0, &oCppFncBaseClass);
+
+  oCppFncBaseClass.SetDate( 0, sDateStr);
+
+  // oCppFncBaseClass.SetClsNam(0,"sstDxf01LibFncBase");
+  oCppFncBaseClass.SetClsNam(0,"Base");
+  // oCppFncBaseClass.SetSysNam(0,"sstDxf01Lib");
+  oCppFncBaseClass.SetSysNam(0,sSysNam);
+  oCppFncBaseClass.SetGrpNam(0,"Fnc");
+
+  sstStr01VarDefCls oVarUserDef;
+  oVarUserDef.Set_EleNam("sstStr01Cls oCsvRow");
+  oVarUserDef.Set_EleInfo("oCsvCnvt Info");
+  oVarUserDef.Set_Type(sstStr01Custom);
+
+  sstCpp01_ClsTyp_Cls oCppVarUserDef;  // for type class, extended var type
+
+  oCppVarUserDef.sClsMem = oVarUserDef;
+  oCppVarUserDef.eClsVisiTyp = myClsPublic;
+
+  iStat = oCppFncBaseClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &SatzNr);
+
+  // Write last type class data to class and header file
+  iStat = sst_WrtClsData_inPipe_toFilesT2 ( 0, &sHedFil, &sCppFil, "Fnc", &oCppFncBaseClass);
+  // iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, &sGrpNam, &oCppFncBaseClass);
+  // iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &oCppFncBaseClass);
+
+  // Datensatz-Verwaltung beenden.
+  iStat = sstCpp01_ClassTab_Close ( 0, &oCppFncBaseClass);
+  iStat = sCppFil.fcloseFil(0);
+  //===========================================================================
+
+  // Return number of TypDef records from file
+  eTypeNum = DsVerw->count();
+
+  // Datensatz-Verwaltung anlegen / Ñ†ffnen.
+  // Open Dss Set 1 for Class Group 2
+  // Open Dss Set 2 for Class Group 2
+  iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
+
+  // write all cpp header files
+  for (dREC04RECNUMTYP ii = 1; ii <= eTypeNum; ii++)
+  {
+
+    // Datensatz an absoluter Position lesen.
+    iStat = DsVerw->Read( 0, ii, &oStrType);
+
+    // if object name is different to actual object name, open new object
+    // size_t dStrPos = oStrTypeAct.Get_ObjNam().find(oStrType.Get_ObjNam());
+    size_t dStrPos = oStrTypeAct.Get_ObjNam().compare(oStrType.Get_ObjNam());
+    // if (dStrPos == oStrType.Get_ObjNam().npos)
+    if (dStrPos != 0)
+    {
+
+       // Class name in table changed: new Class !
+       // store class in pipe and start new one
+
+//===========================================================================
+      sCppFilNam = oStrTypeAct.Get_SysNam();
+      // sCppFilNam = sCppFilNam + "_";
+      // sCppFilNam = sCppFilNam + sGrpNam;
+      sCppFilNam = sCppFilNam + oStrTypeAct.Get_ObjNam();
+      sCppFilNam = sCppFilNam + ".cpp";
+
+      iStat = sCppFil.fcloseFil(0);
+       iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
+
+      iStat = oCppTypClass.GetDate( 0, &sDateStr);
+      // save class name for member class
+      strncpy(oCppTypClass.cClsNam,oStrTypeAct.Get_ObjNam().c_str(),dSST_STR01_VAR_NAM_LEN);
+      // strncpy(oCppTypClass.cGrpNam,"Typ",dSST_STR01_VAR_NAM_LEN);
+      strncpy(oCppTypClass.cSysNam,oStrTypeAct.Get_SysNam().c_str(),dSST_STR01_VAR_NAM_LEN);
+
+      // write headrows in cpp header file
+      iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
+
+      // Write comment and includes to cls file
+      iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
+
+
+      // Write last type class data to class and header file
+      iStat = sst_WrtClsData_inPipe_toFilesT2 ( 0, &sHedFil, &sCppFil, "Typ", &oCppTypClass);
+      iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "Fnc", &oCppTypClass);
+      // iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sGrpNam, &oCppTypClass);
+
+
+      oStrTypeAct = oStrType;
+
+      // Close list of class type definitions
+      // Close list of class function definitions
+      iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
+
+      // Datensatz-Verwaltung anlegen / Ñ†ffnen.
+      iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
+
+    }
+
+    // write new type definition to class list
+    oCppClsTyp1.eClsVisiTyp = myClsPublic;
+    oCppClsTyp1.sClsMem = oStrType;
+
+    // SatzNr = DS1_DsShrNeu ( 0, &oCppTypClass.ClsTypDsVerw, &oCppClsTyp1);
+    iStat = oCppTypClass.ClsTypDsVerw->WritNew( 0, &oCppClsTyp1, &SatzNr);
+
+
+  }
+
+  sCppFilNam = oStrTypeAct.Get_SysNam();
+  // sCppFilNam = sCppFilNam + "_";
+  // sCppFilNam = sCppFilNam + sGrpNam;
+  sCppFilNam = sCppFilNam + oStrTypeAct.Get_ObjNam();
+  sCppFilNam = sCppFilNam + ".cpp";
+
+  iStat = sCppFil.fcloseFil(0);
+   iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
+
+  iStat = oCppTypClass.GetDate( 0, &sDateStr);
+  // save class name for member class
+  strncpy(oCppTypClass.cClsNam,oStrTypeAct.Get_ObjNam().c_str(),dSST_STR01_VAR_NAM_LEN);
+  // strncpy(oCppTypClass.cGrpNam,"Typ",dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppTypClass.cSysNam,oStrTypeAct.Get_SysNam().c_str(),dSST_STR01_VAR_NAM_LEN);
+
+  // write headrows in cpp header file
+  iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
+
+  // Write comment and includes to cls file
+  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
+
+
+  // Write last class data to files
+  iStat = sst_WrtClsData_inPipe_toFilesT2 ( 0, &sHedFil, &sCppFil, "Typ", &oCppTypClass);
+  iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "Fnc", &oCppTypClass);
+  // iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sGrpNam, &oCppTypClass);
 
   // Datensatz-Verwaltung beenden.
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
@@ -441,7 +1138,7 @@ int sstcsv_FilWrtClsFncOpen (int          iKey,
 //=============================================================================
 int sst_WrtClsData_inPipe_toFilesT (int               iKey,
                                     sstMisc01AscFilCls   *sHedFil,
-                                    sstMisc01AscFilCls   *sClsFil,
+//                                    sstMisc01AscFilCls   *sClsFil,
                                     sstCpp01_Class_Cls *oCppTypClass)
 //-----------------------------------------------------------------------------
 {
@@ -452,12 +1149,30 @@ int sst_WrtClsData_inPipe_toFilesT (int               iKey,
   int iRet  = 0;
   int iStat = 0;
 //-----------------------------------------------------------------------------
-  if ( iKey != 0) return -1;
+  // if ( iKey != 0) return -1;
+  if ( iKey < 0 || iKey > 1) return -1;
 
   iStat = strlen(oCppTypClass->cClsNam);
   if(iStat <= 0) return -2;
 
   //===========================================================================
+  std::string sCppFilNam;  // Nam of cpp file
+  sstMisc01AscFilCls oCppFil;
+  std::string sDateStr;
+
+  sCppFilNam = oCppTypClass->GetClsNam();
+  sCppFilNam = sCppFilNam + ".cpp";
+
+  iStat = oCppFil.fopenWr( 0, sCppFilNam.c_str());
+
+  iStat = oCppTypClass->GetDate( 0, &sDateStr);
+
+  // write headrows in cpp header file
+  iStat = sstCpp01_Fil_wrt_head ( 0, &oCppFil, &sDateStr);
+
+  // Write comment and includes to cls file
+  iStat = sstCpp01_Cls_WrtInc( 1, &oCppFil, oCppTypClass);
+//===========================================================================
 
   // define new TYPE class set and write: constructor
   oCppClsFnc1.eCppType = sstStr01Unknown;
@@ -475,6 +1190,11 @@ int sst_WrtClsData_inPipe_toFilesT (int               iKey,
 
   //===========================================================================
 
+  if (iKey == 1)
+  {
+
+  // Only derived classes, no base classes
+
   // define new TYPE class function: SetTestData
   oCppClsFnc1.eCppType = sstStr01Int;
   oCppClsFnc1.eClsVisiTyp = myClsPublic;
@@ -488,13 +1208,18 @@ int sst_WrtClsData_inPipe_toFilesT (int               iKey,
   strcpy(oCppClsFnc1.cFncCom,"/**< Set Test Data */");
   iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc1, &lSatzNr);
 
+  }
+
   //===========================================================================
 
   // write information to cpp header file of member class
-  iStat = sstCpp01_wrt2CppHedFil2 ( 1, sHedFil, oCppTypClass);
+  iStat = sstCpp01_wrt2CppHedFil2 ( iKey, sHedFil, oCppTypClass);
 
   // write information to cpp class file of member class
-  iStat = sstCpp01_wrt2CppClsFil2 ( 1, sClsFil, oCppTypClass);
+  iStat = sstCpp01_wrt2CppClsFil2 ( iKey, &oCppFil, oCppTypClass);
+
+  iStat = oCppFil.fcloseFil(0);
+
 
   // Fatal Errors goes to an assert
   if (iRet < 0)
@@ -513,7 +1238,7 @@ int sst_WrtClsData_inPipe_toFilesT (int               iKey,
 //-----------------------------------------------------------------------------
 int sst_WrtClsData_inPipe_toFilesF (int               iKey,
                                     sstMisc01AscFilCls   *sHedFil,
-                                    sstMisc01AscFilCls   *sClsFil,
+//                                     sstMisc01AscFilCls   *sClsFil,
                                     std::string      *sGrpNam,
                                     sstCpp01_Class_Cls *oCppTypClass)
 //-----------------------------------------------------------------------------
@@ -538,11 +1263,31 @@ int sst_WrtClsData_inPipe_toFilesF (int               iKey,
   iStat = strlen(oCppTypClass->cClsNam);
   if(iStat <= 0) return -2;
 
+
+  //===========================================================================
+
   strncpy(oCppFncClass.cSysNam,oCppTypClass->cSysNam, dSST_STR01_VAR_NAM_LEN);
   strncpy(oCppFncClass.cGrpNam,sGrpNam->c_str(), dSST_STR01_VAR_NAM_LEN);
   strncpy(oCppFncClass.cClsNam,oCppFncClass.cSysNam, dSST_STR01_VAR_NAM_LEN);
   strncat(oCppFncClass.cClsNam,oCppFncClass.cGrpNam, dSST_STR01_VAR_NAM_LEN);
   strncat(oCppFncClass.cClsNam,oCppTypClass->cClsNam, dSST_STR01_VAR_NAM_LEN);
+  //===========================================================================
+  std::string sCppFilNam;  // Nam of cpp file
+  sstMisc01AscFilCls oCppFil;
+  std::string sDateStr;
+
+  sCppFilNam = oCppFncClass.GetClsNam();
+  sCppFilNam = sCppFilNam + ".cpp";
+
+  iStat = oCppFil.fopenWr( 0, sCppFilNam.c_str());
+  iStat = oCppTypClass->GetDate( 0, &sDateStr);
+
+  // write headrows in cpp header file
+  iStat = sstCpp01_Fil_wrt_head ( 0, &oCppFil, &sDateStr);
+
+  // Write comment and includes to cls file
+  iStat = sstCpp01_Cls_WrtInc( 1, &oCppFil, &oCppFncClass);
+  //===========================================================================
 
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppFncClass);
 
@@ -623,9 +1368,11 @@ int sst_WrtClsData_inPipe_toFilesF (int               iKey,
   iStat = sstCpp01_wrt2CppHedFil2 ( 1, sHedFil, &oCppFncClass);
 
   // write information to cpp class file of function class
-  iStat = sstCpp01_wrt2CppClsFil2 ( 1, sClsFil, &oCppFncClass);
+  iStat = sstCpp01_wrt2CppClsFil2 ( 1, &oCppFil, &oCppFncClass);
 
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppFncClass);
+
+  iStat = oCppFil.fcloseFil(0);
 
   // Fatal Errors goes to an assert
   if (iRet < 0)
@@ -640,3 +1387,287 @@ int sst_WrtClsData_inPipe_toFilesF (int               iKey,
   return iRet;
 }
 //=============================================================================
+int sst_WrtClsData_inPipe_toFilesT2 (int               iKey,
+                                    sstMisc01AscFilCls   *sHedFil,
+                                    sstMisc01AscFilCls   *sClsFil,
+                                     std::string      sGrpNam,
+                                    sstCpp01_Class_Cls *oCppTypClass)
+//-----------------------------------------------------------------------------
+{
+  sstCpp01_ClsFnc_Cls oCppClsFnc1;  // functions for type class
+
+  std::string oLocClsNam;   // Local class name
+
+  dREC04RECNUMTYP lSatzNr = 0;
+
+  int iRet  = 0;
+  int iStat = 0;
+//-----------------------------------------------------------------------------
+  // if ( iKey != 0) return -1;
+  if ( iKey < 0 || iKey > 1) return -1;
+
+  iStat = strlen(oCppTypClass->cClsNam);
+  if(iStat <= 0) return -2;
+
+  //===========================================================================
+//  std::string sCppFilNam;  // Nam of cpp file
+//  sstMisc01AscFilCls oCppFil;
+//  std::string sDateStr;
+
+//  sCppFilNam = oCppTypClass->GetClsNam();
+//  sCppFilNam = sCppFilNam + ".cpp";
+
+//  iStat = oCppFil.fopenWr( 0, sCppFilNam.c_str());
+
+//  iStat = oCppTypClass->GetDate( 0, &sDateStr);
+
+//  // write headrows in cpp header file
+//  iStat = sstCpp01_Fil_wrt_head ( 0, &oCppFil, &sDateStr);
+
+//  // Write comment and includes to cls file
+//  iStat = sstCpp01_Cls_WrtInc( 1, &oCppFil, oCppTypClass);
+//===========================================================================
+
+  // define new TYPE class set and write: constructor
+  oCppClsFnc1.eCppType = sstStr01Unknown;
+  oCppClsFnc1.eClsVisiTyp = myClsPublic;
+
+  oCppClsFnc1.lBlcStart=1;
+  // Fill inside of typ constructor class function.
+  oCppClsFnc1.lBlcRows = lSatzNr - oCppClsFnc1.lBlcStart + 1;
+
+  oCppTypClass->SetGrpNam(0, sGrpNam);
+
+  // oLocClsNam = oCppTypClass->GetSysNam()+oCppTypClass->GetGrpNam()+oCppTypClass->GetClsNam();
+  oLocClsNam = oCppTypClass->GetLibClsNam();
+
+//  strncpy(oCppClsFnc1.cClsNam,oCppTypClass->cClsNam,dSST_STR01_VAR_NAM_LEN);
+//  strncpy(oCppClsFnc1.cFncNam,oCppTypClass->cClsNam,dSST_STR01_VAR_NAM_LEN);  // function name constructor
+  strncpy( oCppClsFnc1.cClsNam, oLocClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc1.cFncNam, oLocClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name constructor
+  strncpy( oCppClsFnc1.cFncPar, "", dCPPFILROWLENGTH);
+  strncpy( oCppClsFnc1.cFncCom, "Constructor", dCPPFILROWLENGTH);
+  iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc1, &lSatzNr);
+
+  //===========================================================================
+
+  if (iKey == 1)
+  {
+
+  // Only derived classes, no base classes
+
+  // define new TYPE class function: SetTestData
+  oCppClsFnc1.eCppType = sstStr01Int;
+  oCppClsFnc1.eClsVisiTyp = myClsPublic;
+
+  oCppClsFnc1.lBlcStart = lSatzNr + 1;
+  oCppClsFnc1.lBlcRows = lSatzNr - oCppClsFnc1.lBlcStart + 1;
+
+  strcpy(oCppClsFnc1.cClsNam,oCppTypClass->cClsNam);
+  strcpy(oCppClsFnc1.cFncNam,(char*)"SetTestData");
+  strcpy(oCppClsFnc1.cFncPar,"");
+  strcpy(oCppClsFnc1.cFncCom,"/**< Set Test Data */");
+  iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc1, &lSatzNr);
+
+  }
+
+  //===========================================================================
+
+  // write information to cpp header file of member class
+  iStat = sstCpp01_wrt2CppHedFil2 ( iKey, sHedFil, oCppTypClass);
+
+  // write information to cpp class file of member class
+  iStat = sstCpp01_wrt2CppClsFil2 ( iKey, sClsFil, oCppTypClass);
+
+  // iStat = oCppFil.fcloseFil(0);
+
+
+  // Fatal Errors goes to an assert
+  if (iRet < 0)
+  {
+    // Expression (iRet >= 0) has to be fullfilled
+    assert(0);
+  }
+
+  // Small Errors will given back
+  iRet = iStat;
+
+  return iRet;
+}
+//=============================================================================
+int sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
+                                     sstMisc01AscFilCls   *sHedFil,
+                                     sstMisc01AscFilCls   *sClsFil,
+                                     std::string      sGrpNam,
+                                     sstCpp01_Class_Cls *oCppTypClass)
+//-----------------------------------------------------------------------------
+{
+  sstCpp01_Class_Cls oCppFncClass;
+
+  sstCpp01_ClsFnc_Cls oCppClsFnc2;  // for func class
+
+  sstStr01Cls oFmtInfoObj; // Infos about input output format
+
+  std::string oLocTypClsNam;   // Local type class name
+  std::string oLocFncClsNam;   // Local func class name
+
+  dREC04RECNUMTYP lSatzNr = 0;
+  dREC04RECNUMTYP lSatzNrBlc = 0;
+
+  int iRet  = 0;
+  int iStat = 0;
+//-----------------------------------------------------------------------------
+  if ( iKey != 0) return -1;
+
+//  lSatzNr = oCppTypClass->ClsFncDsVerw->count();
+//  lSatzNr = oCppTypClass->ClsBlcDsVerw->count();
+
+  iStat = strlen(oCppTypClass->cClsNam);
+  if(iStat <= 0) return -2;
+
+
+  //===========================================================================
+
+
+  strncpy(oCppFncClass.cSysNam,oCppTypClass->cSysNam, dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppFncClass.cGrpNam,sGrpNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppFncClass.cClsNam,oCppTypClass->cClsNam, dSST_STR01_VAR_NAM_LEN);
+
+  // strncpy(oCppFncClass.cClsNam,oCppFncClass.cSysNam, dSST_STR01_VAR_NAM_LEN);
+  // strncat(oCppFncClass.cClsNam,oCppFncClass.cGrpNam, dSST_STR01_VAR_NAM_LEN);
+  // strncat(oCppFncClass.cClsNam,oCppTypClass->cClsNam, dSST_STR01_VAR_NAM_LEN);
+  //===========================================================================
+
+  // oLocClsNam = oCppFncClass.GetSysNam()+oCppFncClass.GetGrpNam()+oCppFncClass.GetClsNam();
+  oLocTypClsNam = oCppTypClass->GetLibClsNam();
+  oLocFncClsNam = oCppFncClass.GetLibClsNam();
+
+  //  std::string sCppFilNam;  // Nam of cpp file
+//  sstMisc01AscFilCls oCppFil;
+//  std::string sDateStr;
+
+//  sCppFilNam = oCppFncClass.GetClsNam();
+//  sCppFilNam = sCppFilNam + ".cpp";
+
+//  iStat = oCppFil.fopenWr( 0, sCppFilNam.c_str());
+//  iStat = oCppTypClass->GetDate( 0, &sDateStr);
+
+//  // write headrows in cpp header file
+//  iStat = sstCpp01_Fil_wrt_head ( 0, &oCppFil, &sDateStr);
+
+//  // Write comment and includes to cls file
+//  iStat = sstCpp01_Cls_WrtInc( 1, &oCppFil, &oCppFncClass);
+  //===========================================================================
+
+  iStat = sstCpp01_ClassTab_Open ( 0, &oCppFncClass);
+
+  // define new FUNCTION class set and write: constructor
+
+  // define new class set and write: constructor
+  oCppClsFnc2.eCppType = sstStr01Unknown;
+  oCppClsFnc2.eClsVisiTyp = myClsPublic;
+  oCppClsFnc2.lBlcStart = 0;
+  oCppClsFnc2.lBlcRows = 0;
+//  strncpy(oCppClsFnc2.cClsNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
+//  strncpy(oCppClsFnc2.cFncNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc2.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc2.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppClsFnc2.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc2.cFncCom,"// Constructor", dCPPFILROWLENGTH);
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc2, &lSatzNr);
+
+  //-----------------------------------------------------------------------------
+  // define new FUNCTION class set and write: READ
+
+  oCppClsFnc2.eCppType = sstStr01Int;
+  oCppClsFnc2.eClsVisiTyp = myClsPublic;
+  oCppClsFnc2.lBlcStart = 1;
+
+  // Fill Function Block Read
+  iStat = sstCpp01_CsvLib_FillBlc_Read ( 0, &oFmtInfoObj, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+
+  oCppClsFnc2.lBlcRows = lSatzNrBlc;
+  // strncpy(oCppClsFnc2.cClsNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc2.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+
+  strncpy(oCppClsFnc2.cFncNam,"Csv_Read", dSST_STR01_VAR_NAM_LEN );
+
+  strncpy(oCppClsFnc2.cFncPar,"int iKey, std::string *sErrTxt, std::string *s", dCPPFILROWLENGTH);
+  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc2.cFncPar,"_Str, ", dCPPFILROWLENGTH);
+
+  strncat(oCppClsFnc2.cFncPar, oLocTypClsNam.c_str(), dCPPFILROWLENGTH);
+//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
+//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
+//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
+
+  // build variable oVarName
+  strncat(oCppClsFnc2.cFncPar, " *o", dCPPFILROWLENGTH);
+  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
+
+  strncpy(oCppClsFnc2.cFncCom,"// Csv Read Function", dCPPFILROWLENGTH);
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc2, &lSatzNr);
+
+  //-----------------------------------------------------------------------------
+  // define new FUNCTION class set and write: WRITE
+  oCppClsFnc2.eCppType = sstStr01Int;
+  oCppClsFnc2.eClsVisiTyp = myClsPublic;
+  oCppClsFnc2.lBlcStart = lSatzNrBlc+1;
+
+  // Fill Function Block Write
+  iStat = sstCpp01_CsvLib_FillBlc_Write ( 0, &oFmtInfoObj, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+
+  oCppClsFnc2.lBlcRows = lSatzNrBlc - oCppClsFnc2.lBlcStart +1 ;
+  // strncpy(oCppClsFnc2.cClsNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc2.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+
+  strncpy(oCppClsFnc2.cFncNam,"Csv_Write", dSST_STR01_VAR_NAM_LEN);
+
+  strncpy(oCppClsFnc2.cFncPar,"int iKey, ", dCPPFILROWLENGTH);
+
+  strncat(oCppClsFnc2.cFncPar, oLocTypClsNam.c_str(), dCPPFILROWLENGTH);
+//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
+//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
+//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
+
+  // build variable oVarName
+  strncat(oCppClsFnc2.cFncPar, " *o", dCPPFILROWLENGTH);
+  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
+
+  strncat(oCppClsFnc2.cFncPar,", std::string *s", dCPPFILROWLENGTH);
+  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc2.cFncPar,"_Str", dCPPFILROWLENGTH);
+
+  strncpy(oCppClsFnc2.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc2, &lSatzNr);
+
+  //-----------------------------------------------------------------------------
+
+  // write information to cpp header file of function class
+  iStat = sstCpp01_wrt2CppHedFil2 ( 1, sHedFil, &oCppFncClass);
+
+  // write information to cpp class file of function class
+  iStat = sstCpp01_wrt2CppClsFil2 ( 1, sClsFil, &oCppFncClass);
+
+  iStat = sstCpp01_ClassTab_Close ( 0, &oCppFncClass);
+
+  // iStat = oCppFil.fcloseFil(0);
+
+  // Fatal Errors goes to an assert
+  if (iRet < 0)
+  {
+    // Expression (iRet >= 0) has to be fullfilled
+    assert(0);
+  }
+
+  // Small Errors will given back
+  iRet = iStat;
+
+  return iRet;
+}
+//=============================================================================
+

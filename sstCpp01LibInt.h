@@ -18,9 +18,9 @@
 #define   _SST_CPP01_LIB_INT_HEADER
 
 /**
- * @defgroup sstRecord04InternLib sstRecord04InternLib: Intern cpp sst record library
+ * @defgroup sstCpp01InternLib sstCpp01InternLib: Intern sst cpp coding library
  *
- * Intern cpp sst record library <BR>
+ * Intern sst library for cpp code generating <BR>
  *
  */
 
@@ -38,12 +38,12 @@
 *
 * Changed: 29.06.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01InternLib
 *
 * @param iKey            [in]  For the moment 0
 * @param sExpFile        [in]  Header-File
 * @param cGrpNam         [in]  Lib-Name
-* @param poClsTypDsVerw  [in]  Class-Name
+* @param poCppClass      [in]  Cpp Class
 * @param cClsDat         [in]  Date Info
 *
 * @return Errorstate
@@ -59,33 +59,33 @@
 int sstCpp01_Hed_wrt_class_info (int                 iKey,
                                sstMisc01AscFilCls *sExpFile,
                                std::string        *cGrpNam,
-                               sstRec04Cls        *poClsTypDsVerw,
+                                 sstCpp01_Class_Cls *poCppClass,
+                               // sstRec04Cls        *poClsTypDsVerw,
                                std::string        *cClsDat);
 //==============================================================================
 /**
-* @brief write one class definition in cpp header file
+* @brief // write one class definition in open cpp header file <BR>
+* iStat = sstCpp01_Hed_wrt_class ( iKey, &oHedFil, &oCppClass);
 *
-* iStat = sstCpp01_Hed_wrt_class ( iKey, *sExpFile, *cObjNam);
+* Class name is generated from Sys+Grp+Cls Name.
 *
-* iKey = 1: Write with Base Class
+* iKey = 1: Write with SysNam+GrpNam+Base Class
 *
 *      class X:
 *      {
-*        public:   // Öffentliche Funktionen
-*           X();   // Konstruktor
-*          ~X();   // Destruktor
-*        private:  // Private Funktionen
-*        int Dum;  // Dummy
+*        public:      // Public functions and elements
+*           X();      // Constructor: Defined in Fnc Table
+*        private:     // Private functions and elements
+*          int iDum;  // Class element: Defined in Typ Table
 *      };
 *
+* Changed: 23.09.16  Re.
 *
-* Changed: 29.06.12  Re.
+* @ingroup sstCpp01InternLib
 *
-* @ingroup sstRecord04Lib
-*
-* @param iKey:      [in] 0 or 1
-* @param sExpFile:  [in] Cpp Header File
-* @param oCppClass: [in] Class definition
+* @param iKey      [in] 0 or 1
+* @param oHedFil   [in] Cpp Header File
+* @param oCppClass [in] Cpp Class definition
 *
 * @return Errorstate
 *
@@ -97,10 +97,9 @@ int sstCpp01_Hed_wrt_class_info (int                 iKey,
 * @date 29.06.12
 */
 //------------------------------------------------------------------------------
-int sstCpp01_Hed_wrt_class (int                    iKey,
-                          sstMisc01AscFilCls   *sExpFile,
-                          sstCpp01_Class_Cls     *oCppClass);
-
+int sstCpp01_Hed_wrt_class (int                   iKey,
+                            sstMisc01AscFilCls   *oHedFil,
+                            sstCpp01_Class_Cls   *oCppClass);
 //==============================================================================
 /**
 * @brief // sstCpp01_Hed_ClsWrTypRow <BR>
@@ -110,7 +109,7 @@ int sstCpp01_Hed_wrt_class (int                    iKey,
 *
 * Changed: 09.08.16  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01InternLib
 *
 * @param iKey       [in] For the moment 0
 * @param oCppClsTyp [in out] oCppClsTyp
@@ -140,7 +139,7 @@ int sstCpp01_Hed_ClsWrTypRow (int                  iKey,
 *
 * Changed: 29.06.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01InternLib
 *
 * @param iKey:       [in]  For the moment 0
 * @param oCppClass:  [in]  Class object
@@ -158,32 +157,6 @@ int sstCpp01_Hed_ClsWrTypRow (int                  iKey,
 int sstCpp01_wrt2CppHedFil (int               iKey,
                        sstCpp01_Class_Cls *oCppClass);
 //==============================================================================
-//*
-//* @brief // sst_wrt2CppClsFil <BR>
-//* iStat = sst_wrt2CppClsFil ( iKey, *oCppClass);
-//*
-//* More Comment
-//*
-//* Changed: 16.02.10  Re.
-//*
-//* @ingroup sstRecord04Lib
-//*
-//* @param iKey      [in] For the moment 0
-//* @param oCppClass [in] oCppClass
-//*
-//* @return Errorstate
-//*
-//* @retval   = 0: OK
-//* @retval   < 0: Unspecified Error
-//*
-//* @author Re.
-//*
-//* @date 16.02.10
-
-//------------------------------------------------------------------------------
-// int sst_wrt2CppClsFil (int               iKey,
-//                       sstCpp01_Class_Cls *oCppClass);
-//==============================================================================
 /**
 * @brief write class object to cpp class file
 *
@@ -191,7 +164,7 @@ int sstCpp01_wrt2CppHedFil (int               iKey,
 *
 * Changed: 29.06.12  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01InternLib
 *
 * @param iKey        [in]  For the moment 0
 * @param sExpFile    [in]  File Row
@@ -222,7 +195,7 @@ int sstCpp01_WrtCls (int                    iKey,
 *
 * Changed: 30.08.12  Re.
 *
-* @ingroup sstlib
+* @ingroup sstCpp01InternLib
 *
 * @param iKey:     [in] For the moment 0
 * @param sExpFil:  [in] File to write to
@@ -252,7 +225,7 @@ int sstCpp01_TypeWrtFil (int                  iKey,
 *
 * Changed: 10.08.16  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01InternLib
 *
 * @param iKey [in] For the moment 0
 * @param cFrontTxt [in] For the moment 0
@@ -286,7 +259,7 @@ int sstCpp01_CsvLib_CreatePrtStrRd (int               iKey,
 *
 * Changed: 10.08.16  Re.
 *
-* @ingroup sstRecord04Lib
+* @ingroup sstCpp01InternLib
 *
 * @param iKey [in] For the moment 0
 * @param cFrontTxt [in] cFrontTxt
@@ -311,50 +284,15 @@ int sstCpp01_CsvLib_CreatePrtStrWr (int                iKey,
 //                               std::string       *sVonStr,
 //                               std::string       *sBisStr,
                                std::string       *sBlcTxt);
-//==============================================================================
-//*
-//* @brief // sstCpp01_CsvLib_CreatePrtStrWrFF <BR>
-//* iStat = sstCpp01_CsvLib_CreatePrtStrWrFF ( iKey, cFrontTxt, cGrpNam, *oTypDef, *sBlcTxt);
-//*
-//* More Comment
-//*
-//* Changed: 10.08.16  Re.
-//*
-//* @ingroup sstRecord04Lib
-//*
-//* @param iKey [in] For the moment 0
-//* @param cFrontTxt [in] cFrontTxt
-//* @param cGrpNam [in] cGrpNam
-//* @param oTypDef [in] oTypDef
-//* @param sBlcTxt [out] Result sBlcTxt
-//*
-//* @return Errorstate
-//*
-//* @retval   = 0: OK
-//* @retval   < 0: Unspecified Error
-//*
-//* @author Re.
-//*
-//* @date 10.08.16
 
-//------------------------------------------------------------------------------
-//int sstCpp01_CsvLib_CreatePrtStrWrFF (int                 iKey,
-//                                 std::string         cFrontTxt,
-//                                 std::string         cGrpNam,
-//                                 sstStr01VarDefCls  *oTypDef,
-//                                 std::string        *sBlcTxt);
-//==============================================================================
+//// iStat = Test_VectorSys_Stack ( iKey);
+//int Test_VectorSys_Stack (int iKey);
 
+//// iStat = Test_VectorSys_Heap ( iKey);
+//int Test_VectorSys_Heap (int iKey);
 
-
-// iStat = Test_VectorSys_Stack ( iKey);
-int Test_VectorSys_Stack (int iKey);
-
-// iStat = Test_VectorSys_Heap ( iKey);
-int Test_VectorSys_Heap (int iKey);
-
-// Test Compare functions
-int Test_CompareFunctions (int iKey);
+//// Test Compare functions
+//int Test_CompareFunctions (int iKey);
 
 //==============================================================================
 

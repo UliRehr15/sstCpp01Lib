@@ -34,14 +34,12 @@
 sstCpp01_ClsTyp_Cls::sstCpp01_ClsTyp_Cls()
 {
  this->eClsVisiTyp = myClsUnknown;
-
 }
 //=============================================================================
 sstCpp01_ClsFnc_Cls::sstCpp01_ClsFnc_Cls()
 {
   memset(this->cClsNam,0,sizeof(this->cClsNam));
   memset(this->cFncNam,0,sizeof(this->cFncNam));
-
 }
 //=============================================================================
 sstCpp01_Class_Cls::sstCpp01_Class_Cls()
@@ -68,6 +66,79 @@ int sstCpp01_Class_Cls::GetDate(int iKey, std::string *sLocDateStr)
   // int iStat = 0;
   if ( iKey != 0) return -1;
   *sLocDateStr = this->sDateStr;
+  return 0;
+}
+//==============================================================================
+int sstCpp01_Class_Cls::SetClsNam(int iKey, std::string oClsNam)
+{
+  if ( iKey != 0) return -1;
+  strncpy(this->cClsNam,oClsNam.c_str(),dSST_STR01_VAR_NAM_LEN);
+  return 0;
+}
+//==============================================================================
+int sstCpp01_Class_Cls::SetSysNam(int iKey, std::string oSysNam)
+{
+  if ( iKey != 0) return -1;
+  strncpy(this->cSysNam,oSysNam.c_str(),dSST_STR01_VAR_NAM_LEN);
+  return 0;
+}
+//==============================================================================
+int sstCpp01_Class_Cls::SetGrpNam(int iKey, std::string oGrpNam)
+{
+  if ( iKey != 0) return -1;
+  strncpy(this->cGrpNam,oGrpNam.c_str(),dSST_STR01_VAR_NAM_LEN);
+  return 0;
+}
+//==============================================================================
+std::string sstCpp01_Class_Cls::GetSysNam()
+{
+  return this->cSysNam;
+}
+//==============================================================================
+std::string sstCpp01_Class_Cls::GetGrpNam()
+{
+  return this->cGrpNam;
+}
+//==============================================================================
+std::string sstCpp01_Class_Cls::GetClsNam()
+{
+  return this->cClsNam;
+}
+//==============================================================================
+std::string sstCpp01_Class_Cls::GetLibClsNam()
+{
+  std::string oFullClsNam;
+  std::string oSysNam;
+  std::string oGrpNam;
+  std::string oClsNam;
+  oSysNam = this->cSysNam;
+  oGrpNam = this->cGrpNam;
+  oClsNam = this->cClsNam;
+  oFullClsNam = oSysNam + oGrpNam + oClsNam + "Cls";
+  return oFullClsNam;
+}
+//==============================================================================
+int sstCpp01_Class_Cls::HeadWrtTypDefInfo(int                 iKey,
+                                          sstMisc01AscFilCls *sHedFil)
+{
+  sstCpp01_ClsTyp_Cls oVarDefRec;
+  sstStr01VarDefFncCls oVarDefCsv;
+  std::string oCsvStr;
+  std::string oErrStr;
+
+  if ( iKey != 0) return -1;
+
+  if (this->ClsTypDsVerw->count() <= 0) return -2;
+
+  sHedFil->Wr_String(0,"* Used Type Definitions");
+  for (dREC04RECNUMTYP ii=1;ii <= this->ClsTypDsVerw->count();ii++)
+  {
+    this->ClsTypDsVerw->Read( 0, ii, &oVarDefRec);
+    oVarDefCsv.WriteCSV(0,oVarDefRec.sClsMem,&oErrStr,&oCsvStr);
+    sHedFil->Wr_String(0,"* " + oCsvStr);
+  }
+  sHedFil->Wr_String(0,"*");
+
   return 0;
 }
 //=============================================================================
@@ -171,7 +242,7 @@ int sstCpp01_Cls_WrtInc (int               iKey,
   std::string sFilRow;
   std::string sFilRow2;  // for second include
   std::string sFncGrpNam;
-  std::string clocObjNam;
+  std::string cLocObjNam;
   // char *pStr;
   int iRet  = 0;
   int iStat = 0;
@@ -195,16 +266,18 @@ int sstCpp01_Cls_WrtInc (int               iKey,
 
 //  #include "BLANKO.H"
 
-  // Save function group name ( ptss_fnc, ptss_typ)from filename
+  // Save function group name ( dxf_fnc, dxf_typ)from filename
   sFncGrpNam = sExpFile->GetFileName();
 
   size_t lPos =  sFncGrpNam.find(".cpp");
   // if(pStr != NULL)
   if(lPos != sFncGrpNam.npos)
   {
-    // In String durch Adresse und Länge bezeichneten Substring austauschen.
+    // In String durch Adresse und LÐ´nge bezeichneten Substring austauschen.
     sFncGrpNam.erase(lPos,lPos+4);
   }
+
+  sFncGrpNam = oCppClass->cSysNam;
 
   // Write comment row to Asc-File.
   iStat = sExpFile->wr_txt(0,(char*) "//");
@@ -229,54 +302,14 @@ int sstCpp01_Cls_WrtInc (int               iKey,
   iStat = sExpFile->wr_txt(0, (char*)"#include <sstRec04Lib.h>");
   iStat = sExpFile->wr_txt(0, (char*)" ");
 
-  // write base class include
-  // typ bas include or typ/fnc base include
-  if (iKey == 1)
-  {
-    sFilRow = "#include \"";
-    sFilRow = sFilRow + sFncGrpNam;
-    sFilRow = sFilRow + "_Base.h\"";
-
-    size_t dPos = sFilRow.find("Fnc");
-    if(dPos != sFilRow.npos)
-    {
-      // In String durch Adresse und Länge bezeichneten Substring austauschen.
-      sFilRow2 = "#include \"";
-      sFilRow2 = sFilRow2 + oCppClass->cSysNam;
-      sFilRow2 = sFilRow2 +(char*) "_";
-      sFilRow2 = sFilRow2 +oCppClass->cGrpNam;
-      sFilRow2 = sFilRow2 +"_Base.h\"";
-      iStat = sExpFile->Wr_StrDS1( 0, &sFilRow2);
-    }
-
-    iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
-
-    iStat = sExpFile->wr_txt( 0, (char*) " ");
-  }
-
   // write class include
   // typ include or typ/fnc include
-  clocObjNam = sFncGrpNam;
-
-  size_t dPos = clocObjNam.find("Fnc");
-  if(dPos != clocObjNam.npos)
-  {
-    // In String durch Adresse und Länge bezeichneten Substring austauschen.
-    clocObjNam.replace(dPos,dPos+3,"Typ");
-
-    // Write Casc-Line-Object to Casc-File.
-    sFilRow = "#include \"";
-    sFilRow = sFilRow + oCppClass->cSysNam;
-    sFilRow = sFilRow + "_";
-    sFilRow = sFilRow + oCppClass->cGrpNam;
-    sFilRow = sFilRow + ".h\"";
-    iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
-
-  }
+  cLocObjNam = sFncGrpNam + "Lib";
 
   // Write Casc-Line-Object to Casc-File.
   sFilRow = "#include \"";
-  sFilRow = sFilRow + sFncGrpNam;
+  // sFilRow = sFilRow + sFncGrpNam;
+  sFilRow = sFilRow + cLocObjNam;
   sFilRow = sFilRow + ".h\"";
   iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
 
@@ -314,10 +347,9 @@ int sstCpp01_Hed_wrt_def_open (int             iKey,
   size_t dPos = sTxt.find(".h");
   if(dPos != sTxt.npos)
   {
-    // In String durch Adresse und Länge bezeichneten Substring austauschen.
+    // In String durch Adresse und LÐ´nge bezeichneten Substring austauschen.
     sTxt.erase(dPos,2);
   }
-
 
 //#ifndef   _BLANKO_HEADER
 //#define   _BLANKO_HEADER
@@ -355,6 +387,9 @@ int sstCpp01_Hed_wrt_def_open (int             iKey,
   }
   sFilRow = sFilRow + "_HEADER";
   iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
+
+  // Write empty row to Asc-File.
+  iStat = sExpFile->wr_txt(0, (char*)"  ");
 
   // Fatal Errors goes to an assert
   if (iRet < 0)
@@ -406,7 +441,8 @@ int sstCpp01_Hed_wrt_def_close (int             iKey,
 int sstCpp01_Hed_wrt_class_info (int             iKey,
                                sstMisc01AscFilCls *sExpFile,
                                std::string           *cGrpNam,
-                               sstRec04Cls    *poClsTypDsVerw,
+                                 sstCpp01_Class_Cls *poCppClass,
+                               //  sstRec04Cls    *poClsTypDsVerw,
                                // char           *cObjNam,
                                std::string           *cClsDat)
 //-----------------------------------------------------------------------------
@@ -420,16 +456,20 @@ int sstCpp01_Hed_wrt_class_info (int             iKey,
 //-----------------------------------------------------------------------------
   if ( iKey != 0) return -1;
 
-  // iStat = DS1_DsAnz ( 0, poClsTypDsVerw, &AnzDs);
-  AnzDs = poClsTypDsVerw->count();
-  if (AnzDs <= 0) return -2;
+  // get class information or class name
+  AnzDs = poCppClass->ClsTypDsVerw->count();
 
-  // Record 1 is constructor
-  // Record 2 is first class element
-  iStat = poClsTypDsVerw->Read( 0, 2, &oTypDef);
-  cObjNam = oTypDef.sClsMem.Get_ObjInfo();
-
-
+  if (AnzDs <= 1)
+  {
+    cObjNam = poCppClass->GetClsNam();
+  }
+  else
+  {
+    // Record 1 is constructor
+    // Record 2 is first class element
+    iStat = poCppClass->ClsTypDsVerw->Read( 0, 2, &oTypDef);
+    cObjNam = oTypDef.sClsMem.Get_ObjInfo();
+  }
 
 //  //==============================================================================
 //  /**
@@ -464,6 +504,8 @@ int sstCpp01_Hed_wrt_class_info (int             iKey,
   iStat = sExpFile->wr_txt( 0, (char*)"* More Comment");
   iStat = sExpFile->wr_txt( 0, (char*)"*");
 
+  poCppClass->HeadWrtTypDefInfo( 0, sExpFile);
+
   // Write Casc-Line-Object to Casc-File.
   sFilRow = "* Changed: ";
   sFilRow = sFilRow + *cClsDat;
@@ -475,7 +517,7 @@ int sstCpp01_Hed_wrt_class_info (int             iKey,
 
   // Write Casc-Line-Object to Casc-File.
   sFilRow = "* @ingroup ";
-  sFilRow = sFilRow + *cGrpNam;
+  sFilRow = sFilRow + *cGrpNam +"Lib";
   iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
 
   iStat = sExpFile->wr_txt( 0, (char*)"*");
@@ -489,6 +531,43 @@ int sstCpp01_Hed_wrt_class_info (int             iKey,
 
   iStat = sExpFile->wr_txt( 0, (char*)"*/");
   iStat = sExpFile->wr_txt( 0, (char*)"// ----------------------------------------------------------------------------");
+
+  // Fatal Errors goes to an assert
+  if (iRet < 0)
+  {
+    // Expression (iRet >= 0) has to be fullfilled
+    assert(0);
+  }
+
+  // Small Errors will given back
+  iRet = iStat;
+
+  return iRet;
+}
+//=============================================================================
+int sstCpp01_Hed_wrt_defgroup (int                 iKey,
+                               sstMisc01AscFilCls *sExpFile,
+                               std::string         cGrpNam)
+//-----------------------------------------------------------------------------
+{
+  int iRet  = 0;
+  int iStat = 0;
+//-----------------------------------------------------------------------------
+  if ( iKey != 0) return -1;
+
+  /**
+   * @defgroup sstRecord04Lib sstRecord04Lib: cpp sst record library (Version 4)
+   *
+   * cpp sst record library <BR>
+   *
+   */
+
+  iStat = sExpFile->Wr_String( 0,"/**");
+  iStat = sExpFile->Wr_String( 0," * @defgroup "+ cGrpNam + "Lib "+ cGrpNam + "Lib");
+  iStat = sExpFile->Wr_String( 0," *");
+  iStat = sExpFile->Wr_String( 0," * Description: "+ cGrpNam + "Lib");
+  iStat = sExpFile->Wr_String( 0," *");
+  iStat = sExpFile->Wr_String( 0," */");
 
   // Fatal Errors goes to an assert
   if (iRet < 0)
@@ -528,24 +607,24 @@ int sstCpp01_Hed_wrt_class (int               iKey,
 
   //  class X
   //  {
-  //    public:   // Öffentliche Funktionen
-  //       X();  // Konstruktor
-  //      ~X();  // Destruktor
-  //    private:  // Private Funktionen
+  //    public:   // Public functions
+  //       X();  // Constructor
+  //      ~X();  // Destructor
+  //    private:  // Private functions
   //    int Dum;        /**< Dummy */
   //  };
 
 
   // Write Casc-Line-Object to Casc-File.
   sFilRow = "class ";
-  sFilRow = sFilRow + oCppCls->cClsNam;
+  sFilRow = sFilRow + oCppCls->GetLibClsNam();
   if(iKey == 1)
   {
+    // inherits base class
     sFilRow = sFilRow + " : public ";
     sFilRow = sFilRow + oCppCls->cSysNam;
-    sFilRow = sFilRow + "_";
     sFilRow = sFilRow + oCppCls->cGrpNam;
-    sFilRow = sFilRow + "_Base";
+    sFilRow = sFilRow + "BaseCls";
   }
   iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
 
@@ -570,6 +649,50 @@ int sstCpp01_Hed_wrt_class (int               iKey,
 
     if (oCppClsFnc.eClsVisiTyp != myClsPublic) break;
 
+    //==============================================================================
+    /**
+    * @brief // Set system name to class object <BR>
+    * iStat = oCppClass.SetSysNam( iKey, &oSysNam);
+    *
+    * @param iKey    [in] For the moment 0
+    * @param oSysNam [in] Set system name
+    *
+    * @return Errorstate
+    *
+    * @retval   = 0: OK
+    * @retval   < 0: Unspecified Error
+    */
+    // ----------------------------------------------------------------------------
+
+    std::string oTmpStr = oCppClsFnc.cFncNam;
+    std::string oParPairStr;  // Parameter String
+    std::string oParStr;  // Parameter String
+    sExpFile->Wr_String(0,"    //==============================================================================");
+    sExpFile->Wr_String(0,"    /**");
+    sExpFile->Wr_String(0,"    * @brief // " + oTmpStr + " <BR>");
+
+    oTmpStr = oCppClsFnc.cFncPar;
+    if (oTmpStr.length() > 0)
+    {
+      sstStr01Cls oCnvtParStr1;
+      oCnvtParStr1.SetSeparator(0,(char*) ",");
+      int iStat1 = 0;
+      iStat1 = oCnvtParStr1.CsvString2_Str( 0, &oTmpStr, &oParPairStr);
+      while (iStat1 == 0)
+      {
+        sstStr01Cls oCnvtParStr2;
+        oCnvtParStr2.SetSeparator(0,(char*) " ");
+        oCnvtParStr2.SetNoInfoChar( 0,(char*) "\0");
+        iStat = oCnvtParStr2.CsvString2_Str(0,&oParPairStr,&oParStr);
+        iStat = oCnvtParStr2.CsvString2_Str(0,&oParPairStr,&oParStr);
+        sExpFile->Wr_String(0,"    * @param "+ oParStr);
+        iStat1 = oCnvtParStr1.CsvString2_Str( 0, &oTmpStr, &oParPairStr);
+      }
+    }
+
+    sExpFile->Wr_String(0,"    */");
+    sExpFile->Wr_String(0,"    // -----------------------------------------------------------------------------");
+
     sstStr01VarTypeCls oVarType;
     oVarType.Enm2FullStr( 0, oCppClsFnc.eCppType, &cTypeChar);
 
@@ -580,7 +703,11 @@ int sstCpp01_Hed_wrt_class (int               iKey,
     sFilRow = sFilRow + "(";
     sFilRow = sFilRow + oCppClsFnc.cFncPar;
     sFilRow = sFilRow + "); ";
-    sFilRow = sFilRow + oCppClsFnc.cFncCom;
+    if (strlen(oCppClsFnc.cFncCom) > 0)
+    {
+      sFilRow = sFilRow + "// ";
+      sFilRow = sFilRow + oCppClsFnc.cFncCom;
+    }
     iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
   }
 
@@ -774,7 +901,7 @@ int sstCpp01_WrtCls (int                 iKey,
   cRetVar = cTypeType;
   cRetVar = cRetVar + "Stat";  // iStat, lStat ...
 
-  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
+  // Die Anzahl der aktuell gespeicherten DatensÐ´tze zurÑŒckgeben.
   dREC04RECNUMTYP lBlcRowNum = 0;
   lBlcRowNum = sBlcDsVerw->count();
 
@@ -872,7 +999,7 @@ int sstCpp01_wrt2CppHedFil (int               iKey,
                                                                oCppClass->cClsNam);
 
   // write class info block in cpp header file
-  iStat = sstCpp01_Hed_wrt_class_info ( 0, &sExpFile, &cLibNam, oCppClass->ClsTypDsVerw, &sDateStr);
+  iStat = sstCpp01_Hed_wrt_class_info ( 0, &sExpFile, &cLibNam, oCppClass, &sDateStr);
 
   // Write one class definition in header file
   iStat = sstCpp01_Hed_wrt_class ( iKey, &sExpFile, oCppClass);
@@ -921,12 +1048,12 @@ int sstCpp01_wrt2CppHedFil2 (int               iKey,
 
   // build lib name
   cLibNam = oCppClass->cSysNam;
-  cLibNam = cLibNam + "_Lib";
+  // cLibNam = cLibNam + "_Lib";
 
   iStat = oCppClass->GetDate(0,&sDateStr);
 
-  // write class info block in cpp header file
-  iStat = sstCpp01_Hed_wrt_class_info ( 0, sCppHedFil, &cLibNam, oCppClass->ClsTypDsVerw, &sDateStr);
+  // write class info/doxygen block in cpp header file
+  iStat = sstCpp01_Hed_wrt_class_info ( 0, sCppHedFil, &cLibNam, oCppClass, &sDateStr);
 
   // Write one class definition in header file
   iStat = sstCpp01_Hed_wrt_class ( iKey, sCppHedFil, oCppClass);
@@ -943,89 +1070,6 @@ int sstCpp01_wrt2CppHedFil2 (int               iKey,
 
   return iRet;
 }
-//=============================================================================
-//int sst_wrt2CppClsFil (int               iKey,
-//                       sstCpp01_Class_Cls *oCppClass)
-////-----------------------------------------------------------------------------
-//{
-//  sstMisc01AscFilCls sExpFile;
-//  char cExpFilNam[MAX_PFAD];
-//  dREC04RECNUMTYP  lFuncNum = 0;
-//  sstCpp01_ClsTyp_Cls oCppClsTyp;
-//  // char cClassNam[dSST_STR01_VAR_NAM_LEN];
-//  std::string cClassNam;
-//  sstCpp01_ClsFnc_Cls oCppClsFnc;
-//  // StrDS1_stru sDateStr;
-//  std::string sDateStr;
-
-//  int iRet  = 0;
-//  int iStat = 0;
-////-----------------------------------------------------------------------------
-//  if ( iKey < 0 || iKey > 1) return -1;
-
-//  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
-//  // iStat = DS1_DsAnz ( 0, &oCppClass->ClsFncDsVerw, &lFuncNum);
-//  lFuncNum = oCppClass->ClsFncDsVerw->count();
-
-//  if (lFuncNum <= 0) return -2;
-
-//  iStat = strlen(oCppClass->cClsNam);
-//  if (iStat <= 0) return -3;
-
-//  // Save Class Name
-//  // strcpy(cClassNam,oCppClass->cClsNam);
-//  cClassNam = oCppClass->cClsNam;
-
-//  // strcpy(cExpFilNam,oStrTypeAct->cObjNam);
-////  strcpy(cExpFilNam,cClassNam);
-////  strcat(cExpFilNam,".cpp");
-//  strncpy(cExpFilNam,cClassNam.c_str(),MAX_PFAD);
-//  strncat(cExpFilNam,".cpp",MAX_PFAD);
-
-//  // CascObjekt öffnen zum Schreiben.
-//  // iStat = casc_fopenWr_c ( 0, &sExpFile, cExpFilNam);
-//  iStat = sExpFile.fopenWr( 0, cExpFilNam);
-
-//  iStat = oCppClass->GetDate(0,&sDateStr);
-
-//  // write headrows in cpp header file
-//  // iStat = sstCpp01_Fil_wrt_head ( 0, &sExpFile, cClassNam, cExpFilNam, (char*) "30.06.12");
-//  // iStat = sstCpp01_Fil_wrt_head ( 0, &sExpFile, cClassNam, cExpFilNam, sDateStr.Txt);
-//  iStat = sstCpp01_Fil_wrt_head ( 0, &sExpFile, &sDateStr);
-
-//  // Write comment and includes to cls file
-//  // iStat = sstCpp01_Cls_WrtInc( 1, &sExpFile, cClassNam);
-//  iStat = sstCpp01_Cls_WrtInc( iKey, &sExpFile, oCppClass);
-
-//  // write all class functions to cpp files
-//  for (dREC04RECNUMTYP ii = 1; ii <= lFuncNum; ii++)
-//  {
-
-//    // Datensatz an absoluter Position lesen.
-//    // iStat = DS1_DsLesAbs ( 0, &oCppClass->ClsFncDsVerw, &oCppClsFnc, ii);
-//    iStat = oCppClass->ClsFncDsVerw->Read( 0, ii, &oCppClsFnc);
-
-//    // Write one class function to file
-//    iStat = sstCpp01_WrtCls ( 0, &sExpFile, oCppClass->ClsBlcDsVerw, &oCppClsFnc);
-
-//  }
-
-//  // CascObjekt beenden und zugehörige Datei schließen.
-//  // iStat = casc_fclose_c ( 0, &sExpFile);
-//  iStat = sExpFile.fcloseFil(0);
-
-//  // Fatal Errors goes to an assert
-//  if (iRet < 0)
-//  {
-//    // Expression (iRet >= 0) has to be fullfilled
-//    assert(0);
-//  }
-
-//  // Small Errors will given back
-//  iRet = iStat;
-
-//  return iRet;
-//}
 //=============================================================================
 int sstCpp01_wrt2CppClsFil2 (int               iKey,
                         sstMisc01AscFilCls   *sCppClsFil,
@@ -1182,9 +1226,9 @@ int sstCpp01_CsvLib_CreatePrtStrWr (int          iKey,
 //=============================================================================
 // Complete function description is in headerfile
 // Build Source Row like this:
-// iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, optsstypTT->TT2, sptss_Str);
+// iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, odxftypTT->TT2, sdxf_Str);
 // or
-// iStat = Str1_Real2Zeile ( 1, lRdStart, lRdStop, optsstypTT->TT3, 2, sptss_Str);
+// iStat = Str1_Real2Zeile ( 1, lRdStart, lRdStop, odxftypTT->TT3, 2, sdxf_Str);
 //-----------------------------------------------------------------------------
 int sstCpp01_CsvLib_CreatePrtStrWrFF (int                 iKey,
                                  std::string         cFrontTxt,
@@ -1213,7 +1257,7 @@ int sstCpp01_CsvLib_CreatePrtStrWrFF (int                 iKey,
   *sBlcTxt = cFrontTxt;
 
   // For example
-  // "PtssTypTT->TT3"
+  // "dxfTypTT->TT3"
   *sBlcTxt = *sBlcTxt + oTypDef->Get_SysNam();
   *sBlcTxt = *sBlcTxt + cGrpNam;
   *sBlcTxt = *sBlcTxt + oTypDef->Get_ObjNam();
@@ -1244,7 +1288,7 @@ int sstCpp01_CsvLib_CreatePrtStrWrFF (int                 iKey,
   }
 
   // For example
-  // "Ptss_Str"
+  // "dxf_Str"
   *sBlcTxt = *sBlcTxt + oTypDef->Get_SysNam();
   *sBlcTxt = *sBlcTxt + "_Str);";
 
@@ -1280,7 +1324,7 @@ int sstCpp01_CsvLib_FillBlc_Read (int               iKey,
 //-----------------------------------------------------------------------------
   if ( iKey != 0) return -1;
 
-  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
+  // Die Anzahl der aktuell gespeicherten DatensÐ´tze zurÑŒckgeben.
   lClsTypNum = oCppTypClass->ClsTypDsVerw->count();
   if (lClsTypNum <= 0) return -2;
 
@@ -1329,7 +1373,7 @@ int sstCpp01_CsvLib_FillBlc_Read (int               iKey,
     {
     case sstStr01Double:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0,  (char*) "    iStat = oCsvCnvt.CsvString2_Dbl( 0, s",
+      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0,  (char*) "    iStat = oCsvRow.CsvString2_Dbl( 0, s",
                                           oCppTypClass,
                                           oClsTyp.sClsMem.Get_EleNam(),
                                           (char*)"",
@@ -1338,42 +1382,42 @@ int sstCpp01_CsvLib_FillBlc_Read (int               iKey,
     }
     case sstStr01Float:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvCnvt.CsvString2_Flt( 0, s",
+      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvRow.CsvString2_Flt( 0, s",
                                           oCppTypClass, oClsTyp.sClsMem.Get_EleNam(),
                                           (char*)"", &sBlcTxt);
       break;
     }
     case sstStr01Int:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvCnvt.CsvString2_Int2( 0, s",
+      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvRow.CsvString2_Int2( 0, s",
                                           oCppTypClass, oClsTyp.sClsMem.Get_EleNam(),
                                           (char*)"", &sBlcTxt);
       break;
     }
     case sstStr01UInt:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvCnvt.CsvString2_UInt2( 0, s",
+      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvRow.CsvString2_UInt2( 0, s",
                                           oCppTypClass, oClsTyp.sClsMem.Get_EleNam(),
                                           (char*)"", &sBlcTxt);
       break;
     }
     case sstStr01Long:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvCnvt.CsvString2_Int4( 0, s",
+      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvRow.CsvString2_Int4( 0, s",
                                           oCppTypClass, oClsTyp.sClsMem.Get_EleNam(),
                                           (char*)"", &sBlcTxt);
       break;
     }
     case sstStr01ULong:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvCnvt.CsvString2_UInt4( 0, s",
+      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvRow.CsvString2_UInt4( 0, s",
                                           oCppTypClass, oClsTyp.sClsMem.Get_EleNam(),
                                           (char*)"", &sBlcTxt);
       break;
     }
     case sstStr01Bool:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvCnvt.CsvString2_Bool( 0, s",
+      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvRow.CsvString2_Bool( 0, s",
                                           oCppTypClass, oClsTyp.sClsMem.Get_EleNam(),
                                           (char*)"", &sBlcTxt);
       break;
@@ -1383,7 +1427,7 @@ int sstCpp01_CsvLib_FillBlc_Read (int               iKey,
       sLocStr.clear();
       iStat = oFormatInfo->Csv_Int2_2String( 0, (oClsTyp.sClsMem.Get_Width()+1), &sLocStr);  // for c string
 
-      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvCnvt.CsvString2_Char( 0, s",
+      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvRow.CsvString2_Char( 0, s",
                                           oCppTypClass, oClsTyp.sClsMem.Get_EleNam(),
                                           sLocStr, &sBlcTxt);
 
@@ -1394,7 +1438,7 @@ int sstCpp01_CsvLib_FillBlc_Read (int               iKey,
       sLocStr.clear();
       iStat = oFormatInfo->Csv_Int2_2String( 0, (oClsTyp.sClsMem.Get_Width()+1), &sLocStr);  // for c string
 
-      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvCnvt.CsvString2_Char( 0, s",
+      iStat = sstCpp01_CsvLib_CreatePrtStrRd ( 0, (char*) "    iStat = oCsvRow.CsvString2_Char( 0, s",
                                           oCppTypClass, oClsTyp.sClsMem.Get_EleNam(),
                                           sLocStr, &sBlcTxt);
 
@@ -1428,7 +1472,7 @@ int sstCpp01_CsvLib_FillBlc_Read (int               iKey,
   sBlcTxt =  (char*) " ";
   sBlcRow.setRow(sBlcTxt);
   iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
-  sBlcTxt =  (char*) "  *sErrTxt = oCsvCnvt.GetErrorString();";
+  sBlcTxt =  (char*) "  *sErrTxt = oCsvRow.GetErrorString();";
   sBlcRow.setRow(sBlcTxt);
   iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
 
@@ -1520,7 +1564,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
 //-----------------------------------------------------------------------------
   if ( iKey != 0) return -1;
 
-  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
+  // Die Anzahl der aktuell gespeicherten DatensÐ´tze zurÑŒckgeben.
   lClsTypNum = oCppTypClass->ClsTypDsVerw->count();
   if (lClsTypNum <= 0) return -2;
   // Fill Function Block
@@ -1576,7 +1620,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
       sDecStr.clear();
       iStat = oFormatInfo->Csv_Int2_2String( 0, oClsTyp.sClsMem.Get_Dec(), &sDecStr);
 
-      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvCnvt.Csv_Dbl_2String ( 0, ",
+      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_Dbl_2String ( 0, ",
                                           oCppTypClass,
                                           &oClsTyp.sClsMem,
                                           &sBlcTxt);
@@ -1584,7 +1628,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
     }
     case sstStr01Float:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvCnvt.Csv_Real_2String ( 0, ",
+      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_Real_2String ( 0, ",
                                           oCppTypClass,
                                           &oClsTyp.sClsMem,
                                           &sBlcTxt);
@@ -1592,7 +1636,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
     }
     case sstStr01Int:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvCnvt.Csv_Int2_2String ( 0, ",
+      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_Int2_2String ( 0, ",
                                           oCppTypClass,
                                           &oClsTyp.sClsMem,
                                           &sBlcTxt);
@@ -1600,7 +1644,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
     }
     case sstStr01UInt:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvCnvt.Csv_UInt2_2String ( 0, ",
+      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_UInt2_2String ( 0, ",
                                           oCppTypClass,
                                           &oClsTyp.sClsMem,
                                           &sBlcTxt);
@@ -1608,7 +1652,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
     }
     case sstStr01Long:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvCnvt.Csv_Int4_2String ( 0, ",
+      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_Int4_2String ( 0, ",
                                           oCppTypClass,
                                           &oClsTyp.sClsMem,
                                           &sBlcTxt);
@@ -1616,7 +1660,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
     }
     case sstStr01ULong:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvCnvt.Csv_UInt4_2String ( 0, ",
+      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_UInt4_2String ( 0, ",
                                           oCppTypClass,
                                           &oClsTyp.sClsMem,
                                           &sBlcTxt);
@@ -1624,7 +1668,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
     }
     case sstStr01Bool:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvCnvt.Csv_Bool_2String ( 0, ",
+      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_Bool_2String ( 0, ",
                                           oCppTypClass,
                                           &oClsTyp.sClsMem,
                                           &sBlcTxt);
@@ -1633,7 +1677,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
     }
     case sstStr01Date:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvCnvt.Csv_Char_2String ( 0, ",
+      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_Char_2String ( 0, ",
                                           oCppTypClass,
                                           &oClsTyp.sClsMem,
                                           &sBlcTxt);
@@ -1642,7 +1686,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
     }
     case sstStr01Char:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvCnvt.Csv_Char_2String ( 0, ",
+      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_Char_2String ( 0, ",
                                           oCppTypClass,
                                           &oClsTyp.sClsMem,
                                           &sBlcTxt);
@@ -1739,355 +1783,6 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
   return iRet;
 }
 //=============================================================================
-//int sstCpp01_CsvLib_FillBlc_WriteFF (int               iKey,
-////                                sstFormatInfoCls *oFormatInfo,
-//                                sstStr01Cls *oFormatInfo,
-//                                sstCpp01_Class_Cls *oCppTypClass,
-//                                sstRec04Cls      *ClsBlcDsVerw,
-//                                dREC04RECNUMTYP     *lSatzNr)
-
-////-----------------------------------------------------------------------------
-//{
-////  StrDS1_stru sBlcTxt;  // one row inside function block
-////  StrDS1_stru sVonStr;  //
-////  StrDS1_stru sBisStr;  //
-////  StrDS1_stru sLenStr;  // length string
-//  std::string sBlcTxt;  // one row inside function block
-//  std::string sVonStr;  //
-//  std::string sBisStr;  //
-//  std::string sLenStr;  // length string
-//  dREC04RECNUMTYP lClsTypNum = 0;
-//  sstCpp01_ClsTyp_Cls oClsTyp;
-
-//  int iVon=0;
-//  int iBis=0;
-
-//  int iRet  = 0;
-//  int iStat = 0;
-////-----------------------------------------------------------------------------
-//  if ( iKey != 0) return -1;
-
-//  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
-//  // iStat = DS1_DsAnz ( 0, &oCppTypClass->ClsTypDsVerw, &lClsTypNum);
-//  lClsTypNum = oCppTypClass->ClsTypDsVerw->count();
-//  if (lClsTypNum <= 0) return -2;
-
-
-////  long lRdStart =  0;
-////  long lRdStop  = -1;
-////  long lVarGap = 0;
-////  long lVarLen = 0;
-////  StrDS1_stru sZeroStr;
-
-
-
-//  // Fill Function Block
-
-////  StrDS1_stru sErrTxt;
-////  char cDelimit[2]=" ";
-////  long TPos = 4;
-////  int iRet  = 0;
-////  int iStat = 0;
-//////-----------------------------------------------------------------------------
-////  if ( iKey != 0) return -1;
-
-
-//  sBlcTxt =  (char*) "//  Bloc Function Write Start";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-
-
-//  sBlcTxt =  (char*) "  long lRdStart =  0;";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  long lRdStop  = -1;";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  long lVarGap = 0;";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  long lVarLen = 0;";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  StrDS1_stru sZeroStr;";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//  // sBlcTxt =  (char*) "  int iStat = 0;");
-//  // iStat = oCppFncClass->ClsBlcDsVerw.WritNew( 0, &sBlcTxt, lSatzNr);
-
-//  sBlcTxt =  (char*) "  int iRet  = 0;";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//  sBlcTxt =  (char*) "//-----------------------------------------------------------------------------";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  if ( iKey != 0) return -1;";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) " ";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//  // iStat = Str1_Init( 0, &sZeroStr);
-//  sBlcTxt =  (char*) "  iStat = Str1_Init( 0, &sZeroStr);";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) " ";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//  // iStat = Str1_Init( 0, sPtss_Str);
-////  iStat = Str1Cpy ( 0, &sBlcTxt, (char*) "  iStat = Str1_Init( 0, s");
-////  iStat = Str1Cat ( 0, &sBlcTxt, oCppTypClass->cSysNam);
-////  iStat = Str1Cat ( 0, &sBlcTxt, (char*) "_Str);");
-//  sBlcTxt = "  iStat = Str1_Init( 0, s";
-//  sBlcTxt = sBlcTxt + oCppTypClass->cSysNam;
-//  sBlcTxt = sBlcTxt + "_Str);";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) " ";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//  iVon = 1;
-//  // iBis = iVon + oClsTyp.oClsMem.iWidth;
-
-//  // write all type definitions to header file
-//  for (dREC04RECNUMTYP ii=1; ii <= lClsTypNum; ii++)
-//  {
-//    // Datensatz an absoluter Position lesen.
-//    // iStat = DS1_DsLesAbs ( 0, &oCppTypClass->ClsTypDsVerw, &oClsTyp, ii);
-//    iStat = oCppTypClass->ClsTypDsVerw->Read( 0, ii, &oClsTyp);
-
-//    iBis = iVon + oClsTyp.sClsMem.Get_Width();
-
-//    //  if (iStat >= 0)
-//    sBlcTxt =  (char*) "  if (iStat >= 0)";
-//    iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//    //  {
-//    sBlcTxt =  (char*) "  {";
-//    iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-////    // Kopieren eines Char in einen Zeilenbereich.
-////    lVarLen = 2;
-////    lVarGap = 1;
-////    lRdStart = lRdStop  + lVarGap + 1;
-////    lRdStop  = lRdStart + lVarLen - 1;
-////    iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, oTT.cPar1, &sTestStr);
-////    iStat = Str1_Real2Zeile ( 1, lRdStart, lRdStop, oTT.fPar3 ,2, &sTestStr);
-
-////    iStat = Str1_Init ( 0, &sLenStr);
-////    iStat = Str1_Int2Zeile ( 0, 1, 3, oClsTyp.sClsMem.iWidth, &sLenStr);
-//    sLenStr.clear();
-//    iStat = oFormatInfo->Csv_Int2_2String( 0, oClsTyp.sClsMem.Get_Width(), &sLenStr);
-
-////    iStat = Str1Cpy ( 0, &sBlcTxt, (char*) "    lVarLen = ");
-////    iStat = Str1Cat ( 0, &sBlcTxt, sLenStr.Txt);
-////    iStat = Str1Cat ( 0, &sBlcTxt, (char*)";");
-//    sBlcTxt = "    lVarLen = ";
-//    sBlcTxt = sBlcTxt + sLenStr;
-//    sBlcTxt = sBlcTxt + ";";
-//    iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//    sBlcTxt =  (char*) "    lVarGap = 1;";
-//    iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//    sBlcTxt =  (char*) "    lRdStart = lRdStop  + lVarGap + 1;";
-//    iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//    sBlcTxt =  (char*) "    lRdStop  = lRdStart + lVarLen - 1;";
-//    iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//    // Init Str1 object.
-////    iStat = Str1_Init ( 0, &sVonStr);
-////    iStat = Str1_Init ( 0, &sBisStr);
-//    sVonStr.clear();
-//    sBisStr.clear();
-
-//    // Int2 in einen String konvertieren und in Zeilenbereich kopieren.
-////    iStat = Str1_Int2Zeile ( 0, 1, 3, iVon, &sVonStr);
-////    iStat = Str1_Int2Zeile ( 0, 1, 3, iBis, &sBisStr);
-//    iStat = oFormatInfo->Csv_Int2_2String( 0, iVon, &sVonStr);
-//    iStat = oFormatInfo->Csv_Int2_2String( 0, iBis, &sBisStr);
-
-//    switch(oClsTyp.sClsMem.Get_Type())
-//    {
-//    case sstStr01Double:
-//    {
-//      // memset(sZeroStr.Txt, 48, lVarLen);
-//      // sZeroStr.Txt[lVarLen] = 0;
-//      // iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, sPtss_Str);
-
-//      sBlcTxt =  (char*) "    memset(sZeroStr.Txt, 48, lVarLen);";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//      sBlcTxt =  (char*) "    sZeroStr.Txt[lVarLen] = 0;";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-////      iStat = Str1Cpy ( 0, &sBlcTxt, (char*) "    iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, s");
-////      iStat = Str1Cat ( 0, &sBlcTxt, oCppTypClass->cSysNam);
-////      iStat = Str1Cat ( 0, &sBlcTxt, (char*) "_Str);");
-//      sBlcTxt = "    iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, s";
-//      sBlcTxt = sBlcTxt + oCppTypClass->cSysNam;
-//      sBlcTxt = sBlcTxt + "_Str);";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//      // iStat = Str1_Init ( 0, &sDecStr);
-//      // iStat = Str1_Int2Zeile ( 0, 1, 3, oClsTyp.sClsMem.iDec, &sDecStr);
-
-//      iStat = sstCpp01_CsvLib_CreatePrtStrWrFF ( 0, (char*) "    iStat = Str1_Dbl2Zeile ( 1, lRdStart, lRdStop, o",
-//                                           oCppTypClass->cGrpNam,
-//                                           &oClsTyp.sClsMem, // &sVonStr, &sBisStr,
-//                                           &sBlcTxt);
-//      break;
-//    }
-//    case sstStr01Float:
-//    {
-//      // memset(sZeroStr.Txt, 48, lVarLen);
-//      // sZeroStr.Txt[lVarLen] = 0;
-//      // iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, &sTestStr);
-
-//      sBlcTxt =  (char*) "    memset(sZeroStr.Txt, 48, lVarLen);";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//      sBlcTxt =  (char*) "    sZeroStr.Txt[lVarLen] = 0;";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-////      iStat = Str1Cpy ( 0, &sBlcTxt, (char*) "    iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, s");
-////      iStat = Str1Cat ( 0, &sBlcTxt, oCppTypClass->cSysNam);
-////      iStat = Str1Cat ( 0, &sBlcTxt, (char*) "_Str);");
-//      sBlcTxt = "    iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, s";
-//      sBlcTxt = sBlcTxt + oCppTypClass->cSysNam;
-//      sBlcTxt = sBlcTxt + "_Str);";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//      iStat = sstCpp01_CsvLib_CreatePrtStrWrFF ( 0, (char*) "    iStat = Str1_Real2Zeile ( 1, lRdStart, lRdStop, o",
-//                                           oCppTypClass->cGrpNam,
-//                                           &oClsTyp.sClsMem, // &sVonStr, &sBisStr,
-//                                           &sBlcTxt);
-//      break;
-//    }
-//    case sstStr01Int:
-//    {
-//      // memset(sZeroStr.Txt, 48, lVarLen);
-//      // sZeroStr.Txt[lVarLen] = 0;
-//      // iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, &sTestStr);
-
-//      sBlcTxt =  (char*) "    memset(sZeroStr.Txt, 48, lVarLen);";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//      sBlcTxt =  (char*) "    sZeroStr.Txt[lVarLen] = 0;";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-////      iStat = Str1Cpy ( 0, &sBlcTxt, (char*) "    iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, s");
-////      iStat = Str1Cat ( 0, &sBlcTxt, oCppTypClass->cSysNam);
-////      iStat = Str1Cat ( 0, &sBlcTxt, (char*) "_Str);");
-//      sBlcTxt = "    iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, s";
-//      sBlcTxt = sBlcTxt + oCppTypClass->cSysNam;
-//      sBlcTxt = sBlcTxt + "_Str);";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//      iStat = sstCpp01_CsvLib_CreatePrtStrWrFF ( 0, (char*) "    iStat = Str1_Int2Zeile ( 1, lRdStart, lRdStop, o",
-//                                           oCppTypClass->cGrpNam,
-//                                           &oClsTyp.sClsMem, // &sVonStr, &sBisStr,
-//                                           &sBlcTxt);
-//      break;
-//    }
-//    case sstStr01Long:
-//    {
-//      // memset(sZeroStr.Txt, 48, lVarLen);
-//      // sZeroStr.Txt[lVarLen] = 0;
-//      // iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, &sTestStr);
-
-//      sBlcTxt =  (char*) "    memset(sZeroStr.Txt, 48, lVarLen);";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//      sBlcTxt =  (char*) "    sZeroStr.Txt[lVarLen] = 0;";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-////      iStat = Str1Cpy ( 0, &sBlcTxt, (char*) "    iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, s");
-////      iStat = Str1Cat ( 0, &sBlcTxt, oCppTypClass->cSysNam);
-////      iStat = Str1Cat ( 0, &sBlcTxt, (char*) "_Str);");
-//      sBlcTxt = "    iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, sZeroStr.Txt, s";
-//      sBlcTxt = sBlcTxt + oCppTypClass->cSysNam;
-//      sBlcTxt = sBlcTxt + "_Str);";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//      iStat = sstCpp01_CsvLib_CreatePrtStrWrFF ( 0, (char*) "    iStat = Str1_Int4Zeile ( 1, lRdStart, lRdStop, o",
-//                                           oCppTypClass->cGrpNam,
-//                                           &oClsTyp.sClsMem, // &sVonStr, &sBisStr,
-//                                           &sBlcTxt);
-//      break;
-//    }
-//    case sstStr01Char:
-//    {
-//      iStat = sstCpp01_CsvLib_CreatePrtStrWrFF ( 0, (char*) "    iStat = Str1_Char2Zeile ( 0, lRdStart, lRdStop, o",
-//                                           oCppTypClass->cGrpNam,
-//                                           &oClsTyp.sClsMem, // &sVonStr, &sBisStr,
-//                                           &sBlcTxt);
-
-//      break;
-//    }
-//    case sstStr01Unknown:
-//    {
-//      sBlcTxt =  (char*) "  iStat = -2;)";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//      sBlcTxt =  (char*) "  // iStat = Str1_AbPos2 ... Unknown";
-//      break;
-//    }
-//    default:
-//    {
-//      sBlcTxt =  (char*) "  iStat = -2;)";
-//      iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//      sBlcTxt =  (char*) "  // iStat = Str1_AbPos2 ... Error";
-//      break;
-
-//    }
-//    }
-
-//    iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//    iVon = iBis + 2;  // + one Space
-//    iBis = iVon + oClsTyp.sClsMem.Get_Dec();
-
-//    //  }
-//    sBlcTxt =  (char*) "  }";
-//    iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//  }
-
-////  // Fatal Errors goes to an assert
-////  if (iRet < 0)
-////  {
-////    // Expression (iRet >= 0) has to be fullfilled
-////    assert(0);
-////  }
-
-////  // Small Errors will given back
-////  iRet = iStat;
-
-////  return iRet;
-
-//  sBlcTxt =  (char*) " ";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  // Fatal Errors goes to an assert";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  if (iRet < 0)";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  {";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "    // Expression (iRet >= 0) has to be fullfilled";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "    assert(0);";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  }";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) " ";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  // Small Errors will given back";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) "  iRet = iStat;";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  sBlcTxt =  (char*) " ";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-//  // sBlcTxt =  (char*) "  return iRet;");
-//  // iStat = oCppFncClass->ClsBlcDsVerw.WritNew( 0, &sBlcTxt, lSatzNr);
-
-//  sBlcTxt =  (char*) "//  Bloc Function Write End";
-//  iStat = ClsBlcDsVerw->WritNew( 0, &sBlcTxt, lSatzNr);
-
-//  // Fatal Errors goes to an assert
-//  if (iRet < 0)
-//  {
-//    // Expression (iRet >= 0) has to be fullfilled
-//    assert(0);
-//  }
-
-//  // Small Errors will given back
-//  iRet = iStat;
-
-//  return iRet;
-//}
-//=============================================================================
 int sstCpp01_Hed_ClsWrTypRow (int                iKey,
                             sstCpp01_ClsTyp_Cls *oCppClsTyp,
                             sstMisc01AscFilCls    *sExpFile)
@@ -2153,7 +1848,7 @@ int sstCpp01_ClassTab_Open (int iKey, sstCpp01_Class_Cls *oCppClass)
 //-----------------------------------------------------------------------------
   if ( iKey != 0) return -1;
 
-  // Datensatz-Verwaltung anlegen / öffnen.
+  // Datensatz-Verwaltung anlegen / Ñ†ffnen.
   oCppClass->ClsTypDsVerw = new sstRec04Cls ( sizeof(oCppClsTyp));
   oCppClass->ClsFncDsVerw = new sstRec04Cls ( sizeof(oCppClsFnc));
   oCppClass->ClsBlcDsVerw = new sstRec04Cls ( sizeof(sBlcTxt));
@@ -2196,3 +1891,4 @@ int sstCpp01_ClassTab_Close (int iKey, sstCpp01_Class_Cls *oCppClass)
   return iRet;
 }
 //=============================================================================
+
