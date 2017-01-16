@@ -21,3 +21,5 @@ August 2016, Hanover, Germany, Uli Rehr
 Versions <BR>
 20160815: Vers. 1.0: First Check in. <BR>
 20160926: Vers. 1.1: Some improvements for generating sstDxf02Lib Code. <BR>
+20170116: Vers. 1.2: New class VarTypeDef Table. <BR>
+                     Create Test project.

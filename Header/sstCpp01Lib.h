@@ -628,5 +628,45 @@ int sstCpp01_ClassTab_Open (int iKey, sstCpp01_Class_Cls *oCppClass);
 //------------------------------------------------------------------------------
 int sstCpp01_ClassTab_Close (int iKey, sstCpp01_Class_Cls *oCppClass);
 
+//==============================================================================
+/**
+* @brief Manage file of VarDefTyp csv strings
+*
+* Changed: 13.01.17  Re.
+*
+* @ingroup sstCpp01Lib
+*
+* @author Re.
+*
+* @date 13.01.17
+*/
+// ----------------------------------------------------------------------------
+class sstCpp01VarDefTypFilCls
+{
+  public:   // Public functions
+     sstCpp01VarDefTypFilCls();  // Constructor
+    //~sstTestBaseCls();  // Destructor
+     //==============================================================================
+     /**
+     * @brief // Get Header string <BR>
+     * iStat = oVarDefTypFil.GetHeaderStr(iKey,oVarDefTypFilNam,&oHeaderStr);
+     *
+     * @param iKey             [in] For the moment 0
+     * @param oVarDefTypFilNam [in] For the moment 0
+     * @param oHeaderStr       [out] return header stringf
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int GetHeaderStr(int iKey, std::string oVarDefTypFilNam, std::string *oHeaderStr);
+// ----------------------------------------------------------------------------
+private:  // Private functions
+};
+//-----------------------------------------------------------------------------
+
+
 #endif // SST_REC01_LIB
 

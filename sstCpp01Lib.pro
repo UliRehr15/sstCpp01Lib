@@ -17,7 +17,8 @@ HEADERS		+=  ./Header/sstCpp01Lib.h
 HEADERS		+= sstCpp01LibInt.h
 
 
-SOURCES		+= sstCpp01Lib.cpp
+SOURCES		+= sstCpp01Lib.cpp \
+    sstCpp01VarDefTypFil.cpp
 
 OTHER_FILES += README.md
 
