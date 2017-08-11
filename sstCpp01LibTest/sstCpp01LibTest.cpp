@@ -30,7 +30,7 @@ int main (int argc, char *argv [])
 int Test_VarDefTyp_Functions (int iKey)
 //-----------------------------------------------------------------------------
 {
-  sstCpp01VarDefTypFilCls oVarDefTypFil;
+  // sstCpp01VarDefTypFilCls oVarDefTypFil;
   std::string oHeaderStr;
   sstMisc01AscFilCls oTestFil;
 
@@ -45,9 +45,9 @@ int Test_VarDefTyp_Functions (int iKey)
   oTestFil.Wr_String(0,"LibNam;ClsNam;VarNam4;DD;4;2");
   oTestFil.fcloseFil(0);
 
-  iStat = oVarDefTypFil.GetHeaderStr(0,"VarDefTyps.csv",&oHeaderStr);
-  assert(iStat == 0);
-  assert(oHeaderStr.compare("VarNam1;VarNam2;VarNam3;VarNam4") == 0);
+  // iStat = oVarDefTypFil.GetHeaderStr(0,"VarDefTyps.csv",&oHeaderStr);
+  // assert(iStat == 0);
+  // assert(oHeaderStr.compare("VarNam1;VarNam2;VarNam3;VarNam4") == 0);
 
 
   return iStat;

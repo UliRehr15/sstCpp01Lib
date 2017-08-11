@@ -22,4 +22,5 @@ Versions <BR>
 20160815: Vers. 1.0: First Check in. <BR>
 20160926: Vers. 1.1: Some improvements for generating sstDxf02Lib Code. <BR>
 20170116: Vers. 1.2: New class VarTypeDef Table. <BR>
-                     Create Test project.
+                     Create Test project. <BR>
+20170811: Vers. 1.3: Generate new functions -GetNumberElements, GetAllNameStr, GetAllTypeStr-. <BR>

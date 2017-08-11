@@ -66,7 +66,7 @@ int main(int argc, char *argv [])
     printf("\n");
     printf("Programm generates cpp library for csv io from def-file\n");
 
-    oSstPrt.SST_PrtZu(0);
+    oSstPrt.SST_PrtZu(1);
     return 0;
   }
 
@@ -884,7 +884,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   sCppFilNam = sCppFilNam + sGrpNam;
   sCppFilNam = sCppFilNam + ".cpp";
 
-  // CascObjekt Ã¶ffnen zum Schreiben.
+  // CascObjekt öffnen zum Schreiben.
   iStat = sHedFil.fopenWr( 0, sHedFilNam.c_str());
   // iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
@@ -931,6 +931,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   // Write comment and includes to cls file
   iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
 
+  // Open all tables of CppClass
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypBaseClass);
 
   oCppTypBaseClass.SetDate( 0, sDateStr);
@@ -1028,12 +1029,15 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
     // if object name is different to actual object name, open new object
     // size_t dStrPos = oStrTypeAct.Get_ObjNam().find(oStrType.Get_ObjNam());
     size_t dStrPos = oStrTypeAct.Get_ObjNam().compare(oStrType.Get_ObjNam());
+
+    dREC04RECNUMTYP dNumTypRecsAct = oCppTypClass.ClsTypDsVerw->count();
+
     // if (dStrPos == oStrType.Get_ObjNam().npos)
-    if (dStrPos != 0)
+    if (dStrPos != 0 && dNumTypRecsAct > 1)
     {
 
        // Class name in table changed: new Class !
-       // store class in pipe and start new one
+       // store class in pipe and start new one, if not empty
 
 //===========================================================================
       sCppFilNam = oStrTypeAct.Get_SysNam();
@@ -1063,23 +1067,23 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
       iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "Fnc", &oCppTypClass);
       // iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sGrpNam, &oCppTypClass);
 
-
-      oStrTypeAct = oStrType;
+      // oStrTypeAct = oStrType;
 
       // Close list of class type definitions
       // Close list of class function definitions
       iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
 
-      // Datensatz-Verwaltung anlegen / Ñ†ffnen.
+      // Datensatz-Verwaltung anlegen / öffnen.
       iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
 
     }
+
+    oStrTypeAct = oStrType;
 
     // write new type definition to class list
     oCppClsTyp1.eClsVisiTyp = myClsPublic;
     oCppClsTyp1.sClsMem = oStrType;
 
-    // SatzNr = DS1_DsShrNeu ( 0, &oCppTypClass.ClsTypDsVerw, &oCppClsTyp1);
     iStat = oCppTypClass.ClsTypDsVerw->WritNew( 0, &oCppClsTyp1, &SatzNr);
 
 
@@ -1394,11 +1398,15 @@ int sst_WrtClsData_inPipe_toFilesT2 (int               iKey,
                                     sstCpp01_Class_Cls *oCppTypClass)
 //-----------------------------------------------------------------------------
 {
-  sstCpp01_ClsFnc_Cls oCppClsFnc1;  // functions for type class
+  // sstCpp01_Class_Cls oCppFncClass;
+  sstCpp01_ClsFnc_Cls oCppClsFnc;  // functions for type class
 
   std::string oLocClsNam;   // Local class name
+  // std::string oLocFncClsNam;   // Local func class name
 
   dREC04RECNUMTYP lSatzNr = 0;
+  dREC04RECNUMTYP lSatzNrBlc = 0;
+
 
   int iRet  = 0;
   int iStat = 0;
@@ -1428,26 +1436,31 @@ int sst_WrtClsData_inPipe_toFilesT2 (int               iKey,
 //  iStat = sstCpp01_Cls_WrtInc( 1, &oCppFil, oCppTypClass);
 //===========================================================================
 
-  // define new TYPE class set and write: constructor
-  oCppClsFnc1.eCppType = sstStr01Unknown;
-  oCppClsFnc1.eClsVisiTyp = myClsPublic;
+//  strncpy(oCppFncClass.cSysNam,oCppTypClass->cSysNam, dSST_STR01_VAR_NAM_LEN);
+//  strncpy(oCppFncClass.cGrpNam,sGrpNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+//  strncpy(oCppFncClass.cClsNam,oCppTypClass->cClsNam, dSST_STR01_VAR_NAM_LEN);
 
-  oCppClsFnc1.lBlcStart=1;
+  // define new TYPE class set and write: constructor
+  oCppClsFnc.eCppType = sstStr01Unknown;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+
+  oCppClsFnc.lBlcStart=1;
   // Fill inside of typ constructor class function.
-  oCppClsFnc1.lBlcRows = lSatzNr - oCppClsFnc1.lBlcStart + 1;
+  oCppClsFnc.lBlcRows = lSatzNr - oCppClsFnc.lBlcStart + 1;
 
   oCppTypClass->SetGrpNam(0, sGrpNam);
+  // oLocFncClsNam = oCppFncClass.GetLibClsNam();
 
   // oLocClsNam = oCppTypClass->GetSysNam()+oCppTypClass->GetGrpNam()+oCppTypClass->GetClsNam();
   oLocClsNam = oCppTypClass->GetLibClsNam();
 
 //  strncpy(oCppClsFnc1.cClsNam,oCppTypClass->cClsNam,dSST_STR01_VAR_NAM_LEN);
 //  strncpy(oCppClsFnc1.cFncNam,oCppTypClass->cClsNam,dSST_STR01_VAR_NAM_LEN);  // function name constructor
-  strncpy( oCppClsFnc1.cClsNam, oLocClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
-  strncpy( oCppClsFnc1.cFncNam, oLocClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name constructor
-  strncpy( oCppClsFnc1.cFncPar, "", dCPPFILROWLENGTH);
-  strncpy( oCppClsFnc1.cFncCom, "Constructor", dCPPFILROWLENGTH);
-  iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc1, &lSatzNr);
+  strncpy( oCppClsFnc.cClsNam, oLocClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cFncNam, oLocClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name constructor
+  strncpy( oCppClsFnc.cFncPar, "", dCPPFILROWLENGTH);
+  strncpy( oCppClsFnc.cFncCom, "Constructor", dCPPFILROWLENGTH);
+  iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //===========================================================================
 
@@ -1457,19 +1470,82 @@ int sst_WrtClsData_inPipe_toFilesT2 (int               iKey,
   // Only derived classes, no base classes
 
   // define new TYPE class function: SetTestData
-  oCppClsFnc1.eCppType = sstStr01Int;
-  oCppClsFnc1.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.eCppType = sstStr01Int;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
 
-  oCppClsFnc1.lBlcStart = lSatzNr + 1;
-  oCppClsFnc1.lBlcRows = lSatzNr - oCppClsFnc1.lBlcStart + 1;
+  oCppClsFnc.lBlcStart = lSatzNrBlc + 1;
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart + 1;
 
-  strcpy(oCppClsFnc1.cClsNam,oCppTypClass->cClsNam);
-  strcpy(oCppClsFnc1.cFncNam,(char*)"SetTestData");
-  strcpy(oCppClsFnc1.cFncPar,"");
-  strcpy(oCppClsFnc1.cFncCom,"/**< Set Test Data */");
-  iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc1, &lSatzNr);
+  strcpy(oCppClsFnc.cClsNam,oCppTypClass->cClsNam);
+  strcpy(oCppClsFnc.cFncNam,(char*)"SetTestData");
+  strcpy(oCppClsFnc.cFncPar,"");
+  strcpy(oCppClsFnc.cFncCom,"/**< Set Test Data */");
+  iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   }
+
+  //===========================================================================
+
+  // define new FUNCTION class set and write: Number
+  oCppClsFnc.eCppType = sstStr01UInt; // Return Type
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+
+  // Fill Function Block
+  iStat = sstCpp01_CsvLib_FillBlc_Number ( 0,  oCppTypClass, oCppTypClass, &lSatzNrBlc);
+
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+  strncpy( oCppClsFnc.cClsNam, oLocClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+
+  strncpy(oCppClsFnc.cFncNam,"getMemberNumber", dSST_STR01_VAR_NAM_LEN);
+
+  memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
+
+  strncpy(oCppClsFnc.cFncCom,"// Get Number of Class member", dCPPFILROWLENGTH);
+  iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  //-----------------------------------------------------------------------------
+  // define new FUNCTION class set and write: StringName
+  oCppClsFnc.eCppType = sstStr01String;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+
+  // Fill Function Block
+  iStat = sstCpp01_CsvLib_FillBlc_StrNam ( 0, oCppTypClass, oCppTypClass, &lSatzNrBlc);
+
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, oLocClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+
+  strncpy(oCppClsFnc.cFncNam,"getStringName", dSST_STR01_VAR_NAM_LEN);
+
+  memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
+
+  strncpy(oCppClsFnc.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
+  iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  //-----------------------------------------------------------------------------
+  // define new FUNCTION class set and write: StringType
+  oCppClsFnc.eCppType = sstStr01String;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+
+  // Fill Function Block
+  iStat = sstCpp01_CsvLib_FillBlc_StrTyp ( 0, oCppTypClass, oCppTypClass, &lSatzNrBlc);
+
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, oLocClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+
+  strncpy(oCppClsFnc.cFncNam,"getStringType", dSST_STR01_VAR_NAM_LEN);
+
+  memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
+
+  strncpy(oCppClsFnc.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
+  iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  //-----------------------------------------------------------------------------
+
 
   //===========================================================================
 
@@ -1504,7 +1580,7 @@ int sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
 {
   sstCpp01_Class_Cls oCppFncClass;
 
-  sstCpp01_ClsFnc_Cls oCppClsFnc2;  // for func class
+  sstCpp01_ClsFnc_Cls oCppClsFnc;  // for func class
 
   sstStr01Cls oFmtInfoObj; // Infos about input output format
 
@@ -1564,86 +1640,139 @@ int sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
   // define new FUNCTION class set and write: constructor
 
   // define new class set and write: constructor
-  oCppClsFnc2.eCppType = sstStr01Unknown;
-  oCppClsFnc2.eClsVisiTyp = myClsPublic;
-  oCppClsFnc2.lBlcStart = 0;
-  oCppClsFnc2.lBlcRows = 0;
+  oCppClsFnc.eCppType = sstStr01Unknown;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.lBlcStart = 0;
+  oCppClsFnc.lBlcRows = 0;
 //  strncpy(oCppClsFnc2.cClsNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
 //  strncpy(oCppClsFnc2.cFncNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
-  strncpy( oCppClsFnc2.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
-  strncpy( oCppClsFnc2.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
-  strncpy(oCppClsFnc2.cFncPar,"", dCPPFILROWLENGTH);
-  strncpy(oCppClsFnc2.cFncCom,"// Constructor", dCPPFILROWLENGTH);
-  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc2, &lSatzNr);
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"// Constructor", dCPPFILROWLENGTH);
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
   // define new FUNCTION class set and write: READ
 
-  oCppClsFnc2.eCppType = sstStr01Int;
-  oCppClsFnc2.eClsVisiTyp = myClsPublic;
-  oCppClsFnc2.lBlcStart = 1;
+  oCppClsFnc.eCppType = sstStr01Int;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.lBlcStart = 1;
 
   // Fill Function Block Read
   iStat = sstCpp01_CsvLib_FillBlc_Read ( 0, &oFmtInfoObj, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
 
-  oCppClsFnc2.lBlcRows = lSatzNrBlc;
+  oCppClsFnc.lBlcRows = lSatzNrBlc;
   // strncpy(oCppClsFnc2.cClsNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
-  strncpy( oCppClsFnc2.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
 
-  strncpy(oCppClsFnc2.cFncNam,"Csv_Read", dSST_STR01_VAR_NAM_LEN );
+  strncpy(oCppClsFnc.cFncNam,"Csv_Read", dSST_STR01_VAR_NAM_LEN );
 
-  strncpy(oCppClsFnc2.cFncPar,"int iKey, std::string *sErrTxt, std::string *s", dCPPFILROWLENGTH);
-  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc2.cFncPar,"_Str, ", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncPar,"int iKey, std::string *sErrTxt, std::string *s", dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar,"_Str, ", dCPPFILROWLENGTH);
 
-  strncat(oCppClsFnc2.cFncPar, oLocTypClsNam.c_str(), dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, oLocTypClsNam.c_str(), dCPPFILROWLENGTH);
 //  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
 //  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
 //  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
 
   // build variable oVarName
-  strncat(oCppClsFnc2.cFncPar, " *o", dCPPFILROWLENGTH);
-  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, " *o", dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
 
-  strncpy(oCppClsFnc2.cFncCom,"// Csv Read Function", dCPPFILROWLENGTH);
-  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc2, &lSatzNr);
+  strncpy(oCppClsFnc.cFncCom,"// Csv Read Function", dCPPFILROWLENGTH);
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
   // define new FUNCTION class set and write: WRITE
-  oCppClsFnc2.eCppType = sstStr01Int;
-  oCppClsFnc2.eClsVisiTyp = myClsPublic;
-  oCppClsFnc2.lBlcStart = lSatzNrBlc+1;
+  oCppClsFnc.eCppType = sstStr01Int;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
 
   // Fill Function Block Write
   iStat = sstCpp01_CsvLib_FillBlc_Write ( 0, &oFmtInfoObj, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
 
-  oCppClsFnc2.lBlcRows = lSatzNrBlc - oCppClsFnc2.lBlcStart +1 ;
-  // strncpy(oCppClsFnc2.cClsNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
-  strncpy( oCppClsFnc2.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
 
-  strncpy(oCppClsFnc2.cFncNam,"Csv_Write", dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppClsFnc.cFncNam,"Csv_Write", dSST_STR01_VAR_NAM_LEN);
 
-  strncpy(oCppClsFnc2.cFncPar,"int iKey, ", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncPar,"int iKey, ", dCPPFILROWLENGTH);
 
-  strncat(oCppClsFnc2.cFncPar, oLocTypClsNam.c_str(), dCPPFILROWLENGTH);
-//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
-//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
-//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, oLocTypClsNam.c_str(), dCPPFILROWLENGTH);
 
   // build variable oVarName
-  strncat(oCppClsFnc2.cFncPar, " *o", dCPPFILROWLENGTH);
-  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, " *o", dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
 
-  strncat(oCppClsFnc2.cFncPar,", std::string *s", dCPPFILROWLENGTH);
-  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc2.cFncPar,"_Str", dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar,", std::string *s", dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
+  strncat(oCppClsFnc.cFncPar,"_Str", dCPPFILROWLENGTH);
 
-  strncpy(oCppClsFnc2.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
-  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc2, &lSatzNr);
+  strncpy(oCppClsFnc.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  //-----------------------------------------------------------------------------
+//  // define new FUNCTION class set and write: Number
+//  oCppClsFnc.eCppType = sstStr01UInt; // Return Type
+//  oCppClsFnc.eClsVisiTyp = myClsPublic;
+//  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+
+//  // Fill Function Block
+//  iStat = sstCpp01_CsvLib_FillBlc_Number ( 0,  oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+
+//  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+//  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+
+//  strncpy(oCppClsFnc.cFncNam,"getMemberNumber", dSST_STR01_VAR_NAM_LEN);
+
+//  memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
+
+//  strncpy(oCppClsFnc.cFncCom,"// Get Number of Class member", dCPPFILROWLENGTH);
+//  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  //-----------------------------------------------------------------------------
+//  // define new FUNCTION class set and write: StringName
+//  oCppClsFnc.eCppType = sstStr01String;
+//  oCppClsFnc.eClsVisiTyp = myClsPublic;
+//  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+
+//  // Fill Function Block
+//  iStat = sstCpp01_CsvLib_FillBlc_StrNam ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+
+//  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+//  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+
+//  strncpy(oCppClsFnc.cFncNam,"getStringName", dSST_STR01_VAR_NAM_LEN);
+
+//  memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
+
+//  strncpy(oCppClsFnc.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
+//  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  //-----------------------------------------------------------------------------
+//  // define new FUNCTION class set and write: StringType
+//  oCppClsFnc.eCppType = sstStr01String;
+//  oCppClsFnc.eClsVisiTyp = myClsPublic;
+//  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+
+//  // Fill Function Block
+//  iStat = sstCpp01_CsvLib_FillBlc_StrTyp ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+
+//  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+//  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+
+//  strncpy(oCppClsFnc.cFncNam,"getStringType", dSST_STR01_VAR_NAM_LEN);
+
+//  memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
+
+//  strncpy(oCppClsFnc.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
+//  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
 
@@ -1654,8 +1783,6 @@ int sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
   iStat = sstCpp01_wrt2CppClsFil2 ( 1, sClsFil, &oCppFncClass);
 
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppFncClass);
-
-  // iStat = oCppFil.fcloseFil(0);
 
   // Fatal Errors goes to an assert
   if (iRet < 0)

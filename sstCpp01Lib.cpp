@@ -142,6 +142,22 @@ int sstCpp01_Class_Cls::HeadWrtTypDefInfo(int                 iKey,
   return 0;
 }
 //=============================================================================
+unsigned int sstCpp01_Class_Cls::getNumberOfMember()
+{
+  dREC04RECNUMTYP dNumTypRecsAct = this->ClsTypDsVerw->count();
+  return (unsigned int) dNumTypRecsAct;
+}
+//=============================================================================
+std::string sstCpp01_Class_Cls::getMemberNameStr()
+{
+  return "getMemberNameStr";
+}
+//=============================================================================
+std::string sstCpp01_Class_Cls::getMemberTypeStr()
+{
+  return "getMemberTypeStr";
+}
+//=============================================================================
 sstCpp01_FilRowCls::sstCpp01_FilRowCls()
 {
   memset(this->cCharRow,0,dCPPFILROWLENGTH);
@@ -308,7 +324,6 @@ int sstCpp01_Cls_WrtInc (int               iKey,
 
   // Write Casc-Line-Object to Casc-File.
   sFilRow = "#include \"";
-  // sFilRow = sFilRow + sFncGrpNam;
   sFilRow = sFilRow + cLocObjNam;
   sFilRow = sFilRow + ".h\"";
   iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
@@ -693,17 +708,18 @@ int sstCpp01_Hed_wrt_class (int               iKey,
     sExpFile->Wr_String(0,"    */");
     sExpFile->Wr_String(0,"    // -----------------------------------------------------------------------------");
 
+    // Fill Return Type
     sstStr01VarTypeCls oVarType;
     oVarType.Enm2FullStr( 0, oCppClsFnc.eCppType, &cTypeChar);
-
     sFilRow = "    ";
     sFilRow = sFilRow + cTypeChar;
     if (cTypeChar.length() > 0) sFilRow = sFilRow + " ";
-    sFilRow = sFilRow + oCppClsFnc.cFncNam;
+
+    sFilRow = sFilRow + oCppClsFnc.cFncNam;  // Name of Function
     sFilRow = sFilRow + "(";
-    sFilRow = sFilRow + oCppClsFnc.cFncPar;
+    sFilRow = sFilRow + oCppClsFnc.cFncPar;  // List of parameters
     sFilRow = sFilRow + "); ";
-    if (strlen(oCppClsFnc.cFncCom) > 0)
+    if (strlen(oCppClsFnc.cFncCom) > 0)  // Comment
     {
       sFilRow = sFilRow + "// ";
       sFilRow = sFilRow + oCppClsFnc.cFncCom;
@@ -886,8 +902,11 @@ int sstCpp01_WrtCls (int                 iKey,
 
     switch (oCppClsFnc->eCppType)
     {
+    case sstStr01UInt:
+    case sstStr01ULong:
     case sstStr01Int:
     case sstStr01Long:   sFilRow = sFilRow + " = 0;";break;
+    case sstStr01String:   sFilRow = sFilRow + ";";break;
     case sstStr01Char:   sFilRow = sFilRow + " = """";";break;
     case sstStr01Float:
     case sstStr01Double: sFilRow = sFilRow + " = 0.0;";break;
@@ -1540,11 +1559,10 @@ int sstCpp01_CsvLib_FillBlc_Read (int               iKey,
 }
 //=============================================================================
 int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
-                              sstStr01Cls *oFormatInfo,
-                              sstCpp01_Class_Cls *oCppTypClass,
-                              sstCpp01_Class_Cls *oCppFncClass,
-                              dREC04RECNUMTYP     *lSatzNr)
-
+                                   sstStr01Cls *oFormatInfo,
+                                   sstCpp01_Class_Cls *oCppTypClass,
+                                   sstCpp01_Class_Cls *oCppFncClass,
+                                   dREC04RECNUMTYP     *lSatzNr)
 //-----------------------------------------------------------------------------
 {
   std::string sBlcTxt;  // one row inside function block
@@ -1781,6 +1799,84 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
   iRet = iStat;
 
   return iRet;
+}
+//=============================================================================
+int sstCpp01_CsvLib_FillBlc_Number (int               iKey,
+//                                    sstStr01Cls *oFormatInfo,
+                                    sstCpp01_Class_Cls *oCppTypClass,
+                                    sstCpp01_Class_Cls *oCppFncClass,
+                                    dREC04RECNUMTYP     *lSatzNr)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  sstCpp01_FilRowCls sBlcRow;
+
+  dREC04RECNUMTYP dNumMember= oCppTypClass->ClsTypDsVerw->count();
+
+  std::string oBlcStr = "  uiStat = ";
+  oBlcStr = oBlcStr + std::to_string(dNumMember) + ";";
+  sBlcRow.setRow(oBlcStr);
+  int iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+
+  return iStat;
+}
+//=============================================================================
+int sstCpp01_CsvLib_FillBlc_StrNam (int               iKey,
+//                                    sstStr01Cls *oFormatInfo,
+                                    sstCpp01_Class_Cls *oCppTypClass,
+                                    sstCpp01_Class_Cls *oCppFncClass,
+                                    dREC04RECNUMTYP     *lSatzNr)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  sstCpp01_FilRowCls sBlcRow;
+  sstCpp01_ClsTyp_Cls oMemRec;
+
+  dREC04RECNUMTYP dNumMember= oCppTypClass->ClsTypDsVerw->count();
+
+  std::string oBlcStr = "  oStat = \"";
+
+  for (dREC04RECNUMTYP ll=1;ll<=dNumMember;ll++)
+  {
+    oCppTypClass->ClsTypDsVerw->Read(0,ll,&oMemRec);
+    if (ll != dNumMember) oBlcStr =  oBlcStr + oMemRec.sClsMem.Get_EleNam() + ";";
+    else oBlcStr =  oBlcStr + oMemRec.sClsMem.Get_EleNam();
+
+  }
+
+  oBlcStr += "\";";
+
+  sBlcRow.setRow(oBlcStr);
+  int iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+  return iStat;
+}
+//=============================================================================
+int sstCpp01_CsvLib_FillBlc_StrTyp (int               iKey,
+//                                    sstStr01Cls *oFormatInfo,
+                                    sstCpp01_Class_Cls *oCppTypClass,
+                                    sstCpp01_Class_Cls *oCppFncClass,
+                                    dREC04RECNUMTYP     *lSatzNr)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  sstCpp01_FilRowCls sBlcRow;
+    sstCpp01_ClsTyp_Cls oMemRec;
+
+  dREC04RECNUMTYP dNumMember= oCppTypClass->ClsTypDsVerw->count();
+
+  std::string oBlcStr = "  oStat = \"";
+
+  for (dREC04RECNUMTYP ll=1;ll<=dNumMember;ll++)
+  {
+    oCppTypClass->ClsTypDsVerw->Read(0,ll,&oMemRec);
+    if (ll != dNumMember) oBlcStr =  oBlcStr + oMemRec.sClsMem.Get_TypeStr() + ";";
+    else oBlcStr =  oBlcStr + oMemRec.sClsMem.Get_TypeStr();
+  }
+  oBlcStr += "\";";
+
+  sBlcRow.setRow(oBlcStr);
+  int iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+  return iStat;
 }
 //=============================================================================
 int sstCpp01_Hed_ClsWrTypRow (int                iKey,

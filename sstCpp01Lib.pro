@@ -2,6 +2,8 @@ TEMPLATE	= lib
 CONFIG		+= warn_on
 CONFIG    -= qt
 CONFIG    -= windows
+CONFIG += c++11
+
 
 # CONFIG    -= debug  # ist RELEASE aktiv
 CONFIG    -= release  # ist DEBUG aktiv
@@ -17,8 +19,7 @@ HEADERS		+=  ./Header/sstCpp01Lib.h
 HEADERS		+= sstCpp01LibInt.h
 
 
-SOURCES		+= sstCpp01Lib.cpp \
-    sstCpp01VarDefTypFil.cpp
+SOURCES		+= sstCpp01Lib.cpp
 
 OTHER_FILES += README.md
 

@@ -52,7 +52,7 @@ enum _sstCpp01_ClassType_enum
      };
 typedef enum _sstCpp01_ClassType_enum sstCpp01_ClassType_enum;
 //==============================================================================
-#define dCPPFILROWLENGTH 201    /**< fix size char row   @ingroup sstRecord04Lib */
+#define dCPPFILROWLENGTH 1001    /**< fix size char row   @ingroup sstRecord04Lib */
 //==============================================================================
 /**
 * @brief File Row in Cpp Header or Code File
@@ -141,7 +141,7 @@ class sstCpp01_ClsFnc_Cls
      sstCpp01_ClassType_enum eClsVisiTyp;                       /**< public, protected or private */
      char              cClsNam[dSST_STR01_VAR_NAM_LEN];   /**< Class Name         */
      char              cFncNam[dSST_STR01_VAR_NAM_LEN];   /**< Function Name      */
-     char              cFncPar[dCPPFILROWLENGTH];         /**< Function Parameter */
+     char              cFncPar[dCPPFILROWLENGTH];         /**< Function Parameter without parenthis */
      char              cFncCom[dCPPFILROWLENGTH];         /**< Function Comment   */
      long              lBlcStart;                         /**< lBlcStart in Codeblock Table   */
      long              lBlcRows;                          /**< lBlcRows in Codeblock Table    */
@@ -301,6 +301,10 @@ class sstCpp01_Class_Cls
      int HeadWrtTypDefInfo(int                 iKey,
                            sstMisc01AscFilCls *sHedFil);
      //==============================================================================
+     unsigned int getNumberOfMember();
+     std::string getMemberNameStr();
+     std::string getMemberTypeStr();
+
      sstRec04Cls  *ClsTypDsVerw;   /**< table with all type definitions */
      sstRec04Cls  *ClsFncDsVerw;   /**< Table with for all function definitions */
      sstRec04Cls  *ClsBlcDsVerw;   /**< Table with all function inside code rows */
@@ -576,7 +580,99 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
                               sstCpp01_Class_Cls *oCppTypClass,
                               sstCpp01_Class_Cls *oCppFncClass,
                               dREC04RECNUMTYP  *lSatzNr);
-
+//==============================================================================
+/**
+* @brief // Write Code Block for function -getNumber- <BR>
+* iStat = sstCpp01_CsvLib_FillBlc_Number ( iKey, *oCppTypClass, *oCppFncClass, *lSatzNr);
+*
+* More Comment
+*
+* Changed: 02.08.17  Re.
+*
+* @ingroup sstCpp01Lib
+*
+* @param iKey         [in] For the moment 0
+* @param oCppTypClass [in] oCppTypClass
+* @param oCppFncClass [in] oCppFncClass
+* @param lSatzNr      [in] lSatzNr
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*
+* @author Re.
+*
+* @date 02.08.17
+*/
+//==============================================================================
+int sstCpp01_CsvLib_FillBlc_Number (int               iKey,
+//                              sstStr01Cls      *oFormatInfo,
+                              sstCpp01_Class_Cls *oCppTypClass,
+                              sstCpp01_Class_Cls *oCppFncClass,
+                              dREC04RECNUMTYP  *lSatzNr);
+//==============================================================================
+/**
+* @brief // Write Code Block for function -getNumber- <BR>
+* iStat = sstCpp01_CsvLib_FillBlc_Number ( iKey, *oCppTypClass, *oCppFncClass, *lSatzNr);
+*
+* More Comment
+*
+* Changed: 02.08.17  Re.
+*
+* @ingroup sstCpp01Lib
+*
+* @param iKey         [in] For the moment 0
+* @param oCppTypClass [in] oCppTypClass
+* @param oCppFncClass [in] oCppFncClass
+* @param lSatzNr      [in] lSatzNr
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*
+* @author Re.
+*
+* @date 02.08.17
+*/
+//==============================================================================
+int sstCpp01_CsvLib_FillBlc_StrNam (int               iKey,
+//                              sstStr01Cls      *oFormatInfo,
+                              sstCpp01_Class_Cls *oCppTypClass,
+                              sstCpp01_Class_Cls *oCppFncClass,
+                              dREC04RECNUMTYP  *lSatzNr);
+//==============================================================================
+/**
+* @brief // Write Code Block for function -getNumber- <BR>
+* iStat = sstCpp01_CsvLib_FillBlc_Number ( iKey, *oCppTypClass, *oCppFncClass, *lSatzNr);
+*
+* More Comment
+*
+* Changed: 02.08.17  Re.
+*
+* @ingroup sstCpp01Lib
+*
+* @param iKey         [in] For the moment 0
+* @param oCppTypClass [in] oCppTypClass
+* @param oCppFncClass [in] oCppFncClass
+* @param lSatzNr      [in] lSatzNr
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*
+* @author Re.
+*
+* @date 02.08.17
+*/
+//==============================================================================
+int sstCpp01_CsvLib_FillBlc_StrTyp (int               iKey,
+//                              sstStr01Cls      *oFormatInfo,
+                              sstCpp01_Class_Cls *oCppTypClass,
+                              sstCpp01_Class_Cls *oCppFncClass,
+                              dREC04RECNUMTYP  *lSatzNr);
 //==============================================================================
 /**
 * @brief // Open all tables of CppClass <BR>
@@ -627,46 +723,6 @@ int sstCpp01_ClassTab_Open (int iKey, sstCpp01_Class_Cls *oCppClass);
 */
 //------------------------------------------------------------------------------
 int sstCpp01_ClassTab_Close (int iKey, sstCpp01_Class_Cls *oCppClass);
-
-//==============================================================================
-/**
-* @brief Manage file of VarDefTyp csv strings
-*
-* Changed: 13.01.17  Re.
-*
-* @ingroup sstCpp01Lib
-*
-* @author Re.
-*
-* @date 13.01.17
-*/
-// ----------------------------------------------------------------------------
-class sstCpp01VarDefTypFilCls
-{
-  public:   // Public functions
-     sstCpp01VarDefTypFilCls();  // Constructor
-    //~sstTestBaseCls();  // Destructor
-     //==============================================================================
-     /**
-     * @brief // Get Header string <BR>
-     * iStat = oVarDefTypFil.GetHeaderStr(iKey,oVarDefTypFilNam,&oHeaderStr);
-     *
-     * @param iKey             [in] For the moment 0
-     * @param oVarDefTypFilNam [in] For the moment 0
-     * @param oHeaderStr       [out] return header stringf
-     *
-     * @return Errorstate
-     *
-     * @retval   = 0: OK
-     * @retval   < 0: Unspecified Error
-     */
-     // ----------------------------------------------------------------------------
-     int GetHeaderStr(int iKey, std::string oVarDefTypFilNam, std::string *oHeaderStr);
-// ----------------------------------------------------------------------------
-private:  // Private functions
-};
-//-----------------------------------------------------------------------------
-
 
 #endif // SST_REC01_LIB
 

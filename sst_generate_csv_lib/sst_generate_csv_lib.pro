@@ -23,8 +23,7 @@ release{
   win32-g++:QMAKE_LFLAGS -= -mthreads
   win32-g++:QMAKE_LFLAGS_EXCEPTIONS_ON -= -mthreads
   win32-g++:QMAKE_CXXFLAGS_EXCEPTIONS_ON -= -mthreads
-  
-  
+    
   LIBS        += ../../libs/libsst_cpp01_lib_r.a
   LIBS        += ../../libs/libsst_rec04_lib_r.a
   LIBS        += ../../libs/libsst_misc01_lib_r.a
@@ -38,4 +37,4 @@ SOURCES    += sst_generate_csv_lib.cpp
 TARGET	  	= sst_generate_csv_lib
 
 # copy to deployment directory
-# DESTDIR     = ../../local_deploy
+# DESTDIR     = ../../../../../local_deploy
