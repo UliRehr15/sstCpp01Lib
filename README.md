@@ -24,3 +24,4 @@ Versions <BR>
 20170116: Vers. 1.2: New class VarTypeDef Table. <BR>
                      Create Test project. <BR>
 20170811: Vers. 1.3: Generate new functions -GetNumberElements, GetAllNameStr, GetAllTypeStr-. <BR>
+20171225: Vers. 1.4: More Doxygen help. <BR>

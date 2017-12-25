@@ -301,9 +301,33 @@ class sstCpp01_Class_Cls
      int HeadWrtTypDefInfo(int                 iKey,
                            sstMisc01AscFilCls *sHedFil);
      //==============================================================================
+     /**
+     * @brief // return number of member <BR>
+     * uiNumOfMem = oCppClass.getNumberOfMember();
+     *
+     * @retval return unsigned int number of member
+     */
+     // ----------------------------------------------------------------------------
      unsigned int getNumberOfMember();
+     //==============================================================================
+     /**
+     * @brief // return string with all member names <BR>
+     * sStrAllNames = oCppClass.getMemberNameStr();
+     *
+     * @retval   = string with all member names as csv
+     */
+     // ----------------------------------------------------------------------------
      std::string getMemberNameStr();
+     //==============================================================================
+     /**
+     * @brief // return string with all member types <BR>
+     * sStrAllTypes = oCppClass.getMemberTypeStr();
+     *
+     * @retval   = string with all member types as csv
+     */
+     // ----------------------------------------------------------------------------
      std::string getMemberTypeStr();
+     //==============================================================================
 
      sstRec04Cls  *ClsTypDsVerw;   /**< table with all type definitions */
      sstRec04Cls  *ClsFncDsVerw;   /**< Table with for all function definitions */
