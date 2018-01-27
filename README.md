@@ -25,3 +25,4 @@ Versions <BR>
                      Create Test project. <BR>
 20170811: Vers. 1.3: Generate new functions -GetNumberElements, GetAllNameStr, GetAllTypeStr-. <BR>
 20171225: Vers. 1.4: More Doxygen help. <BR>
+20170127: Vers. 1.5: Insert function SetReadPosition in CSV_READ, CSV_WRITE.  <BR>

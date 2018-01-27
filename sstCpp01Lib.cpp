@@ -1376,6 +1376,11 @@ int sstCpp01_CsvLib_FillBlc_Read (int               iKey,
   sBlcRow.setRow(sBlcTxt);
   iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
 
+  sBlcRow.setRow("  iStat = oCsvRow.SetReadPositon(0,0);");
+  iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+  sBlcRow.setRow(" ");
+  iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+
   // write all type definitions to header file
   for (dREC04RECNUMTYP ii=1; ii <= lClsTypNum; ii++)
   {
@@ -1606,6 +1611,11 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
   iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
   sBlcTxt =  (char*) " ";
   sBlcRow.setRow(sBlcTxt);
+  iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+
+  sBlcRow.setRow("  iStat = oCsvRow.SetReadPositon(0,0);");
+  iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+  sBlcRow.setRow(" ");
   iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
 
   iVon = 1;
