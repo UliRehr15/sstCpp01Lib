@@ -18,21 +18,26 @@ debug{
   LIBS        += ../../libs/libsst_str01_lib_d.a
 }
 release{
-
+  
   win32-g++:QMAKE_LFLAGS += -static
   win32-g++:QMAKE_LFLAGS -= -mthreads
   win32-g++:QMAKE_LFLAGS_EXCEPTIONS_ON -= -mthreads
   win32-g++:QMAKE_CXXFLAGS_EXCEPTIONS_ON -= -mthreads
-
-
+    
   LIBS        += ../../libs/libsst_cpp01_lib_r.a
   LIBS        += ../../libs/libsst_rec04_lib_r.a
   LIBS        += ../../libs/libsst_misc01_lib_r.a
   LIBS        += ../../libs/libsst_str01_lib_r.a
 }
 
-HEADERS    += sstCpp01LibTest.h
+HEADERS    += sst_generate_\
+    sst_generate_qttab_lib.h
 
-SOURCES    += sstCpp01LibTest.cpp
+SOURCES    += \
+    sst_generate_qttab_lib1.cpp \
+    sst_generate_qttab_lib2.cpp
 
-TARGET	  	= sstCpp01LibTest
+TARGET	  	= sst_generate_qttab_lib
+
+# copy to deployment directory
+# DESTDIR     = ../../../../../local_deploy

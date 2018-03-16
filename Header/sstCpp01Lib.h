@@ -141,6 +141,7 @@ class sstCpp01_ClsFnc_Cls
      sstCpp01_ClassType_enum eClsVisiTyp;                       /**< public, protected or private */
      char              cClsNam[dSST_STR01_VAR_NAM_LEN];   /**< Class Name         */
      char              cFncNam[dSST_STR01_VAR_NAM_LEN];   /**< Function Name      */
+     char              cRetNam[dSST_STR01_VAR_NAM_LEN];   /**< User defined Return Var Type      */
      char              cFncPar[dCPPFILROWLENGTH];         /**< Function Parameter without parenthis */
      char              cFncCom[dCPPFILROWLENGTH];         /**< Function Comment   */
      long              lBlcStart;                         /**< lBlcStart in Codeblock Table   */
@@ -149,7 +150,7 @@ class sstCpp01_ClsFnc_Cls
 };
 //==============================================================================
 /**
-* @brief Definition sstCpp01_Class_Cls
+* @brief Class Definition with Member, Functions and Function Code
 *
 * More Comment
 *
@@ -328,15 +329,51 @@ class sstCpp01_Class_Cls
      // ----------------------------------------------------------------------------
      std::string getMemberTypeStr();
      //==============================================================================
+     /**
+     * @brief // return Extern Base Class Name <BR>
+     * sExtBaseCls = oCppClass.getExtBaseCls();
+     *
+     * @retval   = string with all member types as csv
+     */
+     // ----------------------------------------------------------------------------
+     std::string getExtBaseCls() const;
+     //==============================================================================
+     /**
+     * @brief // Set Extern Base Class Name <BR>
+     * oCppClass.setExtBaseCls( sExtBaseCls);
+     *
+     * @param value [in] Extern Base Class Name
+     */
+     // ----------------------------------------------------------------------------
+     void setExtBaseCls(const std::string &value);
+     //==============================================================================
+     /**
+     * @brief // write string row in block table <BR>
+     * iStat = oCppClass.writeBlcRow (iKey, &lSatzNr, sRowStr);
+     *
+     * @param iKey     [in] For the moment 0
+     * @param lSatzNr  [out] Written record number in blc tab
+     * @param sRowStr  [in] New Row in Block table
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int writeBlcRow(int iKey, dREC04RECNUMTYP *lSatzNr , const std::string sRowStr);
+     //==============================================================================
 
      sstRec04Cls  *ClsTypDsVerw;   /**< table with all type definitions */
      sstRec04Cls  *ClsFncDsVerw;   /**< Table with for all function definitions */
-     sstRec04Cls  *ClsBlcDsVerw;   /**< Table with all function inside code rows */
+     sstRec04Cls  *ClsBlcDsVerw;   /**< Table with all function code rows */
      char cClsNam[dSST_STR01_VAR_NAM_LEN];  /**< Class name */
      char cSysNam[dSST_STR01_VAR_NAM_LEN];  /**< System (parent) name of class, for example dxf, csv, ...  */
      char cGrpNam[dSST_STR01_VAR_NAM_LEN];  /**< Function Group name of class, for example typ, fnc   */
-  private:  // Private Funktionen
-     std::string sDateStr;  // Write Date in generating header and class file
+
+private:  // Private Funktionen
+     std::string sDateStr;     // Write Date in generating header and class file
+     std::string sExtBaseCls;  // Extern Base Class Name
 };
 
 
@@ -433,15 +470,16 @@ int sstCpp01_Hed_wrt_def_open (int                  iKey,
 //==============================================================================
 /**
 * @brief // write include rows to cpp class file <BR>
-* iStat = sstCpp01_Cls_WrtInc ( iKey, &sExpFile, &oCppClass);
+* iStat = sstCpp01_Cls_WrtInc ( iKey, &sExpFile, &oCppClass, AddFilNamList);
 *
 * Changed: 29.06.12  Re.
 *
 * @ingroup sstCpp01Lib
 *
-* @param iKey     [in]  For the moment 0
-* @param sExpFile  [in]  File Row
-* @param oCppClass  [out] Interpretation Error at String
+* @param iKey            [in]  For the moment 0
+* @param sExpFile        [in]  Name of source code file
+* @param oCppClass       [in]  cpp object with system name
+* @param oAddFilNamList  [in]  Additional file name list
 *
 * @return Errorstate
 *
@@ -454,9 +492,34 @@ int sstCpp01_Hed_wrt_def_open (int                  iKey,
 */
 //------------------------------------------------------------------------------
 int sstCpp01_Cls_WrtInc (int                   iKey,
-                       sstMisc01AscFilCls   *sExpFile,
-                       sstCpp01_Class_Cls     *oCppClass);
-//=============================================================================
+                         sstMisc01AscFilCls   *sExpFile,
+                         sstCpp01_Class_Cls   *oCppClass,
+                         std::string     oAddFilNamList);
+//==============================================================================
+/**
+* @brief // sstCpp01_Hed_wrt_defgroup <BR>
+* iStat = sstCpp01_Hed_wrt_defgroup ( iKey, sExpFile, cGrpNam);
+*
+* More Comment
+*
+* Changed: 16.02.10  Re.
+*
+* @ingroup sstCpp01Lib
+*
+* @param iKey     [in] For the moment 0
+* @param sExpFile [in] sExpFile
+* @param cGrpNam  [in] cGrpNam
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*
+* @author Re.
+*
+* @date 16.02.10
+*/
+//------------------------------------------------------------------------------
 int sstCpp01_Hed_wrt_defgroup (int                 iKey,
                                sstMisc01AscFilCls *sExpFile,
                                std::string         cGrpNam);
@@ -486,7 +549,7 @@ int sstCpp01_Hed_wrt_def_close (int                 iKey,
                               sstMisc01AscFilCls *sExpFile);
 //==============================================================================
 /**
-* @brief // write one class definition to cpp header file <BR>
+* @brief // write one class with doxy/class definition to cpp header file <BR>
 * iStat = sstCpp01_wrt2CppHedFil2 ( iKey, *sCppHedFil, &oCppClass);
 *
 * Header File Name is Name of Class. <BR>

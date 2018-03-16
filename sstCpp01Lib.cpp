@@ -40,6 +40,9 @@ sstCpp01_ClsFnc_Cls::sstCpp01_ClsFnc_Cls()
 {
   memset(this->cClsNam,0,sizeof(this->cClsNam));
   memset(this->cFncNam,0,sizeof(this->cFncNam));
+  memset(this->cRetNam,0,sizeof(this->cRetNam));
+  memset(this->cFncPar,0,sizeof(this->cFncPar));
+  memset(this->cFncCom,0,sizeof(this->cFncCom));
 }
 //=============================================================================
 sstCpp01_Class_Cls::sstCpp01_Class_Cls()
@@ -51,6 +54,7 @@ sstCpp01_Class_Cls::sstCpp01_Class_Cls()
   memset(this->cSysNam,0,sizeof(this->cSysNam));
   memset(this->cGrpNam,0,sizeof(this->cGrpNam));
   this->sDateStr.clear();
+  this->sExtBaseCls.clear();
 }
 //=============================================================================
 int sstCpp01_Class_Cls::SetDate(int iKey, std::string sLocDateStr)
@@ -158,6 +162,27 @@ std::string sstCpp01_Class_Cls::getMemberTypeStr()
   return "getMemberTypeStr";
 }
 //=============================================================================
+std::string sstCpp01_Class_Cls::getExtBaseCls() const
+{
+  return sExtBaseCls;
+}
+//=============================================================================
+void sstCpp01_Class_Cls::setExtBaseCls(const std::string &value)
+{
+  sExtBaseCls = value;
+}
+//=============================================================================
+int sstCpp01_Class_Cls::writeBlcRow(int iKey, dREC04RECNUMTYP *lSatzNr, const std::string sRowStr)
+{
+  if ( iKey != 0) return -1;
+  int iStat = 0;
+  sstCpp01_FilRowCls sBlcRow;
+
+  sBlcRow.setRow(sRowStr);
+  iStat = this->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+  return iStat;
+}
+//=============================================================================
 sstCpp01_FilRowCls::sstCpp01_FilRowCls()
 {
   memset(this->cCharRow,0,dCPPFILROWLENGTH);
@@ -250,16 +275,16 @@ int sstCpp01_Hed_WrtCom (int                 iKey,
   return iRet;
 }
 //=============================================================================
-int sstCpp01_Cls_WrtInc (int               iKey,
-                       sstMisc01AscFilCls   *sExpFile,
-                       sstCpp01_Class_Cls *oCppClass)
+int sstCpp01_Cls_WrtInc (int                  iKey,
+                         sstMisc01AscFilCls  *sExpFile,
+                         sstCpp01_Class_Cls  *oCppClass,
+                         std::string    oAddFilNamList)
 //-----------------------------------------------------------------------------
 {
   std::string sFilRow;
-  std::string sFilRow2;  // for second include
   std::string sFncGrpNam;
   std::string cLocObjNam;
-  // char *pStr;
+
   int iRet  = 0;
   int iStat = 0;
 //-----------------------------------------------------------------------------
@@ -318,6 +343,26 @@ int sstCpp01_Cls_WrtInc (int               iKey,
   iStat = sExpFile->wr_txt(0, (char*)"#include <sstRec04Lib.h>");
   iStat = sExpFile->wr_txt(0, (char*)" ");
 
+  sstStr01Cls oStrCnvt;
+  std::string oLocFilNam;
+  int iStat1 = 0;
+
+  iStat1 = oStrCnvt.CsvString2_Str ( 0, &oAddFilNamList, &oLocFilNam);
+
+  while (iStat1 >= 0)
+  {
+    // Write Casc-Line-Object to Casc-File.
+    // sFilRow = "#include \"";
+    sFilRow = "#include <";
+    sFilRow = sFilRow + oLocFilNam;
+    // sFilRow = sFilRow + "\"";
+    sFilRow = sFilRow + ">";
+    iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
+
+    iStat1 = oStrCnvt.CsvString2_Str ( 0, &oAddFilNamList, &oLocFilNam);
+  }
+  iStat = sExpFile->wr_txt(0, (char*)" ");
+
   // write class include
   // typ include or typ/fnc include
   cLocObjNam = sFncGrpNam + "Lib";
@@ -327,6 +372,7 @@ int sstCpp01_Cls_WrtInc (int               iKey,
   sFilRow = sFilRow + cLocObjNam;
   sFilRow = sFilRow + ".h\"";
   iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
+
 
   // Fatal Errors goes to an assert
   if (iRet < 0)
@@ -633,13 +679,24 @@ int sstCpp01_Hed_wrt_class (int               iKey,
   // Write Casc-Line-Object to Casc-File.
   sFilRow = "class ";
   sFilRow = sFilRow + oCppCls->GetLibClsNam();
+
+// Insert Base Class
   if(iKey == 1)
   {
-    // inherits base class
-    sFilRow = sFilRow + " : public ";
-    sFilRow = sFilRow + oCppCls->cSysNam;
-    sFilRow = sFilRow + oCppCls->cGrpNam;
-    sFilRow = sFilRow + "BaseCls";
+    if (oCppCls->getExtBaseCls().length() > 0)
+    { // inherits extern base class
+      sFilRow = sFilRow + " : public ";
+      sFilRow = sFilRow + oCppCls->getExtBaseCls();
+    }
+    else
+    {
+      // inherits generated base class
+      sFilRow = sFilRow + " : public ";
+      sFilRow = sFilRow + oCppCls->cSysNam;
+      sFilRow = sFilRow + oCppCls->cGrpNam;
+      sFilRow = sFilRow + "BaseCls";
+    }
+
   }
   iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
 
@@ -711,6 +768,13 @@ int sstCpp01_Hed_wrt_class (int               iKey,
     // Fill Return Type
     sstStr01VarTypeCls oVarType;
     oVarType.Enm2FullStr( 0, oCppClsFnc.eCppType, &cTypeChar);
+
+    // Insert custom return type name
+    if (oCppClsFnc.eCppType == sstStr01Custom)
+    {
+      cTypeChar = oCppClsFnc.cRetNam;
+    }
+
     sFilRow = "    ";
     sFilRow = sFilRow + cTypeChar;
     if (cTypeChar.length() > 0) sFilRow = sFilRow + " ";
@@ -875,6 +939,12 @@ int sstCpp01_WrtCls (int                 iKey,
   iStat = oVarType.Enm2FullStr( 0, oCppClsFnc->eCppType, &cTypeChar);
   iStat = oVarType.Enm2ShortStr( 0, oCppClsFnc->eCppType, &cTypeType);
 
+  // if return custom type, insert name
+  if (oCppClsFnc->eCppType == sstStr01Custom)
+  {
+    cTypeChar = oCppClsFnc->cRetNam;
+  }
+
   // Write Casc-Line-Object to Casc-File.
   sFilRow = cTypeChar;
   if (cTypeChar.length() > 0) sFilRow = sFilRow + " ";
@@ -920,7 +990,7 @@ int sstCpp01_WrtCls (int                 iKey,
   cRetVar = cTypeType;
   cRetVar = cRetVar + "Stat";  // iStat, lStat ...
 
-  // Die Anzahl der aktuell gespeicherten DatensÐ´tze zurÑŒckgeben.
+  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
   dREC04RECNUMTYP lBlcRowNum = 0;
   lBlcRowNum = sBlcDsVerw->count();
 
@@ -1117,6 +1187,14 @@ int sstCpp01_wrt2CppClsFil2 (int               iKey,
 
     // Datensatz an absoluter Position lesen.
     iStat = oCppClass->ClsFncDsVerw->Read( 0, ii, &oCppClsFnc);
+
+    if (ii == 1 && oCppClass->getExtBaseCls().length() > 0)
+    { // if in constructor and extern base class
+      strncat(oCppClsFnc.cFncPar,(char*)"):",dCPPFILROWLENGTH);
+      strncat(oCppClsFnc.cFncPar,oCppClass->getExtBaseCls().c_str(),dCPPFILROWLENGTH);
+      strncat(oCppClsFnc.cFncPar,(char*)"(parent",dCPPFILROWLENGTH);
+
+    }
 
     // Write one class function to file
     iStat = sstCpp01_WrtCls ( 0, sCppClsFil, oCppClass->ClsBlcDsVerw, &oCppClsFnc);
@@ -1946,8 +2024,8 @@ int sstCpp01_Hed_ClsWrTypRow (int                iKey,
 int sstCpp01_ClassTab_Open (int iKey, sstCpp01_Class_Cls *oCppClass)
 {
   sstCpp01_ClsTyp_Cls oCppClsTyp;  // for type class
-  sstCpp01_ClsFnc_Cls oCppClsFnc;  // for type class
-  sstCpp01_FilRowCls  sBlcTxt;   // one row inside function block
+  sstCpp01_ClsFnc_Cls oCppClsFnc;  // for func class
+  sstCpp01_FilRowCls  sBlcTxt;     // one row inside function block
 
   int iRet  = 0;
   int iStat = 0;

@@ -11,9 +11,9 @@
  * See the COPYING file for more information.
  *
  **********************************************************************/
-// sst_generate_csv_lib.cpp    29.06.16  Re.    29.06.16  Re.
+// sst_generate_qttab_lib1.cpp    06.02.2018  Re.    06.02.2018  Re.
 //
-// program generates i/o (csv) lib code.
+// program generates Qt Table lib code.
 //
 
 #include <stdio.h>
@@ -28,7 +28,7 @@
 #include <sstRec04Lib.h>
 #include <sstCpp01Lib.h>
 
-#include "sst_generate_csv_lib.h"
+#include "sst_generate_qttab_lib.h"
 
 //=============================================================================
 int main(int argc, char *argv [])
@@ -237,7 +237,7 @@ int sstcsv_FilWrtClsTypOpen (int          iKey,
   iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
 
   // Write comment and includes to cls file
-  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass,"");
+  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass, "");
 
   //===========================================================================
 
@@ -573,7 +573,7 @@ int sstcsv_FilWrtClsFncOpen (int          iKey,
   iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
 
   // Write comment and includes to cls file
-  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass,"");
+  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass, "");
 
   //===========================================================================
   // Die Anzahl der aktuell gespeicherten Datens–¥tze zur—åckgeben.
@@ -856,7 +856,9 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   sstCpp01_ClsTyp_Cls oCppClsTyp1;  // for type class
   dREC04RECNUMTYP eTypeNum = 0;
   dREC04RECNUMTYP SatzNr = 0;
-
+  std::string oAddIncFilNam = "QtWidgets;sstQt01Lib.h;sstQt01LibInt.h;proton01_lib.h;tonNis01Base.h;tonNis01Lib.h";
+// #include <QtWidgets>
+// #include <QFont>
 
   int iRet  = 0;
   int iStat = 0;
@@ -872,7 +874,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   strncpy(oCppTypClass.cSysNam,sSysNam.c_str(),dSST_STR01_VAR_NAM_LEN);
 
   // sGrpNam = "FncOpen";
-  sGrpNam = "Fnc";
+  sGrpNam = "QtTab";
 
   sHedFilNam = sSysNam;
 //  sHedFilNam = sHedFilNam + "_";
@@ -903,15 +905,6 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
    // write doxygen def group to header file
    iStat = sstCpp01_Hed_wrt_defgroup(0,&sHedFil, oCppTypClass.GetSysNam());
 
-   //===========================================================================
-//  iStat = oCppTypClass.GetDate( 0, &sDateStr);
-
-//  // write headrows in cpp header file
-//  iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
-
-//  // Write comment and includes to cls file
-//  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
-
   //===========================================================================
   // write type base class.
   sCppFilNam = sSysNam;
@@ -928,7 +921,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   // write headrows in cpp header file
   iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
 
-  // Write comment and includes to cls file
+  // Write comment and includes to base cls file
   iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass, "");
 
   // Open all tables of CppClass
@@ -936,31 +929,12 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
 
   oCppTypBaseClass.SetDate( 0, sDateStr);
 
-  // oCppTypBaseClass.SetClsNam(0,"sstDxf01LibTypBase");
   oCppTypBaseClass.SetClsNam(0,"Base");
-  // oCppTypBaseClass.SetSysNam(0,"sstDxf01Lib");
   oCppTypBaseClass.SetSysNam( 0, sSysNam);
   oCppTypBaseClass.SetGrpNam(0,"Typ");
 
-//  sstStr01VarDefCls oVarUserDef;
-//  oVarUserDef.Set_EleNam("sstStr01Cls oCsvCnvt");
-//  oVarUserDef.Set_EleInfo("oCsvCnvt Info");
-//  oVarUserDef.Set_Type(sstStr01Custom);
-
-//  sstCpp01_ClsTyp_Cls oCppVarUserDef;  // for type class, extended var type
-
-//  oCppVarUserDef.sClsMem = oVarUserDef;
-//  oCppVarUserDef.eClsVisiTyp = myClsPublic;
-
-//  iStat = oCppTypBaseClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &SatzNr);
-
-  // Write last type class data to class and header file
+  // Write base type class data to class and header file
   iStat = sst_WrtClsData_inPipe_toFilesT2 ( 0, &sHedFil, &sCppFil, "Typ", &oCppTypBaseClass);
-  // iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &oCppTypBaseClass);
-
-  // Datensatz-Verwaltung beenden.
-  // iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypBaseClass);
-  // iStat = sCppFil.fcloseFil(0);
 
   //===========================================================================c
   // Write Fnc base class.
@@ -969,25 +943,15 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   sCppFilNam = sCppFilNam + sGrpNam;
   sCppFilNam = sCppFilNam + ".cpp";
 
-   // iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
-
   iStat = oCppTypClass.GetDate( 0, &sDateStr);
-
-  // write headrows in cpp header file
-  // iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
-
-  // Write comment and includes to cls file
-  // iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass);
 
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppFncBaseClass);
 
   oCppFncBaseClass.SetDate( 0, sDateStr);
 
-  // oCppFncBaseClass.SetClsNam(0,"sstDxf01LibFncBase");
   oCppFncBaseClass.SetClsNam(0,"Base");
-  // oCppFncBaseClass.SetSysNam(0,"sstDxf01Lib");
   oCppFncBaseClass.SetSysNam(0,sSysNam);
-  oCppFncBaseClass.SetGrpNam(0,"Fnc");
+  oCppFncBaseClass.SetGrpNam(0,"QtTab");
 
   sstStr01VarDefCls oVarUserDef;
   oVarUserDef.Set_EleNam("sstStr01Cls oCsvRow");
@@ -1001,10 +965,8 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
 
   iStat = oCppFncBaseClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &SatzNr);
 
-  // Write last type class data to class and header file
-  iStat = sst_WrtClsData_inPipe_toFilesT2 ( 0, &sHedFil, &sCppFil, "Fnc", &oCppFncBaseClass);
-  // iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, &sGrpNam, &oCppFncBaseClass);
-  // iStat = sst_WrtClsData_inPipe_toFilesT ( 0, &sHedFil, &oCppFncBaseClass);
+  // Write base class data to class and header file
+  iStat = sst_WrtClsData_inPipe_toFilesT2 ( 0, &sHedFil, &sCppFil, "QtTab", &oCppFncBaseClass);
 
   // Datensatz-Verwaltung beenden.
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppFncBaseClass);
@@ -1014,7 +976,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   // Return number of TypDef records from file
   eTypeNum = DsVerw->count();
 
-  // Datensatz-Verwaltung anlegen / —Üffnen.
+  // Datensatz-Verwaltung anlegen / ÷ffnen.
   // Open Dss Set 1 for Class Group 2
   // Open Dss Set 2 for Class Group 2
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
@@ -1027,7 +989,6 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
     iStat = DsVerw->Read( 0, ii, &oStrType);
 
     // if object name is different to actual object name, open new object
-    // size_t dStrPos = oStrTypeAct.Get_ObjNam().find(oStrType.Get_ObjNam());
     size_t dStrPos = oStrTypeAct.Get_ObjNam().compare(oStrType.Get_ObjNam());
 
     dREC04RECNUMTYP dNumTypRecsAct = oCppTypClass.ClsTypDsVerw->count();
@@ -1041,8 +1002,6 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
 
 //===========================================================================
       sCppFilNam = oStrTypeAct.Get_SysNam();
-      // sCppFilNam = sCppFilNam + "_";
-      // sCppFilNam = sCppFilNam + sGrpNam;
       sCppFilNam = sCppFilNam + oStrTypeAct.Get_ObjNam();
       sCppFilNam = sCppFilNam + ".cpp";
 
@@ -1052,22 +1011,16 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
       iStat = oCppTypClass.GetDate( 0, &sDateStr);
       // save class name for member class
       strncpy(oCppTypClass.cClsNam,oStrTypeAct.Get_ObjNam().c_str(),dSST_STR01_VAR_NAM_LEN);
-      // strncpy(oCppTypClass.cGrpNam,"Typ",dSST_STR01_VAR_NAM_LEN);
       strncpy(oCppTypClass.cSysNam,oStrTypeAct.Get_SysNam().c_str(),dSST_STR01_VAR_NAM_LEN);
 
       // write headrows in cpp header file
       iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
 
       // Write comment and includes to cls file
-      iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass, "");
-
+      iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass, oAddIncFilNam);
 
       // Write last type class data to class and header file
-      iStat = sst_WrtClsData_inPipe_toFilesT2 ( 0, &sHedFil, &sCppFil, "Typ", &oCppTypClass);
-      iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "Fnc", &oCppTypClass);
-      // iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sGrpNam, &oCppTypClass);
-
-      // oStrTypeAct = oStrType;
+      iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "QtTab", &oCppTypClass);
 
       // Close list of class type definitions
       // Close list of class function definitions
@@ -1075,7 +1028,6 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
 
       // Datensatz-Verwaltung anlegen / ˆffnen.
       iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
-
     }
 
     oStrTypeAct = oStrType;
@@ -1085,13 +1037,9 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
     oCppClsTyp1.sClsMem = oStrType;
 
     iStat = oCppTypClass.ClsTypDsVerw->WritNew( 0, &oCppClsTyp1, &SatzNr);
-
-
   }
 
   sCppFilNam = oStrTypeAct.Get_SysNam();
-  // sCppFilNam = sCppFilNam + "_";
-  // sCppFilNam = sCppFilNam + sGrpNam;
   sCppFilNam = sCppFilNam + oStrTypeAct.Get_ObjNam();
   sCppFilNam = sCppFilNam + ".cpp";
 
@@ -1101,20 +1049,17 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   iStat = oCppTypClass.GetDate( 0, &sDateStr);
   // save class name for member class
   strncpy(oCppTypClass.cClsNam,oStrTypeAct.Get_ObjNam().c_str(),dSST_STR01_VAR_NAM_LEN);
-  // strncpy(oCppTypClass.cGrpNam,"Typ",dSST_STR01_VAR_NAM_LEN);
   strncpy(oCppTypClass.cSysNam,oStrTypeAct.Get_SysNam().c_str(),dSST_STR01_VAR_NAM_LEN);
 
   // write headrows in cpp header file
   iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &sDateStr);
 
   // Write comment and includes to cls file
-  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass, "");
+  iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass, oAddIncFilNam);
 
 
   // Write last class data to files
-  iStat = sst_WrtClsData_inPipe_toFilesT2 ( 0, &sHedFil, &sCppFil, "Typ", &oCppTypClass);
-  iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "Fnc", &oCppTypClass);
-  // iStat = sst_WrtClsData_inPipe_toFilesF ( 0, &sHedFil, &sGrpNam, &oCppTypClass);
+  iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "QtTab", &oCppTypClass);
 
   // Datensatz-Verwaltung beenden.
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
@@ -1125,7 +1070,6 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   // Close HedFil object and File inside
   iStat = sHedFil.fcloseFil(0);
   iStat = sCppFil.fcloseFil(0);
-
 
   // Fatal Errors goes to an assert
   if (iRet < 0)
@@ -1595,188 +1539,222 @@ int sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
 //-----------------------------------------------------------------------------
   if ( iKey != 0) return -1;
 
-//  lSatzNr = oCppTypClass->ClsFncDsVerw->count();
-//  lSatzNr = oCppTypClass->ClsBlcDsVerw->count();
-
   iStat = strlen(oCppTypClass->cClsNam);
   if(iStat <= 0) return -2;
 
-
   //===========================================================================
-
 
   strncpy(oCppFncClass.cSysNam,oCppTypClass->cSysNam, dSST_STR01_VAR_NAM_LEN);
   strncpy(oCppFncClass.cGrpNam,sGrpNam.c_str(), dSST_STR01_VAR_NAM_LEN);
   strncpy(oCppFncClass.cClsNam,oCppTypClass->cClsNam, dSST_STR01_VAR_NAM_LEN);
+  oCppFncClass.setExtBaseCls("sstQt01TabMdlCls");
 
-  // strncpy(oCppFncClass.cClsNam,oCppFncClass.cSysNam, dSST_STR01_VAR_NAM_LEN);
-  // strncat(oCppFncClass.cClsNam,oCppFncClass.cGrpNam, dSST_STR01_VAR_NAM_LEN);
-  // strncat(oCppFncClass.cClsNam,oCppTypClass->cClsNam, dSST_STR01_VAR_NAM_LEN);
   //===========================================================================
 
-  // oLocClsNam = oCppFncClass.GetSysNam()+oCppFncClass.GetGrpNam()+oCppFncClass.GetClsNam();
   oLocTypClsNam = oCppTypClass->GetLibClsNam();
   oLocFncClsNam = oCppFncClass.GetLibClsNam();
 
-  //  std::string sCppFilNam;  // Nam of cpp file
-//  sstMisc01AscFilCls oCppFil;
-//  std::string sDateStr;
-
-//  sCppFilNam = oCppFncClass.GetClsNam();
-//  sCppFilNam = sCppFilNam + ".cpp";
-
-//  iStat = oCppFil.fopenWr( 0, sCppFilNam.c_str());
-//  iStat = oCppTypClass->GetDate( 0, &sDateStr);
-
-//  // write headrows in cpp header file
-//  iStat = sstCpp01_Fil_wrt_head ( 0, &oCppFil, &sDateStr);
-
-//  // Write comment and includes to cls file
-//  iStat = sstCpp01_Cls_WrtInc( 1, &oCppFil, &oCppFncClass);
   //===========================================================================
 
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppFncClass);
 
+  // Define Database Class Element
+  sstStr01VarDefCls oVarUserDef;
+  std::string oClsNam = "tonNis01Db" + (std::string) oCppTypClass->cClsNam + "Cls";
+  // oVarUserDef.Set_EleNam("sstStr01Cls oDataTable");  // tonNis01FncANSWCls
+  oVarUserDef.Set_EleNam(oClsNam + " oDataTable");  // tonNis01FncANSWCls
+  oVarUserDef.Set_EleInfo("sstStr01Cls oDataTable");
+  oVarUserDef.Set_Type(sstStr01Custom);
+
+  sstCpp01_ClsTyp_Cls oCppVarUserDef;  // for type class, extended var type
+
+  oCppVarUserDef.sClsMem = oVarUserDef;
+  oCppVarUserDef.eClsVisiTyp = myClsPrivate;
+
+  iStat = oCppFncClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &lSatzNr);
+
+  oClsNam = "tonNis01Typ" + (std::string) oCppTypClass->cClsNam + "Cls";
+  // oVarUserDef.Set_EleNam("sstStr01Cls oDataTable");  // tonNis01FncANSWCls
+  oVarUserDef.Set_EleNam(oClsNam + " oTypeRec");  // tonNis01FncANSWCls
+  oVarUserDef.Set_EleInfo("sstStr01Cls oDataTable");
+  oVarUserDef.Set_Type(sstStr01Custom);
+
+  // sstCpp01_ClsTyp_Cls oCppVarUserDef;  // for type class, extended var type
+
+  oCppVarUserDef.sClsMem = oVarUserDef;
+  oCppVarUserDef.eClsVisiTyp = myClsPrivate;
+
+  iStat = oCppFncClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &lSatzNr);
+
+
   // define new FUNCTION class set and write: constructor
 
   // define new class set and write: constructor
-  oCppClsFnc.eCppType = sstStr01Unknown;
-  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.eCppType = sstStr01Unknown;  // Return type
+  oCppClsFnc.eClsVisiTyp = myClsPublic;  // private or public function
   oCppClsFnc.lBlcStart = 0;
   oCppClsFnc.lBlcRows = 0;
-//  strncpy(oCppClsFnc2.cClsNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
-//  strncpy(oCppClsFnc2.cFncNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
-  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
-  strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
-  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
-  strncpy(oCppClsFnc.cFncCom,"// Constructor", dCPPFILROWLENGTH);
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
+  // strncpy(oCppClsFnc.cFncPar,"QObject *parent):sstQt01TabMdlCls(parent", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  strncpy(oCppClsFnc.cFncPar,"QObject *parent", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  strncpy(oCppClsFnc.cFncCom,"// Constructor", dCPPFILROWLENGTH);  // Comment
   iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
-  // define new FUNCTION class set and write: READ
 
-  oCppClsFnc.eCppType = sstStr01Int;
-  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  // rowCount
+  // oCppClsFnc.eCppType = sstStr01Int;  // Return type
+  oCppClsFnc.eCppType = sstStr01ULong;  // Return type
+  oCppClsFnc.eClsVisiTyp = myClsPublic;  // private or public function
+
   oCppClsFnc.lBlcStart = 1;
 
   // Fill Function Block Read
-  iStat = sstCpp01_CsvLib_FillBlc_Read ( 0, &oFmtInfoObj, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+  iStat = sstCpp01_CsvLib_FillBlc_rowCount ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
 
   oCppClsFnc.lBlcRows = lSatzNrBlc;
-  // strncpy(oCppClsFnc2.cClsNam,oCppFncClass.cClsNam, dSST_STR01_VAR_NAM_LEN);
-  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
-
-  strncpy(oCppClsFnc.cFncNam,"Csv_Read", dSST_STR01_VAR_NAM_LEN );
-
-  strncpy(oCppClsFnc.cFncPar,"int iKey, std::string *sErrTxt, std::string *s", dCPPFILROWLENGTH);
-  strncat(oCppClsFnc.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc.cFncPar,"_Str, ", dCPPFILROWLENGTH);
-
-  strncat(oCppClsFnc.cFncPar, oLocTypClsNam.c_str(), dCPPFILROWLENGTH);
-//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
-//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
-//  strncat(oCppClsFnc2.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
-
-  // build variable oVarName
-  strncat(oCppClsFnc.cFncPar, " *o", dCPPFILROWLENGTH);
-  strncat(oCppClsFnc.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
-
-  strncpy(oCppClsFnc.cFncCom,"// Csv Read Function", dCPPFILROWLENGTH);
+//  oCppClsFnc.lBlcStart = 0;
+//  oCppClsFnc.lBlcRows = 0;
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, (char*)"rowCount", dSST_STR01_VAR_NAM_LEN);  // function name
+  strncpy(oCppClsFnc.cFncPar,"const QModelIndex &", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  strncpy(oCppClsFnc.cFncCom,"Count actual number of records", dCPPFILROWLENGTH);  // Comment
   iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
-
   //-----------------------------------------------------------------------------
-  // define new FUNCTION class set and write: WRITE
-  oCppClsFnc.eCppType = sstStr01Int;
-  oCppClsFnc.eClsVisiTyp = myClsPublic;
-  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  // columnCount
 
-  // Fill Function Block Write
-  iStat = sstCpp01_CsvLib_FillBlc_Write ( 0, &oFmtInfoObj, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+  oCppClsFnc.eCppType = sstStr01Int;  // Return type
+  // oCppClsFnc.eCppType = sstStr01ULong;  // Return type
+  oCppClsFnc.eClsVisiTyp = myClsPublic;  // private or public function
+
+    oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+
+  // Fill Function Block Read
+  iStat = sstCpp01_CsvLib_FillBlc_columnCount ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
 
   oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
-  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
 
-  strncpy(oCppClsFnc.cFncNam,"Csv_Write", dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, (char*)"columnCount", dSST_STR01_VAR_NAM_LEN);  // function name
+  strncpy(oCppClsFnc.cFncPar,"const QModelIndex &", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  strncpy(oCppClsFnc.cFncCom,"return number of table columns", dCPPFILROWLENGTH);  // Comment
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+  //-----------------------------------------------------------------------------
+  // data
 
-  strncpy(oCppClsFnc.cFncPar,"int iKey, ", dCPPFILROWLENGTH);
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;  // private or public function
 
-  strncat(oCppClsFnc.cFncPar, oLocTypClsNam.c_str(), dCPPFILROWLENGTH);
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
 
-  // build variable oVarName
-  strncat(oCppClsFnc.cFncPar, " *o", dCPPFILROWLENGTH);
-  strncat(oCppClsFnc.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc.cFncPar, oCppTypClass->cGrpNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc.cFncPar, oCppTypClass->cClsNam, dCPPFILROWLENGTH);
+  // Fill Function Block Read
+  iStat = sstCpp01_CsvLib_FillBlc_data ( 0, &oFmtInfoObj, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
 
-  strncat(oCppClsFnc.cFncPar,", std::string *s", dCPPFILROWLENGTH);
-  strncat(oCppClsFnc.cFncPar, oCppTypClass->cSysNam, dCPPFILROWLENGTH);
-  strncat(oCppClsFnc.cFncPar,"_Str", dCPPFILROWLENGTH);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
 
-  strncpy(oCppClsFnc.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, (char*)"data", dSST_STR01_VAR_NAM_LEN);  // function name
+  strncpy( oCppClsFnc.cRetNam, (char*)"QVariant", dSST_STR01_VAR_NAM_LEN);  // Name of return var
+  strncpy(oCppClsFnc.cFncPar,"const QModelIndex &index, int role", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  strncpy(oCppClsFnc.cFncCom,"return number of table columns", dCPPFILROWLENGTH);  // Comment
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+  //-----------------------------------------------------------------------------
+  // headerData
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;  // private or public function
+
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+
+  // Fill Function Block Read
+  iStat = sstCpp01_CsvLib_FillBlc_HeaderData ( 0, &oFmtInfoObj, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, (char*)"headerData", dSST_STR01_VAR_NAM_LEN);  // function name
+  strncpy( oCppClsFnc.cRetNam, (char*)"QVariant", dSST_STR01_VAR_NAM_LEN);  // Name of return var
+  strncpy(oCppClsFnc.cFncPar,"int section, Qt::Orientation orientation, int role", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  strncpy(oCppClsFnc.cFncCom,"return number of table columns", dCPPFILROWLENGTH);  // Comment
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+  //-----------------------------------------------------------------------------
+  // setData
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;  // private or public function
+
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+
+  // Fill Function Block Read
+  iStat = sstCpp01_CsvLib_FillBlc_setData ( 0,&oFmtInfoObj,  oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, (char*)"setData", dSST_STR01_VAR_NAM_LEN);  // function name
+  strncpy( oCppClsFnc.cRetNam, (char*)"bool", dSST_STR01_VAR_NAM_LEN);  // Name of return var
+  strncpy(oCppClsFnc.cFncPar,"const QModelIndex & index, const QVariant & value, int role", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  strncpy(oCppClsFnc.cFncCom,"return number of table columns", dCPPFILROWLENGTH);  // Comment
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+  //-----------------------------------------------------------------------------
+  // flags
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;  // private or public function
+
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+
+  // Fill Function Block Read
+  iStat = sstCpp01_CsvLib_FillBlc_flags ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, (char*)"flags", dSST_STR01_VAR_NAM_LEN);  // function name
+  strncpy( oCppClsFnc.cRetNam, (char*)"Qt::ItemFlags", dSST_STR01_VAR_NAM_LEN);  // Name of return var
+  strncpy(oCppClsFnc.cFncPar,"const QModelIndex &index", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  strncpy(oCppClsFnc.cFncCom,"return number of table columns", dCPPFILROWLENGTH);  // Comment
   iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
-//  // define new FUNCTION class set and write: Number
-//  oCppClsFnc.eCppType = sstStr01UInt; // Return Type
-//  oCppClsFnc.eClsVisiTyp = myClsPublic;
-//  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  // removeRows
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;  // private or public function
 
-//  // Fill Function Block
-//  iStat = sstCpp01_CsvLib_FillBlc_Number ( 0,  oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
 
-//  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
-//  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  // Fill Function Block Read
+  iStat = sstCpp01_CsvLib_FillBlc_removeRows ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
 
-//  strncpy(oCppClsFnc.cFncNam,"getMemberNumber", dSST_STR01_VAR_NAM_LEN);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
 
-//  memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
-
-//  strncpy(oCppClsFnc.cFncCom,"// Get Number of Class member", dCPPFILROWLENGTH);
-//  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
-
-  //-----------------------------------------------------------------------------
-//  // define new FUNCTION class set and write: StringName
-//  oCppClsFnc.eCppType = sstStr01String;
-//  oCppClsFnc.eClsVisiTyp = myClsPublic;
-//  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
-
-//  // Fill Function Block
-//  iStat = sstCpp01_CsvLib_FillBlc_StrNam ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
-
-//  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
-//  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
-
-//  strncpy(oCppClsFnc.cFncNam,"getStringName", dSST_STR01_VAR_NAM_LEN);
-
-//  memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
-
-//  strncpy(oCppClsFnc.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
-//  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, (char*)"removeRows", dSST_STR01_VAR_NAM_LEN);  // function name
+  strncpy( oCppClsFnc.cRetNam, (char*)"bool", dSST_STR01_VAR_NAM_LEN);  // Name of return var
+  strncpy(oCppClsFnc.cFncPar,"int position, int rows, const QModelIndex &index", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  strncpy(oCppClsFnc.cFncCom,"return number of table columns", dCPPFILROWLENGTH);  // Comment
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
-//  // define new FUNCTION class set and write: StringType
-//  oCppClsFnc.eCppType = sstStr01String;
-//  oCppClsFnc.eClsVisiTyp = myClsPublic;
-//  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  // insertRows
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;  // private or public function
 
-//  // Fill Function Block
-//  iStat = sstCpp01_CsvLib_FillBlc_StrTyp ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
 
-//  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
-//  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  // Fill Function Block Read
+  iStat = sstCpp01_CsvLib_FillBlc_insertRows ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
 
-//  strncpy(oCppClsFnc.cFncNam,"getStringType", dSST_STR01_VAR_NAM_LEN);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
 
-//  memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
-
-//  strncpy(oCppClsFnc.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
-//  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, (char*)"insertRows", dSST_STR01_VAR_NAM_LEN);  // function name
+  strncpy( oCppClsFnc.cRetNam, (char*)"bool", dSST_STR01_VAR_NAM_LEN);  // Name of return var
+  strncpy(oCppClsFnc.cFncPar,"int position, int rows, const QModelIndex &index", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  strncpy(oCppClsFnc.cFncCom,"return number of table columns", dCPPFILROWLENGTH);  // Comment
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
 
-  // write information to cpp header file of function class
+  // write doxy/class information to cpp header file of function class
   iStat = sstCpp01_wrt2CppHedFil2 ( 1, sHedFil, &oCppFncClass);
 
   // write information to cpp class file of function class
