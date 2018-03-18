@@ -479,7 +479,7 @@ int sstCpp01_Hed_wrt_def_open (int                  iKey,
 * @param iKey            [in]  For the moment 0
 * @param sExpFile        [in]  Name of source code file
 * @param oCppClass       [in]  cpp object with system name
-* @param oAddFilNamList  [in]  Additional file name list
+* @param oAddFilNamList  [in]  Additional include file name list csv without parentheses
 *
 * @return Errorstate
 *

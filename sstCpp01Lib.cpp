@@ -339,29 +339,33 @@ int sstCpp01_Cls_WrtInc (int                  iKey,
   iStat = sExpFile->wr_txt(0, (char*)"#include <string>");
   iStat = sExpFile->wr_txt(0, (char*)" ");
   iStat = sExpFile->wr_txt(0, (char*)"#include <sstStr01Lib.h>");
+  iStat = sExpFile->wr_txt(0, (char*)"#include <sstMath01Lib.h>");
   iStat = sExpFile->wr_txt(0, (char*)"#include <sstMisc01Lib.h>");
   iStat = sExpFile->wr_txt(0, (char*)"#include <sstRec04Lib.h>");
   iStat = sExpFile->wr_txt(0, (char*)" ");
 
-  sstStr01Cls oStrCnvt;
-  std::string oLocFilNam;
-  int iStat1 = 0;
+  if (oAddFilNamList.length() > 0)
+  {  // Add more Include-Files
 
-  iStat1 = oStrCnvt.CsvString2_Str ( 0, &oAddFilNamList, &oLocFilNam);
-
-  while (iStat1 >= 0)
-  {
-    // Write Casc-Line-Object to Casc-File.
-    // sFilRow = "#include \"";
-    sFilRow = "#include <";
-    sFilRow = sFilRow + oLocFilNam;
-    // sFilRow = sFilRow + "\"";
-    sFilRow = sFilRow + ">";
-    iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
+    sstStr01Cls oStrCnvt;
+    std::string oLocFilNam;
+    int iStat1 = 0;
 
     iStat1 = oStrCnvt.CsvString2_Str ( 0, &oAddFilNamList, &oLocFilNam);
+
+    while (iStat1 >= 0)
+    {
+      // Write Casc-Line-Object to Casc-File.
+      sFilRow = "#include <";
+      sFilRow = sFilRow + oLocFilNam;
+      sFilRow = sFilRow + ">";
+      iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
+
+      iStat1 = oStrCnvt.CsvString2_Str ( 0, &oAddFilNamList, &oLocFilNam);
+    }
+    iStat = sExpFile->wr_txt(0, (char*)" ");
+
   }
-  iStat = sExpFile->wr_txt(0, (char*)" ");
 
   // write class include
   // typ include or typ/fnc include
@@ -372,7 +376,6 @@ int sstCpp01_Cls_WrtInc (int                  iKey,
   sFilRow = sFilRow + cLocObjNam;
   sFilRow = sFilRow + ".h\"";
   iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
-
 
   // Fatal Errors goes to an assert
   if (iRet < 0)
@@ -990,7 +993,7 @@ int sstCpp01_WrtCls (int                 iKey,
   cRetVar = cTypeType;
   cRetVar = cRetVar + "Stat";  // iStat, lStat ...
 
-  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
+  // Die Anzahl der aktuell gespeicherten Datens\E4tze zur\FCckgeben.
   dREC04RECNUMTYP lBlcRowNum = 0;
   lBlcRowNum = sBlcDsVerw->count();
 
@@ -2075,4 +2078,3 @@ int sstCpp01_ClassTab_Close (int iKey, sstCpp01_Class_Cls *oCppClass)
   return iRet;
 }
 //=============================================================================
-

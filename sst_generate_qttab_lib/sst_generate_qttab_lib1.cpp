@@ -57,14 +57,15 @@ int main(int argc, char *argv [])
 //-----------------------------------------------------------------------------
 
   // Open Protocol with filename
-  iStat = oSstPrt.SST_PrtAuf ( 1, (char*) "sst_generate_csv_lib.prt");
+  iStat = oSstPrt.SST_PrtAuf ( 1, (char*) "sst_generate_qttab_lib.prt");
 
   if (argc <= 1)
   {
     printf("\n");
-    printf("Call sst_generate_csv_lib typelib.def\n");
+    printf("Programm generates cpp code library with qt table model objects from def-file\n");
     printf("\n");
-    printf("Programm generates cpp library for csv io from def-file\n");
+    printf("ERROR: Call sst_generate_qttab_lib vartype.def\n");
+    printf("\n");
 
     oSstPrt.SST_PrtZu(1);
     return 0;
@@ -856,9 +857,8 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   sstCpp01_ClsTyp_Cls oCppClsTyp1;  // for type class
   dREC04RECNUMTYP eTypeNum = 0;
   dREC04RECNUMTYP SatzNr = 0;
-  std::string oAddIncFilNam = "QtWidgets;sstQt01Lib.h;sstQt01LibInt.h;proton01_lib.h;tonNis01Base.h;tonNis01Lib.h";
-// #include <QtWidgets>
-// #include <QFont>
+  std::string oAddIncFilNam = "list;dl_dxf.h;dl_creationadapter.h;rs_vector.h;QtWidgets;sstQt01Lib.h;sstQt01LibInt.h;sstDxf03Lib.h;sstDxf03LibInt.h";
+
 
   int iRet  = 0;
   int iStat = 0;
@@ -886,7 +886,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   sCppFilNam = sCppFilNam + sGrpNam;
   sCppFilNam = sCppFilNam + ".cpp";
 
-  // CascObjekt öffnen zum Schreiben.
+  // CascObjekt \F6ffnen zum Schreiben.
   iStat = sHedFil.fopenWr( 0, sHedFilNam.c_str());
   // iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
@@ -976,7 +976,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   // Return number of TypDef records from file
   eTypeNum = DsVerw->count();
 
-  // Datensatz-Verwaltung anlegen / Öffnen.
+  // Datensatz-Verwaltung anlegen / \D6ffnen.
   // Open Dss Set 1 for Class Group 2
   // Open Dss Set 2 for Class Group 2
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
@@ -1026,7 +1026,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
       // Close list of class function definitions
       iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
 
-      // Datensatz-Verwaltung anlegen / öffnen.
+      // Datensatz-Verwaltung anlegen / \F6ffnen.
       iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
     }
 
@@ -1560,9 +1560,9 @@ int sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
 
   // Define Database Class Element
   sstStr01VarDefCls oVarUserDef;
-  std::string oClsNam = "tonNis01Db" + (std::string) oCppTypClass->cClsNam + "Cls";
-  // oVarUserDef.Set_EleNam("sstStr01Cls oDataTable");  // tonNis01FncANSWCls
-  oVarUserDef.Set_EleNam(oClsNam + " oDataTable");  // tonNis01FncANSWCls
+  std::string oClsNam = "sstDxf03Fnc" + (std::string) oCppTypClass->cClsNam + "Cls";
+  // oVarUserDef.Set_EleNam("sstStr01Cls oDataTable");
+  oVarUserDef.Set_EleNam(oClsNam + " oDataTable");
   oVarUserDef.Set_EleInfo("sstStr01Cls oDataTable");
   oVarUserDef.Set_Type(sstStr01Custom);
 
@@ -1573,9 +1573,9 @@ int sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
 
   iStat = oCppFncClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &lSatzNr);
 
-  oClsNam = "tonNis01Typ" + (std::string) oCppTypClass->cClsNam + "Cls";
-  // oVarUserDef.Set_EleNam("sstStr01Cls oDataTable");  // tonNis01FncANSWCls
-  oVarUserDef.Set_EleNam(oClsNam + " oTypeRec");  // tonNis01FncANSWCls
+  oClsNam = "sstDxf03Typ" + (std::string) oCppTypClass->cClsNam + "Cls";
+  // oVarUserDef.Set_EleNam("sstStr01Cls oDataTable");
+  oVarUserDef.Set_EleNam(oClsNam + " oTypeRec");
   oVarUserDef.Set_EleInfo("sstStr01Cls oDataTable");
   oVarUserDef.Set_Type(sstStr01Custom);
 
@@ -1775,4 +1775,3 @@ int sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
   return iRet;
 }
 //=============================================================================
-

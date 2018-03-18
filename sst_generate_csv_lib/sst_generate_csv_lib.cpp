@@ -75,8 +75,8 @@ int main(int argc, char *argv [])
   iStat = sImpFile.fopenRd( 0, cFilNamEnd.c_str());
   if (iStat < 0)
   {
-    printf("Can not open file: %s\n", cFilNamEnd.c_str());
-    oSstPrt.SST_PrtZu(0);
+    oSstPrt.SST_PrtWrtChar(1, (char*) cFilNamEnd.c_str(),(char*)"Can not open file: ");
+    oSstPrt.SST_PrtZu(1);
     return -1;
   }
 
@@ -884,7 +884,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   sCppFilNam = sCppFilNam + sGrpNam;
   sCppFilNam = sCppFilNam + ".cpp";
 
-  // CascObjekt öffnen zum Schreiben.
+  // CascObjekt \F6ffnen zum Schreiben.
   iStat = sHedFil.fopenWr( 0, sHedFilNam.c_str());
   // iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
@@ -1073,7 +1073,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
       // Close list of class function definitions
       iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
 
-      // Datensatz-Verwaltung anlegen / öffnen.
+      // Datensatz-Verwaltung anlegen / \F6ffnen.
       iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
 
     }
@@ -1501,7 +1501,7 @@ int sst_WrtClsData_inPipe_toFilesT2 (int               iKey,
 
   memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
 
-  strncpy(oCppClsFnc.cFncCom,"// Get Number of Class member", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"Get Number of Class member", dCPPFILROWLENGTH);
   iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
@@ -1521,7 +1521,7 @@ int sst_WrtClsData_inPipe_toFilesT2 (int               iKey,
 
   memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
 
-  strncpy(oCppClsFnc.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"Function get String of Member Names (csv) ", dCPPFILROWLENGTH);
   iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
@@ -1541,7 +1541,7 @@ int sst_WrtClsData_inPipe_toFilesT2 (int               iKey,
 
   memset(oCppClsFnc.cFncPar,0,dCPPFILROWLENGTH);
 
-  strncpy(oCppClsFnc.cFncCom,"// Csv Write Function", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"Function get String of Member Types (csv) ", dCPPFILROWLENGTH);
   iStat = oCppTypClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
@@ -1797,4 +1797,3 @@ int sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
   return iRet;
 }
 //=============================================================================
-

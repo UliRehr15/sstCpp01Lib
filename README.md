@@ -28,3 +28,4 @@ Versions <BR>
 20180127: Vers. 1.5: Insert function SetReadPosition in CSV_READ, CSV_WRITE.  <BR>
 20180315: Vers. 1.6: New App -Generate_QtTab_Lib-, which generates Qt Table Objects <BR>
                      from TypeDef file. Needs generated code from app -Generate_Csv_Lib-.  <BR>
+20180318: Vers. 1.7: Fit library for sst_dxf03_lib. <BR>
