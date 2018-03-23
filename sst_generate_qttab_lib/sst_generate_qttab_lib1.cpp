@@ -857,7 +857,8 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   sstCpp01_ClsTyp_Cls oCppClsTyp1;  // for type class
   dREC04RECNUMTYP eTypeNum = 0;
   dREC04RECNUMTYP SatzNr = 0;
-  std::string oAddIncFilNam = "list;dl_dxf.h;dl_creationadapter.h;rs_vector.h;QtWidgets;sstQt01Lib.h;sstQt01LibInt.h;sstDxf03Lib.h;sstDxf03LibInt.h";
+  // std::string oAddIncFilNam = "list;dl_dxf.h;dl_creationadapter.h;rs_vector.h;QtWidgets;sstQt01Lib.h;sstQt01LibInt.h;sstDxf03Lib.h;sstDxf03LibInt.h";
+  std::string oAddIncFilNam = "list;dl_dxf.h;dl_creationadapter.h;rs_vector.h;QtWidgets;sstQt01Lib.h;sstDxf03Lib.h";
 
 
   int iRet  = 0;
@@ -874,7 +875,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   strncpy(oCppTypClass.cSysNam,sSysNam.c_str(),dSST_STR01_VAR_NAM_LEN);
 
   // sGrpNam = "FncOpen";
-  sGrpNam = "QtTab";
+  sGrpNam = "TabMdl";
 
   sHedFilNam = sSysNam;
 //  sHedFilNam = sHedFilNam + "_";
@@ -886,7 +887,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   sCppFilNam = sCppFilNam + sGrpNam;
   sCppFilNam = sCppFilNam + ".cpp";
 
-  // CascObjekt \F6ffnen zum Schreiben.
+  // CascObjekt öffnen zum Schreiben.
   iStat = sHedFil.fopenWr( 0, sHedFilNam.c_str());
   // iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
@@ -951,7 +952,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
 
   oCppFncBaseClass.SetClsNam(0,"Base");
   oCppFncBaseClass.SetSysNam(0,sSysNam);
-  oCppFncBaseClass.SetGrpNam(0,"QtTab");
+  oCppFncBaseClass.SetGrpNam(0,"TabMdl");
 
   sstStr01VarDefCls oVarUserDef;
   oVarUserDef.Set_EleNam("sstStr01Cls oCsvRow");
@@ -1002,11 +1003,12 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
 
 //===========================================================================
       sCppFilNam = oStrTypeAct.Get_SysNam();
+      sCppFilNam += sGrpNam;
       sCppFilNam = sCppFilNam + oStrTypeAct.Get_ObjNam();
       sCppFilNam = sCppFilNam + ".cpp";
 
       iStat = sCppFil.fcloseFil(0);
-       iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
+      iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
       iStat = oCppTypClass.GetDate( 0, &sDateStr);
       // save class name for member class
@@ -1020,7 +1022,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
       iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass, oAddIncFilNam);
 
       // Write last type class data to class and header file
-      iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "QtTab", &oCppTypClass);
+      iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "TabMdl", &oCppTypClass);
 
       // Close list of class type definitions
       // Close list of class function definitions
@@ -1040,6 +1042,7 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   }
 
   sCppFilNam = oStrTypeAct.Get_SysNam();
+  sCppFilNam += sGrpNam;
   sCppFilNam = sCppFilNam + oStrTypeAct.Get_ObjNam();
   sCppFilNam = sCppFilNam + ".cpp";
 
@@ -1057,9 +1060,8 @@ int sstcsv_FilWrtClsFncOpen3 (int          iKey,
   // Write comment and includes to cls file
   iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppTypClass, oAddIncFilNam);
 
-
   // Write last class data to files
-  iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "QtTab", &oCppTypClass);
+  iStat = sst_WrtClsData_inPipe_toFilesF2 ( 0, &sHedFil, &sCppFil, "TabMdl", &oCppTypClass);
 
   // Datensatz-Verwaltung beenden.
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
