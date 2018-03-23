@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = 
 CFLAGS        = -m32 -pipe -g -fPIC -Wall -W $(DEFINES)
 CXXFLAGS      = -m32 -pipe -g -fPIC -std=c++0x -Wall -W $(DEFINES)
-INCPATH       = -I. -IHeader -I../sst_str01_lib/Header -I../sst_misc01_lib/Header -I../sst_rec04_lib/Header -I../../Qt/5.5/gcc/mkspecs/linux-g++-32
+INCPATH       = -I. -IHeader -I../sst_str01_lib/Header -I../sstMath01Lib/Header -I../sst_misc01_lib/Header -I../sst_rec04_lib/Header -I../../Qt/5.5/gcc/mkspecs/linux-g++-32
 QMAKE         = /home/uli-le/Qt/5.5/gcc/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -45,8 +45,10 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = sstCpp01Lib.cpp 
-OBJECTS       = sstCpp01Lib.o
+SOURCES       = sstCpp01Lib.cpp \
+		sstCpp01TypDefTab.cpp 
+OBJECTS       = sstCpp01Lib.o \
+		sstCpp01TypDefTab.o
 DIST          = dxftype.def \
 		../../Qt/5.5/gcc/mkspecs/features/spec_pre.prf \
 		../../Qt/5.5/gcc/mkspecs/common/unix.conf \
@@ -178,7 +180,8 @@ DIST          = dxftype.def \
 		../../Qt/5.5/gcc/mkspecs/features/yacc.prf \
 		../../Qt/5.5/gcc/mkspecs/features/lex.prf \
 		sstCpp01Lib.pro ./Header/sstCpp01Lib.h \
-		sstCpp01LibInt.h sstCpp01Lib.cpp
+		sstCpp01LibInt.h sstCpp01Lib.cpp \
+		sstCpp01TypDefTab.cpp
 QMAKE_TARGET  = sst_cpp01_lib_d
 DESTDIR       = ../libs/#avoid trailing-slash linebreak
 TARGET        = libsst_cpp01_lib_d.a
@@ -523,6 +526,13 @@ sstCpp01Lib.o: sstCpp01Lib.cpp ../sst_str01_lib/Header/sstStr01Lib.h \
 		Header/sstCpp01Lib.h \
 		sstCpp01LibInt.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstCpp01Lib.o sstCpp01Lib.cpp
+
+sstCpp01TypDefTab.o: sstCpp01TypDefTab.cpp ../sstMath01Lib/Header/sstMath01Lib.h \
+		../sst_str01_lib/Header/sstStr01Lib.h \
+		../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../sst_rec04_lib/Header/sstRec04Lib.h \
+		Header/sstCpp01Lib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstCpp01TypDefTab.o sstCpp01TypDefTab.cpp
 
 ####### Install
 

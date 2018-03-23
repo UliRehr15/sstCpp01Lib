@@ -8,6 +8,7 @@ Tool sst_generate_csv_lib
 Tool generates code for lib sst_str01_lib for import /export of csv data.
 record definition comes from file with type def data.
 
+- Tool Generate_Typ_Lib generates Record/Csv Objects from TypeDef File.
 - Tool Generate_QtTab_Lib generates Qt Table Model Objects from TypeDef File.
 
 Structure of coding projects should be:
@@ -33,3 +34,5 @@ Versions <BR>
                      from TypeDef file. Needs generated code from app -Generate_Csv_Lib-.  <BR>
 20180318: Vers. 1.7: Fit library for sst_dxf03_lib. <BR>
 20180323: Vers. 1.8: Small improvements in working with typeDef files. <BR>
+20180323: Vers. 1.9: New Table Class for storing TypeDef Records. <BR>
+                     New Tool -Generate_Typ_Lib-, which generate record/csv objects from TypeDef file. <BR>

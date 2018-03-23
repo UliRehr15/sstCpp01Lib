@@ -12,6 +12,7 @@ CONFIG    += staticlib
 
 INCLUDEPATH += ./Header
 INCLUDEPATH += ../sst_str01_lib/Header
+INCLUDEPATH += ../sstMath01Lib/Header
 INCLUDEPATH += ../sst_misc01_lib/Header
 INCLUDEPATH += ../sst_rec04_lib/Header
 
@@ -19,7 +20,8 @@ HEADERS		+=  ./Header/sstCpp01Lib.h
 HEADERS		+= sstCpp01LibInt.h
 
 
-SOURCES		+= sstCpp01Lib.cpp
+SOURCES		+= sstCpp01Lib.cpp \
+    sstCpp01TypDefTab.cpp
 
 OTHER_FILES += README.md
 

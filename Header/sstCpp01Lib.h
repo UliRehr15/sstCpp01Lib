@@ -376,6 +376,72 @@ private:  // Private Funktionen
      std::string sExtBaseCls;  // Extern Base Class Name
 };
 
+//==============================================================================
+/**
+* @brief Definition sstCppTypDefTabCls
+*
+* More Comment
+*
+* Changed: 19.02.10  Re.
+*
+* @ingroup sstCpp01Lib
+*
+* @author Re.
+*
+* @date 19.02.10
+*/
+// ----------------------------------------------------------------------------
+class sstCppTypDefTabCls
+{
+  public:   // Public functions
+     sstCppTypDefTabCls(sstMisc01PrtFilCls *oSstPrt);   // Constructor
+    ~sstCppTypDefTabCls();   // Destructor
+     //==============================================================================
+     /**
+     * @brief // Shortstory <BR>
+     * iStat = oTest =  Func_1( iKey);
+     *
+     * @param iKey [in] For the moment 0
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+int LoadTypDefFromFile (int iKey, const std::string sTypDefFilNam);
+//==============================================================================
+/**
+* @brief // Shortstory <BR>
+* iStat = oTest =  Func_1( iKey);
+*
+* @param iKey [in] For the moment 0
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*/
+// ----------------------------------------------------------------------------
+std::string getSysNam() const;
+//==============================================================================
+dREC04RECNUMTYP count();
+int Read(int iKey, dREC04RECNUMTYP dRecNo, void *vRecAdr);
+
+
+private:  // Private functions
+  // int Dum;        /**< Dummy */
+  // sstStr01VarDefCls oStrType;
+  // sstStr01VarDefFncCls oVarDefFnc;
+  sstRec04Cls  *DsVerw;   /**< sst Record Table storage */
+  std::string  sSysNam;   /**< System Name (System Name of last TypeDef Record) */
+  // dREC04RECNUMTYP dRecNo = 0;
+  sstMisc01PrtFilCls *poPrt;
+};
+//-----------------------------------------------------------------------------
+
+
+
 
 //==============================================================================
 /**
