@@ -30,9 +30,9 @@ Versions <BR>
 20170811: Vers. 1.3: Generate new functions -GetNumberElements, GetAllNameStr, GetAllTypeStr-. <BR>
 20171225: Vers. 1.4: More Doxygen help. <BR>
 20180127: Vers. 1.5: Insert function SetReadPosition in CSV_READ, CSV_WRITE.  <BR>
-20180315: Vers. 1.6: New App -Generate_QtTab_Lib-, which generates Qt Table Model Objects <BR>
+20180315: Vers. 1.6: New App -Generate_QtTab_Lib-, which generates Qt Table Model Objects Code <BR>
                      from TypeDef file. Needs generated code from app -Generate_Csv_Lib-.  <BR>
 20180318: Vers. 1.7: Fit library for sst_dxf03_lib. <BR>
 20180323: Vers. 1.8: Small improvements in working with typeDef files. <BR>
 20180323: Vers. 1.9: New Table Class for storing TypeDef Records. <BR>
-                     New Tool -Generate_Typ_Lib-, which generate record/csv objects from TypeDef file. <BR>
+                     New Tool -Generate_Typ_Lib-, which generate record/csv objects code from TypeDef file. <BR>
