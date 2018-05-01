@@ -18,8 +18,22 @@
 #include "sst_generate_qttab_lib.h"
 
 //=============================================================================
-int sstCpp01_CsvLib_FillBlc_rowCount (int               iKey,
-                             // sstStr01Cls *oFormatInfo,
+sstCppGenQtTabLibCls::sstCppGenQtTabLibCls()
+{
+
+}
+//=============================================================================
+void sstCppGenQtTabLibCls::setGrpNam(const std::string &sTmpGrpNam)
+{
+  this->sGrpNam = sTmpGrpNam;
+}
+//=============================================================================
+std::string sstCppGenQtTabLibCls::getGrpNam() const
+{
+  return this->sGrpNam;
+}
+//=============================================================================
+int sstCppGenQtTabLibCls::FillBlc_rowCount (int               iKey,
                              sstCpp01_Class_Cls *oCppTypClass,
                              sstCpp01_Class_Cls *oCppFncClass,
                              dREC04RECNUMTYP     *lSatzNr)
@@ -28,9 +42,8 @@ int sstCpp01_CsvLib_FillBlc_rowCount (int               iKey,
 {
   std::string sBlcTxt;  // one row inside function block
   sstCpp01_FilRowCls sBlcRow;
-  std::string sLocStr;  // one row inside function block
   dREC04RECNUMTYP lClsTypNum = 0;
-  sstCpp01_ClsTyp_Cls oClsTyp;
+  std::string oEntityCountStr;
 
   int iRet  = 0;
   int iStat = 0;
@@ -46,9 +59,11 @@ int sstCpp01_CsvLib_FillBlc_rowCount (int               iKey,
   sBlcRow.setRow("//  Bloc Code Generation Start");
   iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
 
-  // return oTestRec1Table.Count();
-  sBlcRow.setRow("  ulStat = oDataTable.count();");
-  iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+  // Build EntityCount Call
+  oEntityCountStr = "  iStat = this->poDatabase->EntityCount(RS2::Entity";
+  oEntityCountStr += oCppTypClass->cClsNam;
+  oEntityCountStr += ");";
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,oEntityCountStr);
 
   sBlcRow.setRow("//  Bloc Code Generation End");
   iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
@@ -66,7 +81,7 @@ int sstCpp01_CsvLib_FillBlc_rowCount (int               iKey,
   return iRet;
 }
 //=============================================================================
-int sstCpp01_CsvLib_FillBlc_columnCount (int               iKey,
+int sstCppGenQtTabLibCls::FillBlc_columnCount (int               iKey,
                              sstCpp01_Class_Cls *oCppTypClass,
                              sstCpp01_Class_Cls *oCppFncClass,
                              dREC04RECNUMTYP     *lSatzNr)
@@ -80,10 +95,14 @@ int sstCpp01_CsvLib_FillBlc_columnCount (int               iKey,
 
   // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
   if (oCppTypClass->ClsTypDsVerw->count() <= 0) return -2;
+  std::string oTmpStr;
+  sstStr01Cls oStrCnvt;
+  iStat = oStrCnvt.Csv_UInt4_2String( 0, oCppTypClass->ClsTypDsVerw->count(), &oTmpStr);
 
   // Fill Function Block
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"//  Bloc Code Generation Start");
-  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = oTypeRec.getMemberNumber();");
+  // iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = oTypeRec.getMemberNumber();");
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = " + oTmpStr +";");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"//  Bloc Code Generation End");
 
   // Expression (iRet >= 0) has to be fullfilled
@@ -95,7 +114,7 @@ int sstCpp01_CsvLib_FillBlc_columnCount (int               iKey,
   return iRet;
 }
 //=============================================================================
-int sstCpp01_CsvLib_FillBlc_data (int               iKey,
+int sstCppGenQtTabLibCls::FillBlc_data (int               iKey,
                              sstStr01Cls *poFormatInfo,
                              sstCpp01_Class_Cls *oCppTypClass,
                              sstCpp01_Class_Cls *oCppFncClass,
@@ -103,11 +122,9 @@ int sstCpp01_CsvLib_FillBlc_data (int               iKey,
 
 //-----------------------------------------------------------------------------
 {
-  // std::string sBlcTxt;  // one row inside function block
   sstCpp01_FilRowCls sBlcRow;
-  // std::string sLocStr;  // one row inside function block
   dREC04RECNUMTYP lClsTypNum = 0;
-  // sstCpp01_ClsTyp_Cls oClsTyp;
+  std::string oCallStr;
 
   int iRet  = 0;
   int iStat = 0;
@@ -149,17 +166,30 @@ int sstCpp01_CsvLib_FillBlc_data (int               iKey,
 
   // Fill Function Block
 
-  sBlcRow.setRow("//  Bloc Code Generation Start");
-  iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+  oCppFncClass->writeBlcRow( 0, lSatzNr, "//  Bloc Code Generation Start");
+  // sBlcRow.setRow("//  Bloc Code Generation Start");
+  // iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
 
-  sBlcRow.setRow(" ");
-  iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
-  sBlcRow.setRow("  int iStat = this->oDataTable.Read( 0, this->sstTabVector[index.row()], &this->oTypeRec);");
-  iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
-  sBlcRow.setRow("   assert (iStat == 0);");
-  iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
-  sBlcRow.setRow(" ");
-  iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
+//  oCallStr  = "  ";
+//  oCallStr += oCppTypClass->GetSysNam();
+//  oCallStr += oCppTypClass->GetGrpNam();
+//  oCallStr += oCppTypClass->GetClsNam();
+//  oCallStr += "Cls oTypRec;";
+
+  // oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_LineData oTypRec(0,0,0,0,0,0);");
+  oCppFncClass->writeBlcRow( 0, lSatzNr, "  " + this->GetDxfConstructStr(oCppFncClass->GetClsNam()));
+
+  oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);
+  oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_Attributes oDLAttributes;");
+
+  oCallStr = "  int iStat = this->poDatabase->Read";
+  oCallStr += oCppTypClass->GetClsNam();
+  oCallStr += "( 0, this->sstTabVector[index.row()], &oTypRec, &oDLAttributes);";
+
+  oCppFncClass->writeBlcRow( 0, lSatzNr, " ");
+  oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);
+  oCppFncClass->writeBlcRow( 0, lSatzNr, "  assert (iStat == 0);");
+  oCppFncClass->writeBlcRow( 0, lSatzNr, " ");
 
   sBlcRow.setRow("  switch(role){");
   iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
@@ -189,9 +219,10 @@ int sstCpp01_CsvLib_FillBlc_data (int               iKey,
     // First Letter of Member should be upper
     std::string sEleFncNam;
     sEleFncNam = oCppClsTypRec.sClsMem.Get_EleNam();
-    char& c = sEleFncNam[0];  // reference to character inside string
-    c = std::toupper(c);
-    sEleFncNam = "oTypeRec.get" + sEleFncNam + "()";
+    // char& c = sEleFncNam[0];  // reference to character inside string
+    // c = std::toupper(c);
+    // sEleFncNam = "oTypeRec.get" + sEleFncNam + "()";   // all
+    sEleFncNam = "oTypRec." + sEleFncNam;                // dxf
 
     switch (oCppClsTypRec.sClsMem.Get_Type())
     {
@@ -287,7 +318,7 @@ int sstCpp01_CsvLib_FillBlc_data (int               iKey,
   return iRet;
 }
 //=============================================================================
-int sstCpp01_CsvLib_FillBlc_HeaderData (int               iKey,
+int sstCppGenQtTabLibCls::FillBlc_HeaderData (int               iKey,
                                         sstStr01Cls *poFormatInfo,
                              sstCpp01_Class_Cls *oCppTypClass,
                              sstCpp01_Class_Cls *oCppFncClass,
@@ -390,7 +421,7 @@ int sstCpp01_CsvLib_FillBlc_HeaderData (int               iKey,
   return iRet;
 }
 //=============================================================================
-int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
+int sstCppGenQtTabLibCls::FillBlc_setData (int               iKey,
                                      sstStr01Cls *poFormatInfo,
                              sstCpp01_Class_Cls *oCppTypClass,
                              sstCpp01_Class_Cls *oCppFncClass,
@@ -402,6 +433,7 @@ int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
   // sstCpp01_FilRowCls sBlcRow;
   std::string sLocRowStr;  // one row inside function block
   dREC04RECNUMTYP lClsTypNum = 0;
+  std::string oCallStr;
   // sstCpp01_ClsTyp_Cls oClsTyp;
 
   int iRet  = 0;
@@ -452,10 +484,18 @@ int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"if (role == Qt::EditRole)");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"{");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  //save value from editor to oTestRecDss");
-  // iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  sstRec04TestRec2Cls oTabRec;");
+  // iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  sstRec04TestRec2Cls oTabRec;");  // general
+  //oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_LineData oTypRec(0,0,0,0,0,0);");       // dxf
+  oCppFncClass->writeBlcRow( 0, lSatzNr, "  " + this->GetDxfConstructStr(oCppFncClass->GetClsNam()));
+  oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_Attributes oDLAttributes;");
+  oCppFncClass->writeBlcRow( 0, lSatzNr, "  dREC04RECNUMTYP dMainRecNo = 0;");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr," ");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  dREC04RECNUMTYP dRecNo = index.row() +1;");
-  iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  this->oDataTable.Read ( 0, this->sstTabVector[index.row()], &oTypeRec);");
+  // iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  this->poDatabase.Read ( 0, this->sstTabVector[index.row()], &oTypRec);");
+  oCallStr = "  this->poDatabase->Read";
+  oCallStr += oCppTypClass->GetClsNam();
+  oCallStr += "( 0, this->sstTabVector[index.row()], &oTypRec, &oDLAttributes);";
+  iStat = oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr," ");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  bool bOK = 1;");
 
@@ -487,9 +527,10 @@ int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
     // First Letter of Member should be upper
     std::string sEleFncNam;
     sEleFncNam = oCppClsTypRec.sClsMem.Get_EleNam();
-    char& c = sEleFncNam[0];  // reference to character inside string
-    c = std::toupper(c);
-    sEleFncNam = "        oTypeRec.set" + sEleFncNam + "(";
+    // char& c = sEleFncNam[0];  // reference to character inside string
+    // c = std::toupper(c);
+    // sEleFncNam = "        oTypRec.set" + sEleFncNam + "(";  // general
+    sEleFncNam = "        oTypRec." + sEleFncNam + " = ";        // dxf
 
     switch (oCppClsTypRec.sClsMem.Get_Type())
     {
@@ -497,64 +538,66 @@ int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
     {
       //    QString locStr = value.toString();
       // oTypeRec.setText( locStr.toStdString()); break;
+      sLocRowStr.clear();
       sLocRowStr += "        QString locStr = value.toString();";
       iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,sLocRowStr);
-      sBlcRowStr += sEleFncNam + "locStr.toStdString());";
+      sBlcRowStr += sEleFncNam + "locStr.toStdString()";
       break;
     }
     case (sstStr01Date):
     {
       // sBlcRowStr += "oTypeRec." + oCppClsTypRec.sClsMem.Get_EleNam() +";";
-      sBlcRowStr += sEleFncNam +";";
+      sBlcRowStr += sEleFncNam + "locStr.toStdString()";
+      // sBlcRowStr += sEleFncNam +";";
       break;
     }
     case (sstStr01Bool):
     {
       //  case 6: oTestRec2.bVal = value.toBool(); break;
       // sBlcRowStr += "oTypeRec." + oCppClsTypRec.sClsMem.Get_EleNam() +" = value.toBool();";
-      sBlcRowStr += sEleFncNam + "value.toBool());";
+      sBlcRowStr += sEleFncNam + "value.toBool()";
       break;
     }
     case (sstStr01Int):
     {
       //  case 0: oTestRec2.iVal = value.toInt(&bOK);  break;
       // sBlcRowStr += "oTypeRec." + oCppClsTypRec.sClsMem.Get_EleNam() +" = value.toInt(&bOK);";
-      sBlcRowStr += sEleFncNam + "value.toInt(&bOK));";
+      sBlcRowStr += sEleFncNam + "value.toInt(&bOK)";
       break;
     }
     case (sstStr01UInt):
     {
       //  case 1: oTestRec2.uiVal = value.toUInt(&bOK) ; break;
       // sBlcRowStr += "oTypeRec." + oCppClsTypRec.sClsMem.Get_EleNam() +" = value.toUInt(&bOK);";
-      sBlcRowStr += sEleFncNam + "value.toUInt(&bOK));";
+      sBlcRowStr += sEleFncNam + "value.toUInt(&bOK)";
       break;
     }
     case (sstStr01Long):
     {
       //  case 2: oTestRec2.lVal = value.toLongLong(&bOK) ; break;
       // sBlcRowStr += "oTypeRec." + oCppClsTypRec.sClsMem.Get_EleNam() +" = value.toLongLong(&bOK);";
-      sBlcRowStr += sEleFncNam  + "value.toLongLong(&bOK));";
+      sBlcRowStr += sEleFncNam  + "value.toLongLong(&bOK)";
       break;
     }
     case (sstStr01ULong):
     {
       //  case 3: oTestRec2.ulVal = value.toULongLong(&bOK) ; break;
       // sBlcRowStr += "oTypeRec." + oCppClsTypRec.sClsMem.Get_EleNam() +" = value.toULongLong(&bOK);";
-      sBlcRowStr += sEleFncNam + "value.toULongLong(&bOK));";
+      sBlcRowStr += sEleFncNam + "value.toULongLong(&bOK)";
       break;
     }
     case (sstStr01Float):
     {
       //  case 4: oTestRec2.fVal = value.toFloat(&bOK) ; break;
       // sBlcRowStr += "oTypeRec." + oCppClsTypRec.sClsMem.Get_EleNam() +" = value.toFloat(&bOK);";
-      sBlcRowStr += sEleFncNam + "value.toFloat(&bOK));";
+      sBlcRowStr += sEleFncNam + "value.toFloat(&bOK)";
       break;
     }
     case (sstStr01Double):
     {
       //  case 5: oTestRec2.dVal = value.toDouble(&bOK); break;
       // sBlcRowStr += "oTypeRec." + oCppClsTypRec.sClsMem.Get_EleNam() +" = value.toDouble(&bOK);";
-      sBlcRowStr += sEleFncNam + "value.toDouble(&bOK));";
+      sBlcRowStr += sEleFncNam + "value.toDouble(&bOK)";
       break;
     }
     case (sstStr01String):
@@ -563,11 +606,13 @@ int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
       // oTypeRec.setText( locStr.toStdString()); break;
       iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"    QString locStr = value.toString();");
       // sBlcRowStr += "strncpy(oTypeRec." + oCppClsTypRec.sClsMem.Get_EleNam() +", locStr.toUtf8(),10);";
-      sBlcRowStr += "strncpy(" + sEleFncNam +", locStr.toUtf8()),10);";
+      sBlcRowStr += "strncpy(" + sEleFncNam +", locStr.toUtf8()),10";
       break;
     }
     default: break;
     }
+    // sBlcRowStr += ");";  // General
+    sBlcRowStr += ";";      // dxf
     sBlcRowStr += " break;";
     iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,sBlcRowStr);
     // iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
@@ -576,7 +621,12 @@ int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
 
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr," ");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  }");
-  iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  if (bOK) this->oDataTable.Writ( 0, &oTypeRec, dRecNo);");
+  // iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  if (bOK) this->oDataTable.Writ( 0, &oTypeRec, dRecNo);");
+  // iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  if (bOK) this->poDatabase->Writ( 0, &oTypeRec, dRecNo);");
+  oCallStr ="  if (bOK) this->poDatabase->Write";
+  oCallStr += oCppTypClass->GetClsNam();
+  oCallStr += "( 0, oTypRec, oDLAttributes, &dRecNo, &dMainRecNo);";
+  iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,oCallStr);
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr," ");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  }");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  return true;");
@@ -596,7 +646,7 @@ int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
   return iRet;
 }
 //=============================================================================
-int sstCpp01_CsvLib_FillBlc_flags (int               iKey,
+int sstCppGenQtTabLibCls::FillBlc_flags (int               iKey,
                              sstCpp01_Class_Cls *oCppTypClass,
                              sstCpp01_Class_Cls *oCppFncClass,
                              dREC04RECNUMTYP     *lSatzNr)
@@ -629,7 +679,7 @@ int sstCpp01_CsvLib_FillBlc_flags (int               iKey,
   return iRet;
 }
 //=============================================================================
-int sstCpp01_CsvLib_FillBlc_removeRows (int               iKey,
+int sstCppGenQtTabLibCls::FillBlc_removeRows (int               iKey,
                              sstCpp01_Class_Cls *oCppTypClass,
                              sstCpp01_Class_Cls *oCppFncClass,
                              dREC04RECNUMTYP     *lSatzNr)
@@ -669,7 +719,7 @@ int sstCpp01_CsvLib_FillBlc_removeRows (int               iKey,
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  // Position is 0 > n-1");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr," ");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  for (int row = 0; row < rows; ++row) {");
-  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"    this->oDataTable.RecSetDeleted(0,position+1);");
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"    // this->poDatabase->RecSetDeleted(0,position+1);");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  }");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  endRemoveRows();");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr," ");
@@ -691,7 +741,7 @@ int sstCpp01_CsvLib_FillBlc_removeRows (int               iKey,
   return iRet;
 }
 //=============================================================================
-int sstCpp01_CsvLib_FillBlc_insertRows (int               iKey,
+int sstCppGenQtTabLibCls::FillBlc_insertRows (int               iKey,
                              sstCpp01_Class_Cls *oCppTypClass,
                              sstCpp01_Class_Cls *oCppFncClass,
                              dREC04RECNUMTYP     *lSatzNr)
@@ -737,9 +787,8 @@ int sstCpp01_CsvLib_FillBlc_insertRows (int               iKey,
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  dREC04RECNUMTYP dRecNo = 0;");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  ");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  for (int row = 0; row < rows; ++row) {");
-  // iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"    sstRec04TestRec2Cls oTestRec;");
-  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"    this->oDataTable.Read(0,this->oDataTable.count(),&this->oTypeRec);");
-  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"    this->oDataTable.WritNew( 0, &this->oTypeRec, &dRecNo);");
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"    // this->poDatabase->Read(0,this->poDatabase->count(),&this->oTypeRec);");
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"    // this->poDatabase->WritNew( 0, &this->oTypeRec, &dRecNo);");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  }");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr," ");
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  endInsertRows();");
@@ -761,5 +810,26 @@ int sstCpp01_CsvLib_FillBlc_insertRows (int               iKey,
   iRet = iStat;
 
   return iRet;
+}
+//=============================================================================
+std::string sstCppGenQtTabLibCls::GetDxfConstructStr(const std::string oClsNam)
+{
+  std::string oDxfStr = "DL_LineData oTypRec(0,0,0,0,0,0);";  // DLDataLine
+
+  if      (oClsNam.compare("Unknown")   == 0) oDxfStr = "";
+  else if (oClsNam.compare("Container") == 0) oDxfStr = "";
+  else if (oClsNam.compare("Block")     == 0) oDxfStr = "";
+  else if (oClsNam.compare("FontChar")  == 0) oDxfStr = "";
+  else if (oClsNam.compare("Insert")    == 0) oDxfStr = "";
+  else if (oClsNam.compare("Line")      == 0) oDxfStr = "DL_LineData oTypRec(0,0,0,0,0,0);";
+  else if (oClsNam.compare("Point")     == 0) oDxfStr = "DL_PointData oTypRec;";
+  else if (oClsNam.compare("Circle")    == 0) oDxfStr = "DL_CircleData oTypRec(0,0,0,1);";
+  else if (oClsNam.compare("MText")     == 0) oDxfStr = "DL_MTextData oTypRec(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0.0,\"\",\"\",0.0);";
+  else if (oClsNam.compare("Text")      == 0) oDxfStr = "DL_TextData oTypRec(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,\"\",\"\",0.0);";
+  else oDxfStr = "";
+
+  if (oDxfStr.length() == 0) assert(0);
+
+  return oDxfStr;
 }
 //=============================================================================

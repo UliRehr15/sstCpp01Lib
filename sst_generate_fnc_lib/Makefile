@@ -14,7 +14,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = 
 CFLAGS        = -pipe -g -fPIC -Wall -W -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -g -fPIC -std=c++0x -Wall -W -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -g -fPIC -Wall -W -fPIC $(DEFINES)
 INCPATH       = -I. -I../../sst_rec04_lib/Header -I../../sst_misc01_lib/Header -I../../sstMath01Lib/Header -I../../sst_str01_lib/Header -I../Header -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/i386-linux-gnu/qt5/bin/qmake
 DEL_FILE      = rm -f
@@ -98,7 +98,6 @@ DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/default_pre.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/resolve_config.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/default_post.prf \
-		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/c++11.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/warn_on.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/testcase_targets.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/exceptions.prf \
@@ -182,7 +181,6 @@ Makefile: sst_generate_fnc_lib.pro /usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/default_pre.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/resolve_config.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/default_post.prf \
-		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/c++11.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/warn_on.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/testcase_targets.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/exceptions.prf \
@@ -236,7 +234,6 @@ Makefile: sst_generate_fnc_lib.pro /usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/default_pre.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/resolve_config.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/default_post.prf:
-/usr/lib/i386-linux-gnu/qt5/mkspecs/features/c++11.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/warn_on.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/testcase_targets.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/exceptions.prf:

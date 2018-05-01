@@ -20,6 +20,69 @@
 
 // Prototypen datei.c ----------------------------------------------------------
 
+////==============================================================================
+///**
+//* @brief Definition Class X
+//*
+//* More Comment
+//*
+//* Changed: 19.02.10  Re.
+//*
+//* @ingroup examples
+//*
+//* @author Re.
+//*
+//* @date 19.02.10
+//*/
+//// ----------------------------------------------------------------------------
+//class sstCppTypDefTabCls
+//{
+//  public:   // Public functions
+//     sstCppTypDefTabCls(sstMisc01PrtFilCls *oSstPrt);   // Constructor
+//    ~sstCppTypDefTabCls();   // Destructor
+//     //==============================================================================
+//     /**
+//     * @brief // Shortstory <BR>
+//     * iStat = oTest =  Func_1( iKey);
+//     *
+//     * @param iKey [in] For the moment 0
+//     *
+//     * @return Errorstate
+//     *
+//     * @retval   = 0: OK
+//     * @retval   < 0: Unspecified Error
+//     */
+//     // ----------------------------------------------------------------------------
+//int LoadTypDefFromFile (int iKey, const std::string sTypDefFilNam);
+////==============================================================================
+///**
+//* @brief // Shortstory <BR>
+//* iStat = oTest =  Func_1( iKey);
+//*
+//* @param iKey [in] For the moment 0
+//*
+//* @return Errorstate
+//*
+//* @retval   = 0: OK
+//* @retval   < 0: Unspecified Error
+//*/
+//// ----------------------------------------------------------------------------
+//std::string getSysNam() const;
+////==============================================================================
+//dREC04RECNUMTYP count();
+//int Read(int iKey, dREC04RECNUMTYP dRecNo, void *vRecAdr);
+
+
+//private:  // Private functions
+//  // int Dum;        /**< Dummy */
+//  // sstStr01VarDefCls oStrType;
+//  // sstStr01VarDefFncCls oVarDefFnc;
+//  sstRec04Cls  *DsVerw;   /**< sst Record Table storage */
+//  std::string  sSysNam;   /**< System Name (System Name of last TypeDef Record) */
+//  // dREC04RECNUMTYP dRecNo = 0;
+//  sstMisc01PrtFilCls *poPrt;
+//};
+////-----------------------------------------------------------------------------
 
 
 //==============================================================================
@@ -128,114 +191,17 @@ int sst_WrtBaseClsData (int                   iKey,
                                     sstMisc01AscFilCls   *sHedFil,
                                     sstCpp01_Class_Cls     *oCppTypClass);
 //==============================================================================
-
-int sstCpp01_CsvLib_FillBlc_rowCount (int               iKey,
-                             // sstStr01Cls *oFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-
-int sstCpp01_CsvLib_FillBlc_columnCount (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-
-int sstCpp01_CsvLib_FillBlc_data (int               iKey,
-                             sstStr01Cls *poFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-
-int sstCpp01_CsvLib_FillBlc_HeaderData (int               iKey,
-                                        sstStr01Cls *poFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
-                             sstStr01Cls *poFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_flags (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_removeRows (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_insertRows (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
+int FillBlc_Constructor(int                 iKey,
+                        sstCpp01_Class_Cls *oCppFncClass,
+                        dREC04RECNUMTYP    *lSatzNr);
 //==============================================================================
-/**
-* @brief // Write CSV_Read Code block to code table <BR>
-* iStat = sstCpp01_CsvLib_FillBlc_Read ( iKey, *oFormatInfo, *oCppTypClass, *oCppFncClass, *lSatzNr);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstCpp01Lib
-*
-* @param iKey         [in] For the moment 0
-* @param oFormatInfo  [in] oFormatInfo
-* @param oCppTypClass [in] oCppTypClass
-* @param oCppFncClass [in] oCppFncClass
-* @param lSatzNr      [in] lSatzNr
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//==============================================================================
-int sstCpp01_CsvLib_FillBlc_Read (int               iKey,
-                             sstStr01Cls      *oFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP  *lSatzNr);
-//==============================================================================
-/**
-* @brief // // Write CSV_Write Code block to code table <BR>
-* iStat = sstCpp01_CsvLib_FillBlc_Write ( iKey, *oFormatInfo, *oCppTypClass, *oCppFncClass, *lSatzNr);
-*
-* More Comment
-*
-* Changed: 16.02.10  Re.
-*
-* @ingroup sstCpp01Lib
-*
-* @param iKey         [in] For the moment 0
-* @param oFormatInfo  [in] oFormatInfo
-* @param oCppTypClass [in] oCppTypClass
-* @param oCppFncClass [in] oCppFncClass
-* @param lSatzNr      [in] lSatzNr
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 16.02.10
-*/
-//==============================================================================
-int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
-                              sstStr01Cls      *oFormatInfo,
-                              sstCpp01_Class_Cls *oCppTypClass,
-                              sstCpp01_Class_Cls *oCppFncClass,
-                              dREC04RECNUMTYP  *lSatzNr);
+int FillBlc_Destructor(int                 iKey,
+                       sstCpp01_Class_Cls *oCppFncClass,
+                       dREC04RECNUMTYP    *lSatzNr);
 //==============================================================================
 /**
 * @brief // Write Code Block for function -getNumber- <BR>
-* iStat = sstCpp01_CsvLib_FillBlc_Number ( iKey, *oCppTypClass, *oCppFncClass, *lSatzNr);
+* iStat = FillBlc_LoadAllFromCsv ( iKey, *oCppTypClass, *oCppFncClass, *lSatzNr);
 *
 * More Comment
 *
@@ -258,7 +224,7 @@ int sstCpp01_CsvLib_FillBlc_Write (int               iKey,
 * @date 02.08.17
 */
 //==============================================================================
-int sstCpp01_CsvLib_FillBlc_Number (int               iKey,
+int FillBlc_LoadAllFromCsv (int               iKey,
 //                              sstStr01Cls      *oFormatInfo,
                               sstCpp01_Class_Cls *oCppTypClass,
                               sstCpp01_Class_Cls *oCppFncClass,
@@ -266,7 +232,7 @@ int sstCpp01_CsvLib_FillBlc_Number (int               iKey,
 //==============================================================================
 /**
 * @brief // Write Code Block for function -getNumber- <BR>
-* iStat = sstCpp01_CsvLib_FillBlc_Number ( iKey, *oCppTypClass, *oCppFncClass, *lSatzNr);
+* iStat = FillBlc_LoadAllFromCsv ( iKey, *oCppTypClass, *oCppFncClass, *lSatzNr);
 *
 * More Comment
 *
@@ -289,15 +255,15 @@ int sstCpp01_CsvLib_FillBlc_Number (int               iKey,
 * @date 02.08.17
 */
 //==============================================================================
-int sstCpp01_CsvLib_FillBlc_StrNam (int               iKey,
+int FillBlc_SaveAllToCsv (int               iKey,
 //                              sstStr01Cls      *oFormatInfo,
                               sstCpp01_Class_Cls *oCppTypClass,
                               sstCpp01_Class_Cls *oCppFncClass,
                               dREC04RECNUMTYP  *lSatzNr);
 //==============================================================================
 /**
-* @brief // Write Code Block for function -getNumber- <BR>
-* iStat = sstCpp01_CsvLib_FillBlc_Number ( iKey, *oCppTypClass, *oCppFncClass, *lSatzNr);
+* @brief // Write Code Block for function -Count- <BR>
+* iStat = FillBlc_Count ( iKey, *oCppFncClass, *lSatzNr);
 *
 * More Comment
 *
@@ -306,7 +272,6 @@ int sstCpp01_CsvLib_FillBlc_StrNam (int               iKey,
 * @ingroup sstCpp01Lib
 *
 * @param iKey         [in] For the moment 0
-* @param oCppTypClass [in] oCppTypClass
 * @param oCppFncClass [in] oCppFncClass
 * @param lSatzNr      [in] lSatzNr
 *
@@ -320,29 +285,23 @@ int sstCpp01_CsvLib_FillBlc_StrNam (int               iKey,
 * @date 02.08.17
 */
 //==============================================================================
-int sstCpp01_CsvLib_FillBlc_StrTyp (int               iKey,
-//                              sstStr01Cls      *oFormatInfo,
-                              sstCpp01_Class_Cls *oCppTypClass,
+int FillBlc_Count (int               iKey,
                               sstCpp01_Class_Cls *oCppFncClass,
                               dREC04RECNUMTYP  *lSatzNr);
 //==============================================================================
-//==============================================================================
 /**
-* @brief // Create sstStr01Cls.Read code row <BR>
-* iStat = sstCpp01_CsvLib_CreatePrtStrRd ( iKey, cFrontTxt, *oCppCls, cEleNam, cEleNamLen, *sBlcTxt);
+* @brief // Write Code Block for function -Read- <BR>
+* iStat = FillBlc_Read ( iKey, *oCppFncClass, *lSatzNr);
 *
 * More Comment
 *
-* Changed: 10.08.16  Re.
+* Changed: 02.08.17  Re.
 *
-* @ingroup sstCpp01InternLib
+* @ingroup sstCpp01Lib
 *
-* @param iKey [in] For the moment 0
-* @param cFrontTxt [in] For the moment 0
-* @param oCppCls [in] For the moment 0
-* @param cEleNam [in] cEleNam
-* @param cEleNamLen [in] cEleNamLen
-* @param sBlcTxt [out] Result sBlcTxt
+* @param iKey         [in] For the moment 0
+* @param oCppFncClass [in] oCppFncClass
+* @param lSatzNr      [in] lSatzNr
 *
 * @return Errorstate
 *
@@ -351,51 +310,26 @@ int sstCpp01_CsvLib_FillBlc_StrTyp (int               iKey,
 *
 * @author Re.
 *
-* @date 10.08.16
+* @date 02.08.17
 */
-//------------------------------------------------------------------------------
-int sstCpp01_CsvLib_CreatePrtStrRd (int               iKey,
-                               std::string      cFrontTxt,
-                               sstCpp01_Class_Cls *oCppCls,
-                               std::string      cEleNam,
-                               std::string      cEleNamLen,
-                               std::string      *sBlcTxt);
 //==============================================================================
-/**
-* @brief // Create sstStr01Cls.write code row <BR>
-* iStat = sstCpp01_CsvLib_CreatePrtStrWr ( iKey, cFrontTxt, *oCppCls, *oTypDef, *sBlcTxt);
-*
-* More Comment
-*
-* Changed: 10.08.16  Re.
-*
-* @ingroup sstCpp01InternLib
-*
-* @param iKey [in] For the moment 0
-* @param cFrontTxt [in] cFrontTxt
-* @param oCppCls [in] oCppCls
-* @param oTypDef [in] oTypDef
-* @param sBlcTxt [out] Result sBlcTxt
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 10.08.16
-*/
-//------------------------------------------------------------------------------
-int sstCpp01_CsvLib_CreatePrtStrWr (int                iKey,
-                               std::string        cFrontTxt,
-                               sstCpp01_Class_Cls  *oCppCls,
-                               sstStr01VarDefCls *oTypDef,
-//                               std::string       *sVonStr,
-//                               std::string       *sBisStr,
-                               std::string       *sBlcTxt);
-
-
+int FillBlc_Read (int               iKey,
+                              sstCpp01_Class_Cls *oCppFncClass,
+                              dREC04RECNUMTYP  *lSatzNr);
+//==============================================================================
+int FillBlc_Write (int               iKey,
+                              sstCpp01_Class_Cls *oCppFncClass,
+                              dREC04RECNUMTYP  *lSatzNr);
+//==============================================================================
+int FillBlc_DatabaseRead (int                  iKey,
+                          sstStr01VarDefCls    oClsMemDef,
+                          sstCpp01_Class_Cls  *oCppFncClass,
+                          dREC04RECNUMTYP     *lSatzNr);
+//==============================================================================
+int FillBlc_DatabaseWrite (int                  iKey,
+                           sstStr01VarDefCls    oClsMemDef,
+                           sstCpp01_Class_Cls  *oCppFncClass,
+                           dREC04RECNUMTYP     *lSatzNr);
 //==============================================================================
 /**
 * @brief // Shortstory <BR>

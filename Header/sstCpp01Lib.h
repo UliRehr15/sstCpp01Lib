@@ -137,6 +137,9 @@ class sstCpp01_ClsFnc_Cls
 {
   public:
      sstCpp01_ClsFnc_Cls();  // Constructur
+     bool getIsConstFunc() const;
+     void setIsConstFunc(bool value);
+
      sstStr01VarType_enum      eCppType;                  /**< Return type of function      */
      sstCpp01_ClassType_enum eClsVisiTyp;                       /**< public, protected or private */
      char              cClsNam[dSST_STR01_VAR_NAM_LEN];   /**< Class Name         */
@@ -146,7 +149,9 @@ class sstCpp01_ClsFnc_Cls
      char              cFncCom[dCPPFILROWLENGTH];         /**< Function Comment   */
      long              lBlcStart;                         /**< lBlcStart in Codeblock Table   */
      long              lBlcRows;                          /**< lBlcRows in Codeblock Table    */
-  private:
+
+private:
+     bool              bIsConstFunc;                      /**< Is a const function    */
 };
 //==============================================================================
 /**
@@ -167,7 +172,7 @@ class sstCpp01_ClsFnc_Cls
 // ----------------------------------------------------------------------------
 class sstCpp01_Class_Cls
 {
-  public:   // Öffentliche Funktionen
+  public:   // public functions
   // sstCpp01_Class_Cls(): ClsTypDsVerw(sstCpp01_ClsTyp_Cls),ClsFncDsVerw(sstCpp01_ClsFnc_Cls),ClsBlcDsVerw(sstMisc01AscRowCls);  // Konstruktor
   sstCpp01_Class_Cls();  // Konstruktor
 //     int GetDate(int iKey, StrDS1_stru *sDateStr);
@@ -363,6 +368,24 @@ class sstCpp01_Class_Cls
      // ----------------------------------------------------------------------------
      int writeBlcRow(int iKey, dREC04RECNUMTYP *lSatzNr , const std::string sRowStr);
      //==============================================================================
+     /**
+     * @brief // Set QT MOC Macro into Class Header <BR>
+     * oCppClass.setQtMocMacroStr( oQtMocMacroStr);
+     *
+     * @param value [in] QT Moc Macro string like Q_OBJECT
+     */
+     // ----------------------------------------------------------------------------
+     void setQtMocMacroStr(const std::string &value);
+     //==============================================================================
+     /**
+     * @brief // return Qt Moc Macro Str <BR>
+     * sExtBaseCls = oCppClass.getQtMocMacroStr();
+     *
+     * @retval   = string with Qt Moc Macro like Q_OBJECT
+     */
+     // ----------------------------------------------------------------------------
+     std::string getQtMocMacroStr() const;
+     //==============================================================================
 
      sstRec04Cls  *ClsTypDsVerw;   /**< table with all type definitions */
      sstRec04Cls  *ClsFncDsVerw;   /**< Table with for all function definitions */
@@ -371,9 +394,12 @@ class sstCpp01_Class_Cls
      char cSysNam[dSST_STR01_VAR_NAM_LEN];  /**< System (parent) name of class, for example dxf, csv, ...  */
      char cGrpNam[dSST_STR01_VAR_NAM_LEN];  /**< Function Group name of class, for example typ, fnc   */
 
+
+
 private:  // Private Funktionen
-     std::string sDateStr;     // Write Date in generating header and class file
-     std::string sExtBaseCls;  // Extern Base Class Name
+     std::string sDateStr;        // Write Date in generating header and class file
+     std::string sExtBaseCls;     // Extern Base Class Name
+     std::string oQtMocMacroStr;  // Like O_OBJECT for inserting into Class header
 };
 
 //==============================================================================
@@ -561,6 +587,12 @@ int sstCpp01_Cls_WrtInc (int                   iKey,
                          sstMisc01AscFilCls   *sExpFile,
                          sstCpp01_Class_Cls   *oCppClass,
                          std::string     oAddFilNamList);
+//==============================================================================
+// iStat = sstCpp01_Hed_wrt_inc( iKey, &oHedFil, oAddFilNamList);
+//==============================================================================
+int sstCpp01_Hed_wrt_inc(int                  iKey,
+                         sstMisc01AscFilCls  *oHedFil,
+                         std::string          oAddFilNamList);
 //==============================================================================
 /**
 * @brief // sstCpp01_Hed_wrt_defgroup <BR>

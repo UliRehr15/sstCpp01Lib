@@ -52,16 +52,20 @@ SOURCES       = sstQtDxf01TabMdlLine.cpp \
 		sstQtDxf01TabMdlPoint.cpp \
 		sstQtDxf01TabMdlCircle.cpp \
 		sstQtDxf01TabMdlMText.cpp \
+		sstQtDxf01TabMdlText.cpp \
 		dialog.cpp \
 		sst_generate_qttab_test.cpp \
-		sst_generate_qttab_view.cpp moc_sstQtDxf01TabTest.cpp
+		sst_generate_qttab_view.cpp moc_sstQtDxf01Lib.cpp \
+		moc_sstQtDxf01TabTest.cpp
 OBJECTS       = sstQtDxf01TabMdlLine.o \
 		sstQtDxf01TabMdlPoint.o \
 		sstQtDxf01TabMdlCircle.o \
 		sstQtDxf01TabMdlMText.o \
+		sstQtDxf01TabMdlText.o \
 		dialog.o \
 		sst_generate_qttab_test.o \
 		sst_generate_qttab_view.o \
+		moc_sstQtDxf01Lib.o \
 		moc_sstQtDxf01TabTest.o
 DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -121,11 +125,12 @@ DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/lex.prf \
-		sst_generate_qttab_test.pro sstDxf03QtTabLib.h \
+		sst_generate_qttab_test.pro sstQtDxf01Lib.h \
 		sstQtDxf01TabTest.h sstQtDxf01TabMdlLine.cpp \
 		sstQtDxf01TabMdlPoint.cpp \
 		sstQtDxf01TabMdlCircle.cpp \
 		sstQtDxf01TabMdlMText.cpp \
+		sstQtDxf01TabMdlText.cpp \
 		dialog.cpp \
 		sst_generate_qttab_test.cpp \
 		sst_generate_qttab_view.cpp
@@ -298,8 +303,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents sstDxf03QtTabLib.h sstQtDxf01TabTest.h $(DISTDIR)/
-	$(COPY_FILE) --parents sstQtDxf01TabMdlLine.cpp sstQtDxf01TabMdlPoint.cpp sstQtDxf01TabMdlCircle.cpp sstQtDxf01TabMdlMText.cpp dialog.cpp sst_generate_qttab_test.cpp sst_generate_qttab_view.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents sstQtDxf01Lib.h sstQtDxf01TabTest.h $(DISTDIR)/
+	$(COPY_FILE) --parents sstQtDxf01TabMdlLine.cpp sstQtDxf01TabMdlPoint.cpp sstQtDxf01TabMdlCircle.cpp sstQtDxf01TabMdlMText.cpp sstQtDxf01TabMdlText.cpp dialog.cpp sst_generate_qttab_test.cpp sst_generate_qttab_view.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -322,13 +327,51 @@ check: first
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all: moc_sstQtDxf01TabTest.cpp
+compiler_moc_header_make_all: moc_sstQtDxf01Lib.cpp moc_sstQtDxf01TabTest.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_sstQtDxf01TabTest.cpp
+	-$(DEL_FILE) moc_sstQtDxf01Lib.cpp moc_sstQtDxf01TabTest.cpp
+moc_sstQtDxf01Lib.cpp: ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		sstDxf03TypLib.h \
+		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
+		sstQtDxf01Lib.h
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/uli-le/Entwicklung/sstCpp01Lib/sst_generate_qttab_lib -I/home/uli-le/Entwicklung/sstQtDxf01Lib/Header -I/home/uli-le/Entwicklung/sst_dxf03_lib/Header -I/home/uli-le/Entwicklung/sstQt01Lib/Header -I/home/uli-le/Entwicklung/sst_rec04_lib/Header -I/home/uli-le/Entwicklung/sst_misc01_lib/Header -I/home/uli-le/Entwicklung/sstMath01Lib/Header -I/home/uli-le/Entwicklung/sst_str01_lib/Header -I/home/uli-le/Entwicklung/sstLibreCAD2Lib/Header -I/home/uli-le/Entwicklung/dxflib/Header -I/home/uli-le/Entwicklung/sstCpp01Lib/Header -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/5 -I/usr/include/i386-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/i686-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/5/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include sstQtDxf01Lib.h -o moc_sstQtDxf01Lib.cpp
+
 moc_sstQtDxf01TabTest.cpp: ../../sst_str01_lib/Header/sstStr01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
+		sstQtDxf01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		sstDxf03TypLib.h \
+		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
 		sstQtDxf01TabTest.h
 	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/uli-le/Entwicklung/sstCpp01Lib/sst_generate_qttab_lib -I/home/uli-le/Entwicklung/sstQtDxf01Lib/Header -I/home/uli-le/Entwicklung/sst_dxf03_lib/Header -I/home/uli-le/Entwicklung/sstQt01Lib/Header -I/home/uli-le/Entwicklung/sst_rec04_lib/Header -I/home/uli-le/Entwicklung/sst_misc01_lib/Header -I/home/uli-le/Entwicklung/sstMath01Lib/Header -I/home/uli-le/Entwicklung/sst_str01_lib/Header -I/home/uli-le/Entwicklung/sstLibreCAD2Lib/Header -I/home/uli-le/Entwicklung/dxflib/Header -I/home/uli-le/Entwicklung/sstCpp01Lib/Header -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/5 -I/usr/include/i386-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/i686-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/5/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include sstQtDxf01TabTest.h -o moc_sstQtDxf01TabTest.cpp
 
@@ -363,6 +406,7 @@ sstQtDxf01TabMdlLine.o: sstQtDxf01TabMdlLine.cpp ../../sst_str01_lib/Header/sstS
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
+		sstDxf03TypLib.h \
 		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
 		sstQtDxf01Lib.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabMdlLine.o sstQtDxf01TabMdlLine.cpp
@@ -384,6 +428,7 @@ sstQtDxf01TabMdlPoint.o: sstQtDxf01TabMdlPoint.cpp ../../sst_str01_lib/Header/ss
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
+		sstDxf03TypLib.h \
 		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
 		sstQtDxf01Lib.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabMdlPoint.o sstQtDxf01TabMdlPoint.cpp
@@ -405,6 +450,7 @@ sstQtDxf01TabMdlCircle.o: sstQtDxf01TabMdlCircle.cpp ../../sst_str01_lib/Header/
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
+		sstDxf03TypLib.h \
 		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
 		sstQtDxf01Lib.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabMdlCircle.o sstQtDxf01TabMdlCircle.cpp
@@ -426,14 +472,53 @@ sstQtDxf01TabMdlMText.o: sstQtDxf01TabMdlMText.cpp ../../sst_str01_lib/Header/ss
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
+		sstDxf03TypLib.h \
 		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
 		sstQtDxf01Lib.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabMdlMText.o sstQtDxf01TabMdlMText.cpp
 
-dialog.o: dialog.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+sstQtDxf01TabMdlText.o: sstQtDxf01TabMdlText.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		sstDxf03TypLib.h \
+		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
+		sstQtDxf01Lib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabMdlText.o sstQtDxf01TabMdlText.cpp
+
+dialog.o: dialog.cpp ../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
+		sstDxf03TypLib.h \
+		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
+		sstQtDxf01Lib.h \
 		sstQtDxf01TabTest.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dialog.o dialog.cpp
 
@@ -453,18 +538,38 @@ sst_generate_qttab_test.o: sst_generate_qttab_test.cpp ../../dxflib/Header/dl_dx
 		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		sstDxf03TypLib.h \
 		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
 		sstQtDxf01Lib.h \
 		sstQtDxf01TabTest.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sst_generate_qttab_test.o sst_generate_qttab_test.cpp
 
-sst_generate_qttab_view.o: sst_generate_qttab_view.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+sst_generate_qttab_view.o: sst_generate_qttab_view.cpp ../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
+		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
+		sstQtDxf01Lib.h \
+		sstDxf03TypLib.h \
 		sstQtDxf01TabTest.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sst_generate_qttab_view.o sst_generate_qttab_view.cpp
+
+moc_sstQtDxf01Lib.o: moc_sstQtDxf01Lib.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_sstQtDxf01Lib.o moc_sstQtDxf01Lib.cpp
 
 moc_sstQtDxf01TabTest.o: moc_sstQtDxf01TabTest.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_sstQtDxf01TabTest.o moc_sstQtDxf01TabTest.cpp

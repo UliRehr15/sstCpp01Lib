@@ -43,12 +43,23 @@ sstCpp01_ClsFnc_Cls::sstCpp01_ClsFnc_Cls()
   memset(this->cRetNam,0,sizeof(this->cRetNam));
   memset(this->cFncPar,0,sizeof(this->cFncPar));
   memset(this->cFncCom,0,sizeof(this->cFncCom));
+  this->bIsConstFunc = false;
+}
+//=============================================================================
+bool sstCpp01_ClsFnc_Cls::getIsConstFunc() const
+{
+    return bIsConstFunc;
+}
+//=============================================================================
+void sstCpp01_ClsFnc_Cls::setIsConstFunc(bool value)
+{
+    bIsConstFunc = value;
 }
 //=============================================================================
 sstCpp01_Class_Cls::sstCpp01_Class_Cls()
 {
-  this->ClsBlcDsVerw = NULL;
-  this->ClsFncDsVerw = NULL;
+    this->ClsBlcDsVerw = NULL;
+    this->ClsFncDsVerw = NULL;
   this->ClsTypDsVerw = NULL;
   memset(this->cClsNam,0,sizeof(this->cClsNam));
   memset(this->cSysNam,0,sizeof(this->cSysNam));
@@ -181,6 +192,16 @@ int sstCpp01_Class_Cls::writeBlcRow(int iKey, dREC04RECNUMTYP *lSatzNr, const st
   sBlcRow.setRow(sRowStr);
   iStat = this->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
   return iStat;
+}
+//=============================================================================
+void sstCpp01_Class_Cls::setQtMocMacroStr(const std::string &value)
+{
+    oQtMocMacroStr = value;
+}
+//=============================================================================
+std::string sstCpp01_Class_Cls::getQtMocMacroStr() const
+{
+  return oQtMocMacroStr;
 }
 //=============================================================================
 sstCpp01_FilRowCls::sstCpp01_FilRowCls()
@@ -609,6 +630,54 @@ int sstCpp01_Hed_wrt_class_info (int             iKey,
   return iRet;
 }
 //=============================================================================
+int sstCpp01_Hed_wrt_inc(int                  iKey,
+                         sstMisc01AscFilCls  *oHedFil,
+                         std::string          oAddFilNamList)
+{
+  if ( iKey != 0) return -1;
+
+  std::string sFilRow;
+  int iStat = 0;
+
+  iStat = oHedFil->wr_txt(0, (char*)" ");
+  iStat = oHedFil->wr_txt(0, (char*)"#include <stdio.h>");
+  iStat = oHedFil->wr_txt(0, (char*)"#include <stdlib.h>");
+  iStat = oHedFil->wr_txt(0, (char*)"#include <string.h>");
+  iStat = oHedFil->wr_txt(0, (char*)"#include <assert.h>");
+  iStat = oHedFil->wr_txt(0, (char*)" ");
+  iStat = oHedFil->wr_txt(0, (char*)"#include <string>");
+  iStat = oHedFil->wr_txt(0, (char*)" ");
+  iStat = oHedFil->wr_txt(0, (char*)"#include <sstStr01Lib.h>");
+  iStat = oHedFil->wr_txt(0, (char*)"#include <sstMath01Lib.h>");
+  iStat = oHedFil->wr_txt(0, (char*)"#include <sstMisc01Lib.h>");
+  iStat = oHedFil->wr_txt(0, (char*)"#include <sstRec04Lib.h>");
+  iStat = oHedFil->wr_txt(0, (char*)" ");
+
+  if (oAddFilNamList.length() > 0)
+  {  // Add more Include-Files
+
+    sstStr01Cls oStrCnvt;
+    std::string oLocFilNam;
+    int iStat1 = 0;
+
+    iStat1 = oStrCnvt.CsvString2_Str ( 0, &oAddFilNamList, &oLocFilNam);
+
+    while (iStat1 >= 0)
+    {
+      // Write Casc-Line-Object to Casc-File.
+      sFilRow = "#include <";
+      sFilRow = sFilRow + oLocFilNam;
+      sFilRow = sFilRow + ">";
+      iStat = oHedFil->Wr_StrDS1( 0, &sFilRow);
+
+      iStat1 = oStrCnvt.CsvString2_Str ( 0, &oAddFilNamList, &oLocFilNam);
+    }
+    iStat = oHedFil->wr_txt(0, (char*)" ");
+
+  }
+  return iStat;
+}
+//=============================================================================
 int sstCpp01_Hed_wrt_defgroup (int                 iKey,
                                sstMisc01AscFilCls *sExpFile,
                                std::string         cGrpNam)
@@ -705,6 +774,12 @@ int sstCpp01_Hed_wrt_class (int               iKey,
 
   iStat = sExpFile->wr_txt( 0, (char*)"{");
 
+  // Write Qt Moc Macro Str to Class header
+  if (oCppCls->getQtMocMacroStr().length() > 0)
+  {
+    sExpFile->Wr_String(0,"  " + oCppCls->getQtMocMacroStr());
+  }
+
   // Get number of stored class functions ( include constructor)
   lFuncNum = oCppCls->ClsFncDsVerw->count();
 
@@ -785,7 +860,15 @@ int sstCpp01_Hed_wrt_class (int               iKey,
     sFilRow = sFilRow + oCppClsFnc.cFncNam;  // Name of Function
     sFilRow = sFilRow + "(";
     sFilRow = sFilRow + oCppClsFnc.cFncPar;  // List of parameters
-    sFilRow = sFilRow + "); ";
+    sFilRow = sFilRow + ")";
+
+    if (oCppClsFnc.getIsConstFunc())
+    {
+      sFilRow = sFilRow + " const";
+    }
+    sFilRow = sFilRow + ";";
+
+    // Write comment information, if possible
     if (strlen(oCppClsFnc.cFncCom) > 0)  // Comment
     {
       sFilRow = sFilRow + "// ";
@@ -794,6 +877,7 @@ int sstCpp01_Hed_wrt_class (int               iKey,
     iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
   }
 
+  //---------------------------------------------------------------------------
   // write all type definitions to header file
   for (dREC04RECNUMTYP ii=1; ii <= lClsTypNum; ii++)
   {
@@ -957,6 +1041,12 @@ int sstCpp01_WrtCls (int                 iKey,
   sFilRow = sFilRow + "(";
   sFilRow = sFilRow + oCppClsFnc->cFncPar;
   sFilRow = sFilRow + ")";
+
+  // is const function ?
+  if (oCppClsFnc->getIsConstFunc())
+  {
+      sFilRow = sFilRow + " const";
+  }
   iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
 
   // iStat = casc_wr_txt ( 0, sExpFile, (char*)"{");

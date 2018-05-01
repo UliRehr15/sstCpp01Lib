@@ -4,7 +4,6 @@ CONFIG    -= qt
 CONFIG    -= windows
 CONFIG    += c++11
 
-
 # CONFIG    -= debug  # ist RELEASE aktiv
 CONFIG    -= release  # ist DEBUG aktiv
 
@@ -40,7 +39,12 @@ HEADERS   += sst_generate_typ_lib.h
 SOURCES		+= sst_generate_typ_lib.cpp \
              sst_generate_typ1.cpp
 
-TARGET = ss_generate_typ_lib
+TARGET = sst_generate_typ_lib
+
+# copy to deployment directory
+# DESTDIR     = ../../../../local_deploy
+
+
 # DESTDIR     = ../libs
 
 

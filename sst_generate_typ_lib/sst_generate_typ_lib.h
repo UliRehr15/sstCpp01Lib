@@ -20,20 +20,80 @@
 
 // Prototypen datei.c ----------------------------------------------------------
 
+////==============================================================================
+///**
+//* @brief Definition Class sstCppTypDefTabCls
+//*
+//* More Comment
+//*
+//* Changed: 19.02.10  Re.
+//*
+//* @ingroup examples
+//*
+//* @author Re.
+//*
+//* @date 19.02.10
+//*/
+//// ----------------------------------------------------------------------------
+//class sstCppTypDefTabCls
+//{
+//  public:   // Public functions
+//     sstCppTypDefTabCls(sstMisc01PrtFilCls *oSstPrt);   // Constructor
+//    ~sstCppTypDefTabCls();   // Destructor
+//     //==============================================================================
+//     /**
+//     * @brief // Shortstory <BR>
+//     * iStat = oTest =  Func_1( iKey);
+//     *
+//     * @param iKey [in] For the moment 0
+//     *
+//     * @return Errorstate
+//     *
+//     * @retval   = 0: OK
+//     * @retval   < 0: Unspecified Error
+//     */
+//     // ----------------------------------------------------------------------------
+//int LoadTypDefFromFile (int iKey, const std::string sTypDefFilNam);
+////==============================================================================
+///**
+//* @brief // Shortstory <BR>
+//* iStat = oTest =  Func_1( iKey);
+//*
+//* @param iKey [in] For the moment 0
+//*
+//* @return Errorstate
+//*
+//* @retval   = 0: OK
+//* @retval   < 0: Unspecified Error
+//*/
+//// ----------------------------------------------------------------------------
+//std::string getSysNam() const;
+////==============================================================================
+//dREC04RECNUMTYP count();
+//int Read(int iKey, dREC04RECNUMTYP dRecNo, void *vRecAdr);
+
+
+//private:  // Private functions
+//  sstRec04Cls  *DsVerw;   /**< sst Record Table storage */
+//  std::string  sSysNam;   /**< System Name (System Name of last TypeDef Record) */
+//  sstMisc01PrtFilCls *poPrt;
+//};
+////-----------------------------------------------------------------------------
+
 
 //==============================================================================
 /**
-* @brief Definition Class X
+* @brief Definition Class sstCppGenTypLibCls
 *
 * More Comment
 *
-* Changed: 19.02.10  Re.
+* Changed: 05.04.18  Re.
 *
-* @ingroup examples
+* @ingroup sstCpp01Lib
 *
 * @author Re.
 *
-* @date 19.02.10
+* @date 05.04.18
 */
 // ----------------------------------------------------------------------------
 class sstCppGenTypLibCls
@@ -42,36 +102,6 @@ class sstCppGenTypLibCls
      sstCppGenTypLibCls();   // Constructor
    // ~sstCppGenTypLibCls();   // Destructor
 
-//==============================================================================
-/**
-* @brief // Write CSV Type classes to type header and type class file <BR>
-* iStat = sstcsv_FilWrtClsTypOpen ( iKey, *DsVerw, sSysNam, sDateStr);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey     [in] For the moment 0
-* @param DsVerw   [in] sst table with var def types
-* @param sSysNam  [in] System Name
-* @param sDateStr [in] Code Generation Date
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sstcsv_FilWrtClsTypOpen (int          iKey,
-                             sstRec04Cls *DsVerw,
-                             std::string  sSysNam,
-                             std::string  sDateStr);
 //==============================================================================
 /**
 * @brief // Write CSV Type classes to system header and type class file <BR>
@@ -106,36 +136,6 @@ int sstcsv_FilWrtClsTypOpen2 (int          iKey,
 //==============================================================================
 /**
 * @brief // sst_WrtClsData_inPipe_toFilesT <BR>
-* iStat = sst_WrtClsData_inPipe_toFilesT ( iKey, *sHedFil, *sClsFil, *oCppTypClass);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey         [in] For the moment 0
-* @param sHedFil      [in] sHedFil
-* @param sClsFil      [in] sClsFil
-* @param oCppTypClass [in] oCppTypClass
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sst_WrtClsData_inPipe_toFilesT (int                   iKey,
-                                    sstMisc01AscFilCls   *sHedFil,
-                                    // sstMisc01AscFilCls   *sClsFil,
-                                    sstCpp01_Class_Cls     *oCppTypClass);
-//==============================================================================
-/**
-* @brief // sst_WrtClsData_inPipe_toFilesT <BR>
 * iStat = sst_WrtClsData_inPipe_toFilesT ( iKey, *sHedFil, *sClsFil, sGrpNam, *oCppTypClass);
 *
 * More Comment
@@ -165,47 +165,6 @@ int sst_WrtClsData_inPipe_toFilesT2 (int                    iKey,
                                     // sstMisc01AscFilCls     *sClsFil,
                                     std::string             sGrpNam,
                                     sstCpp01_Class_Cls     *oCppTypClass);
-//==============================================================================
-
-int sstCpp01_CsvLib_FillBlc_rowCount (int               iKey,
-                             // sstStr01Cls *oFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-
-int sstCpp01_CsvLib_FillBlc_columnCount (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-
-int sstCpp01_CsvLib_FillBlc_data (int               iKey,
-                             sstStr01Cls *poFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-
-int sstCpp01_CsvLib_FillBlc_HeaderData (int               iKey,
-                                        sstStr01Cls *poFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
-                             sstStr01Cls *poFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_flags (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_removeRows (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_insertRows (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
 //==============================================================================
 /**
 * @brief // Write CSV_Read Code block to code table <BR>
@@ -364,7 +323,6 @@ int sstCpp01_CsvLib_FillBlc_StrTyp (int               iKey,
                               sstCpp01_Class_Cls *oCppFncClass,
                               dREC04RECNUMTYP  *lSatzNr);
 //==============================================================================
-//==============================================================================
 /**
 * @brief // Create sstStr01Cls.Read code row <BR>
 * iStat = sstCpp01_CsvLib_CreatePrtStrRd ( iKey, cFrontTxt, *oCppCls, cEleNam, cEleNamLen, *sBlcTxt);
@@ -455,7 +413,7 @@ int sstCpp01_CsvLib_CreatePrtStrWr (int                iKey,
   std::string getGrpNam() const;
 
 private:  // Private functions
-  int Dum;        /**< Dummy */
+  // int Dum;        /**< Dummy */
   std::string sGrpNam;  /**< Group Name like typ, fnc or qttab */
 };
 //-----------------------------------------------------------------------------

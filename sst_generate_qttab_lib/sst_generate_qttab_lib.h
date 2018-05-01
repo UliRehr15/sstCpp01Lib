@@ -19,321 +19,268 @@
 
 
 // Prototypen datei.c ----------------------------------------------------------
-//==============================================================================
-/**
-* @brief // Write CSV Type classes to type header and type class file <BR>
-* iStat = sstcsv_FilWrtClsTypOpen ( iKey, *DsVerw, sSysNam, sDateStr);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey     [in] For the moment 0
-* @param DsVerw   [in] sst table with var def types
-* @param sSysNam  [in] System Name
-* @param sDateStr [in] Code Generation Date
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sstcsv_FilWrtClsTypOpen (int          iKey,
-                             sstRec04Cls *DsVerw,
-                             std::string  sSysNam,
-                             std::string  sDateStr);
-//==============================================================================
-/**
-* @brief // Write CSV Type classes to system header and type class file <BR>
-* iStat = sstcsv_FilWrtClsTypOpen2 ( iKey, *DsVerw, sSysNam, sDateStr);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey     [in] For the moment 0
-* @param DsVerw   [in] sst table with var def types
-* @param sSysNam  [in] System Name
-* @param sDateStr [in] Code Generation Date
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sstcsv_FilWrtClsTypOpen2 (int          iKey,
-                              sstRec04Cls *DsVerw,
-                              std::string  sSysNam,
-                              std::string  sDateStr);
-//==============================================================================
-/**
-* @brief // Write CSV Function classes to fnc header and fnc class file
-* iStat = sstcsv_FilWrtClsFncOpen ( iKey, *DsVerw, sSysNam, sDateStr);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey     [in] For the moment 0
-* @param DsVerw   [in] sst table with var def types
-* @param sSysNam  [in] System Name
-* @param sDateStr [in] Code Generation date
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sstcsv_FilWrtClsFncOpen (int          iKey,
-                             sstRec04Cls *DsVerw,
-                             std::string  sSysNam,
-                             std::string  sDateStr);
-//==============================================================================
-/**
-* @brief // Write CSV Function classes to system header and fnc class file
-* iStat = sstcsv_FilWrtClsFncOpen2 ( iKey, *DsVerw, sSysNam, sDateStr);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey     [in] For the moment 0
-* @param DsVerw   [in] sst table with var def types
-* @param sSysNam  [in] System Name
-* @param sDateStr [in] Code Generation date
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sstcsv_FilWrtClsFncOpen2 (int          iKey,
-                              sstRec04Cls *DsVerw,
-                              std::string  sSysNam,
-                              std::string  sDateStr);
-//==============================================================================
-/**
-* @brief // Write CSV Function classes to system header and fnc class file
-* iStat = sstcsv_FilWrtClsFncOpen2 ( iKey, *DsVerw, sSysNam, sDateStr);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey     [in] For the moment 0
-* @param DsVerw   [in] sst table with var def types
-* @param sSysNam  [in] System Name
-* @param sDateStr [in] Code Generation date
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sstcsv_FilWrtClsFncOpen3 (int          iKey,
-                              sstRec04Cls *DsVerw,
-                              std::string  sSysNam,
-                              std::string  sDateStr);
-//==============================================================================
-/**
-* @brief // sst_WrtClsData_inPipe_toFilesT <BR>
-* iStat = sst_WrtClsData_inPipe_toFilesT ( iKey, *sHedFil, *sClsFil, *oCppTypClass);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey         [in] For the moment 0
-* @param sHedFil      [in] sHedFil
-* @param sClsFil      [in] sClsFil
-* @param oCppTypClass [in] oCppTypClass
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sst_WrtClsData_inPipe_toFilesT (int                   iKey,
-                                    sstMisc01AscFilCls   *sHedFil,
-                                    // sstMisc01AscFilCls   *sClsFil,
-                                    sstCpp01_Class_Cls     *oCppTypClass);
-//==============================================================================
-/**
-* @brief // sst_WrtClsData_inPipe_toFilesF <BR>
-* iStat = sst_WrtClsData_inPipe_toFilesF ( iKey, &sHedFil, &sClsFil, &sGrpNam, &oCppTypClass);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey         [in] For the moment 0
-* @param sHedFil      [in] sHedFil
-* @param sClsFil      [in] sClsFil
-* @param sGrpNam      [in] sGrpNam
-* @param oCppTypClass [in] oCppTypClass
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sst_WrtClsData_inPipe_toFilesF (int                   iKey,
-                                    sstMisc01AscFilCls   *sHedFil,
-                                    // sstMisc01AscFilCls   *sClsFil,
-                                    std::string          *sGrpNam,
-                                    sstCpp01_Class_Cls     *oCppTypClass);
-//==============================================================================
-/**
-* @brief // sst_WrtClsData_inPipe_toFilesT <BR>
-* iStat = sst_WrtClsData_inPipe_toFilesT ( iKey, *sHedFil, *sClsFil, *oCppTypClass);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey         [in] For the moment 0
-* @param sHedFil      [in] sHedFil
-* @param sClsFil      [in] sClsFil
-* @param oCppTypClass [in] oCppTypClass
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sst_WrtClsData_inPipe_toFilesT2 (int                   iKey,
-                                    sstMisc01AscFilCls   *sHedFil,
-                                    sstMisc01AscFilCls   *sClsFil,
-                                     std::string      sGrpNam,
-                                    sstCpp01_Class_Cls     *oCppTypClass);
-//==============================================================================
-/**
-* @brief // sst_WrtClsData_inPipe_toFilesF <BR>
-* iStat = sst_WrtClsData_inPipe_toFilesF ( iKey, &sHedFil, &sClsFil, &sGrpNam, &oCppTypClass);
-*
-* More Comment
-*
-* Changed: 09.08.16  Re.
-*
-* @ingroup sstRec04Lib
-*
-* @param iKey         [in] For the moment 0
-* @param sHedFil      [in] sHedFil
-* @param sClsFil      [in] sClsFil
-* @param sGrpNam      [in] sGrpNam
-* @param oCppTypClass [in] oCppTypClass
-*
-* @return Errorstate
-*
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
-*
-* @author Re.
-*
-* @date 09.08.16
-*/
-//------------------------------------------------------------------------------
-int sst_WrtClsData_inPipe_toFilesF2 (int                   iKey,
-                                    sstMisc01AscFilCls   *sHedFil,
-                                    sstMisc01AscFilCls   *sClsFil,
-                                    std::string          sGrpNam,
-                                    sstCpp01_Class_Cls     *oCppTypClass);
 
-int sstCpp01_CsvLib_FillBlc_rowCount (int               iKey,
-                             // sstStr01Cls *oFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
 
-int sstCpp01_CsvLib_FillBlc_columnCount (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
+//==============================================================================
+/**
+* @brief Definition Class sstCppGenQtTabLibCls
+*
+* More Comment
+*
+* Changed: 05.04.18  Re.
+*
+* @ingroup sstCpp01Lib
+*
+* @author Re.
+*
+* @date 05.04.18
+*/
+// ----------------------------------------------------------------------------
+class sstCppGenQtTabLibCls
+{
+  public:   // Public functions
+     sstCppGenQtTabLibCls();   // Constructor
+   // ~sstCppGenQtTabLibCls();   // Destructor
 
-int sstCpp01_CsvLib_FillBlc_data (int               iKey,
-                             sstStr01Cls *poFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
+     //==============================================================================
+     /**
+     * @brief // Write CSV Type classes to type header and type class file <BR>
+     * iStat = sstcsv_FilWrtClsTypOpen ( iKey, *DsVerw, sSysNam, sDateStr);
+     *
+     * More Comment
+     *
+     * Changed: 09.08.16  Re.
+     *
+     * @ingroup sstRec04Lib
+     *
+     * @param iKey     [in] For the moment 0
+     * @param DsVerw   [in] sst table with var def types
+     * @param sSysNam  [in] System Name
+     * @param sDateStr [in] Code Generation Date
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     *
+     * @author Re.
+     *
+     * @date 09.08.16
+     */
+     //------------------------------------------------------------------------------
+     int sstcsv_FilWrtClsTypOpen (int          iKey,
+                                  sstRec04Cls *DsVerw,
+                                  std::string  sSysNam,
+                                  std::string  sDateStr);
+     //==============================================================================
+     /**
+     * @brief // Write CSV Type classes to system header and type class file <BR>
+     * iStat = sstcsv_FilWrtClsTypOpen2 ( iKey, *DsVerw, sSysNam, sDateStr);
+     *
+     * More Comment
+     *
+     * Changed: 09.08.16  Re.
+     *
+     * @ingroup sstRec04Lib
+     *
+     * @param iKey     [in] For the moment 0
+     * @param DsVerw   [in] sst table with var def types
+     * @param sSysNam  [in] System Name
+     * @param sDateStr [in] Code Generation Date
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     *
+     * @author Re.
+     *
+     * @date 09.08.16
+     */
+     //------------------------------------------------------------------------------
+     int sstcsv_FilWrtClsTypOpen2 (int          iKey,
+                                   sstRec04Cls *DsVerw,
+                                   std::string  sSysNam,
+                                   std::string  sDateStr);
+     //==============================================================================
+     /**
+     * @brief // Write CSV Function classes to fnc header and fnc class file
+     * iStat = sstcsv_FilWrtClsFncOpen ( iKey, *DsVerw, sSysNam, sDateStr);
+     *
+     * More Comment
+     *
+     * Changed: 09.08.16  Re.
+     *
+     * @ingroup sstRec04Lib
+     *
+     * @param iKey     [in] For the moment 0
+     * @param DsVerw   [in] sst table with var def types
+     * @param sSysNam  [in] System Name
+     * @param sDateStr [in] Code Generation date
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     *
+     * @author Re.
+     *
+     * @date 09.08.16
+     */
+     //------------------------------------------------------------------------------
+     int sstcsv_FilWrtClsFncOpen (int          iKey,
+                                  sstRec04Cls *DsVerw,
+                                  std::string  sSysNam,
+                                  std::string  sDateStr);
+     //==============================================================================
+     /**
+     * @brief // Write CSV Function classes to system header and fnc class file
+     * iStat = sstcsv_FilWrtClsFncOpen2 ( iKey, *DsVerw, sSysNam, sDateStr);
+     *
+     * More Comment
+     *
+     * Changed: 09.08.16  Re.
+     *
+     * @ingroup sstRec04Lib
+     *
+     * @param iKey     [in] For the moment 0
+     * @param DsVerw   [in] sst table with var def types
+     * @param sSysNam  [in] System Name
+     * @param sDateStr [in] Code Generation date
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     *
+     * @author Re.
+     *
+     * @date 09.08.16
+     */
+     //------------------------------------------------------------------------------
+     int sstcsv_FilWrtClsFncOpen2 (int          iKey,
+                                   sstRec04Cls *DsVerw,
+                                   std::string  sSysNam,
+                                   std::string  sDateStr);
+     //==============================================================================
+     /**
+     * @brief // Write CSV Function classes to system header and fnc class file
+     * iStat = sstcsv_FilWrtClsFncOpen2 ( iKey, *DsVerw, sSysNam, sDateStr);
+     *
+     * More Comment
+     *
+     * Changed: 09.08.16  Re.
+     *
+     * @ingroup sstRec04Lib
+     *
+     * @param iKey     [in] For the moment 0
+     * @param DsVerw   [in] sst table with var def types
+     * @param sSysNam  [in] System Name
+     * @param sDateStr [in] Code Generation date
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     *
+     * @author Re.
+     *
+     * @date 09.08.16
+     */
+     //------------------------------------------------------------------------------
+     int sstcsv_FilWrtClsFncOpen3 (int          iKey,
+                                   sstCppTypDefTabCls *poTypDefTab,
+     //                              sstRec04Cls *DsVerw,
+                                   std::string  sSysNam,
+                                   std::string  sDateStr);
+     //==============================================================================
+     //==============================================================================
+     /**
+     * @brief // sst_WrtClsData_inPipe_toFilesF <BR>
+     * iStat = sst_WrtClsData_inPipe_toFilesF ( iKey, &sHedFil, &sClsFil, &sGrpNam, &oCppTypClass);
+     *
+     * More Comment
+     *
+     * Changed: 09.08.16  Re.
+     *
+     * @ingroup sstRec04Lib
+     *
+     * @param iKey         [in] For the moment 0
+     * @param sHedFil      [in] sHedFil
+     * @param sClsFil      [in] sClsFil
+     * @param sGrpNam      [in] sGrpNam
+     * @param oCppTypClass [in] oCppTypClass
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     *
+     * @author Re.
+     *
+     * @date 09.08.16
+     */
+     //------------------------------------------------------------------------------
+     int sst_WrtClsData_inPipe_toFilesF2 (int                   iKey,
+                                         sstMisc01AscFilCls   *sHedFil,
+                                         // sstMisc01AscFilCls   *sClsFil,
+                                         std::string          sGrpNam,
+                                         sstCpp01_Class_Cls     *oCppTypClass);
+     int sst_WrtBaseClsData (int               iKey,
+                                          sstMisc01AscFilCls   *sHedFil,
+                                          sstCpp01_Class_Cls *oCppTypClass);
 
-int sstCpp01_CsvLib_FillBlc_HeaderData (int               iKey,
-                                        sstStr01Cls *poFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_setData (int               iKey,
-                             sstStr01Cls *poFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_flags (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_removeRows (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
-int sstCpp01_CsvLib_FillBlc_insertRows (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr);
+
+     int FillBlc_rowCount (int               iKey,
+                                  // sstStr01Cls *oFormatInfo,
+                                  sstCpp01_Class_Cls *oCppTypClass,
+                                  sstCpp01_Class_Cls *oCppFncClass,
+                                  dREC04RECNUMTYP     *lSatzNr);
+
+     int FillBlc_columnCount (int               iKey,
+                                  sstCpp01_Class_Cls *oCppTypClass,
+                                  sstCpp01_Class_Cls *oCppFncClass,
+                                  dREC04RECNUMTYP     *lSatzNr);
+
+     int FillBlc_data (int               iKey,
+                                  sstStr01Cls *poFormatInfo,
+                                  sstCpp01_Class_Cls *oCppTypClass,
+                                  sstCpp01_Class_Cls *oCppFncClass,
+                                  dREC04RECNUMTYP     *lSatzNr);
+
+     int FillBlc_HeaderData (int               iKey,
+                                             sstStr01Cls *poFormatInfo,
+                                  sstCpp01_Class_Cls *oCppTypClass,
+                                  sstCpp01_Class_Cls *oCppFncClass,
+                                  dREC04RECNUMTYP     *lSatzNr);
+     int FillBlc_setData (int               iKey,
+                                  sstStr01Cls *poFormatInfo,
+                                  sstCpp01_Class_Cls *oCppTypClass,
+                                  sstCpp01_Class_Cls *oCppFncClass,
+                                  dREC04RECNUMTYP     *lSatzNr);
+     int FillBlc_flags (int               iKey,
+                                  sstCpp01_Class_Cls *oCppTypClass,
+                                  sstCpp01_Class_Cls *oCppFncClass,
+                                  dREC04RECNUMTYP     *lSatzNr);
+     int FillBlc_removeRows (int               iKey,
+                                  sstCpp01_Class_Cls *oCppTypClass,
+                                  sstCpp01_Class_Cls *oCppFncClass,
+                                  dREC04RECNUMTYP     *lSatzNr);
+     int FillBlc_insertRows (int               iKey,
+                                  sstCpp01_Class_Cls *oCppTypClass,
+                                  sstCpp01_Class_Cls *oCppFncClass,
+                                  dREC04RECNUMTYP     *lSatzNr);
+  void setGrpNam(const std::string &value);
+
+  std::string getGrpNam() const;
+
+  std::string GetDxfConstructStr(const std::string oClsNam);
+
+private:  // Private functions
+  std::string sGrpNam;     /**< Group Name like typ, fnc or qttab */
+  std::string oAddCsvIncStr;  /**< Csv List string with additional Include files names */
+};
+
 
 
 #endif

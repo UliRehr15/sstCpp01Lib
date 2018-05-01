@@ -9,6 +9,7 @@ Tool generates code for lib sst_str01_lib for import /export of csv data.
 record definition comes from file with type def data.
 
 - Tool Generate_Typ_Lib generates Record/Csv Objects from TypeDef File.
+- Tool Generate_Fnc_Lib generates Database Objects from TypeDef File.
 - Tool Generate_QtTab_Lib generates Qt Table Model Objects from TypeDef File.
 
 Structure of coding projects should be:
@@ -36,3 +37,6 @@ Versions <BR>
 20180323: Vers. 1.8: Small improvements in working with typeDef files. <BR>
 20180323: Vers. 1.9: New Table Class for storing TypeDef Records. <BR>
                      New Tool -Generate_Typ_Lib-, which generate record/csv objects code from TypeDef file. <BR>
+20180402: Vers. 1.10: New Tool -Generate_Fnc_Lib, which generate database objects code from Typedef file. <BR>
+20180501: Vers. 1.11: Tool -Generate_qttab_Lib- extended. <BR>
+                      Tool -Generate_fnc_lib- extended. <BR>
