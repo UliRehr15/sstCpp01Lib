@@ -40,3 +40,5 @@ Versions <BR>
 20180402: Vers. 1.10: New Tool -Generate_Fnc_Lib, which generate database objects code from Typedef file. <BR>
 20180501: Vers. 1.11: Tool -Generate_qttab_Lib- extended. <BR>
                       Tool -Generate_fnc_lib- extended. <BR>
+20180504: Vers. 1.12: Tool -Generate_qttab_lib- extended. <BR>
+                      Tool -Generate_csv_lib- removed and replaced by -typ- and -fnc-. <BR>

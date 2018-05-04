@@ -1,3 +1,16 @@
+/**********************************************************************
+ *
+ * sstCpp01Lib - library for generating cpp code from Type.def file.
+ * Hosted on github
+ *
+ * Copyright (C) 2016 Hans Ulrich Rehr
+ *
+ * This is free software; you can redistribute and/or modify it under
+ * the terms of the GNU Lesser General Public Licence as published
+ * by the Free Software Foundation.
+ * See the COPYING file for more information.
+ *
+ **********************************************************************/
 // sst_generate_qttab_lib2.cpp    08.02.18 Re.    08.02.18  Re.
 //
 // program generates Qt Table lib code.
@@ -33,10 +46,38 @@ std::string sstCppGenQtTabLibCls::getGrpNam() const
   return this->sGrpNam;
 }
 //=============================================================================
+int sstCppGenQtTabLibCls::FillBlc_constructor(int                 iKey,
+                                              sstCpp01_Class_Cls *oCppTypClass,
+                                              sstCpp01_Class_Cls *oCppFncClass,
+                                              dREC04RECNUMTYP    *lSatzNr)
+{
+  int iStat = 0;
+//-----------------------------------------------------------------------------
+  if ( iKey != 0) return -1;
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  this->poPrt = poTmpPrt;");
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  this->poDatabase = poTmpDatabase;");
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  ");
+
+  // Build EntityCount Call
+  std::string oEntityCountStr;
+  oEntityCountStr = "  dREC04RECNUMTYP dRecNum = this->poDatabase->EntityCount(RS2::Entity";
+  oEntityCountStr += oCppTypClass->cClsNam;
+  oEntityCountStr += ");";
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,oEntityCountStr);
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  ");
+
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  for (dREC04RECNUMTYP ll=1; ll<=dRecNum; ++ll)");
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  {");
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"    this->sstTabVector.push_back(ll);");
+  iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  }");
+
+  return iStat;
+}
+//=============================================================================
 int sstCppGenQtTabLibCls::FillBlc_rowCount (int               iKey,
                              sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr)
+                                            sstCpp01_Class_Cls *oCppFncClass,
+                                            dREC04RECNUMTYP     *lSatzNr)
 
 //-----------------------------------------------------------------------------
 {
