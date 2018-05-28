@@ -165,7 +165,7 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
   // Return number of TypDef records from file
   eTypeNum = DsVerw->count();
 
-  // Datensatz-Verwaltung anlegen / Öffnen.
+  // Datensatz-Verwaltung anlegen / Ã–ffnen.
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
 
   // write all cpp header files
@@ -181,7 +181,7 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
     dREC04RECNUMTYP dNumTypRecsAct = oCppTypClass.ClsTypDsVerw->count();
 
     // if (dStrPos == oStrType.Get_ObjNam().npos)
-    if (dStrPos != 0 && dNumTypRecsAct > 1)
+    if (dStrPos != 0 && dNumTypRecsAct >= 1)
     {
 
        // Class name in table changed: new Class !
@@ -201,7 +201,7 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
       // Close list of class function definitions
       iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
 
-      // Datensatz-Verwaltung anlegen / öffnen.
+      // Datensatz-Verwaltung anlegen / Ã¶ffnen.
       iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
     }
 
@@ -213,7 +213,6 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
 
     iStat = oCppTypClass.ClsTypDsVerw->WritNew( 0, &oCppClsTyp1, &SatzNr);
   }
-
 
   iStat = oCppTypClass.GetDate( 0, &sDateStr);
   // save class name for member class
@@ -227,10 +226,11 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
 
   // === write database class =================================================
+  // with all tables
 
   sstCpp01_Class_Cls oCppFncClass;  // One func class
 
-  // Datensatz-Verwaltung anlegen / Öffnen.
+  // Datensatz-Verwaltung anlegen / Ã–ffnen.
   // iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppFncClass);
 
@@ -284,7 +284,8 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
       sstStr01VarDefCls oStrTypeDb;        // next TypDef Record
       oStrTypeDb.Set_Type(sstStr01Custom);
       oStrTypeDb.Set_ObjNam("tonNis01FncAbzwCls oTabAbzw");
-      oStrTypeDb.Set_EleNam("tonNis01Fnc" + oEleNamStr + "Cls oTab" + oEleNamStr);
+      // oStrTypeDb.Set_EleNam("tonNis01Fnc" + oEleNamStr + "Cls oTab" + oEleNamStr);
+      oStrTypeDb.Set_EleNam(oStrTypeAct.Get_SysNam() + sGrpNam + oEleNamStr + "Cls oTab" + oEleNamStr);
       oStrTypeDb.Set_ObjInfo("Test");
       oStrTypeDb.Set_SysNam(oStrTypeAct.Get_SysNam());
       oStrTypeDb.Set_SysInfo("");
@@ -333,7 +334,8 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
   oStrTypeDb.Set_Type(sstStr01Custom);
   oStrTypeDb.Set_ObjNam("tonNis01FncAbzwCls oAbzw");
   // oStrTypeDb.Set_EleNam("tonNis01FncAbzwCls oAbzw");
-  oStrTypeDb.Set_EleNam("tonNis01Fnc" + oEleNamStr + "Cls oTab" + oEleNamStr);
+  // oStrTypeDb.Set_EleNam("tonNis01Fnc" + oEleNamStr + "Cls oTab" + oEleNamStr);
+  oStrTypeDb.Set_EleNam(oStrTypeAct.Get_SysNam() + sGrpNam + oEleNamStr + "Cls oTab" + oEleNamStr);
   oStrTypeDb.Set_ObjInfo("Test");
   oStrTypeDb.Set_SysNam(oStrTypeAct.Get_SysNam());
   oStrTypeDb.Set_SysInfo("");
@@ -358,7 +360,7 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
   sCppFilNam += oCppFncClass.GetClsNam();
   sCppFilNam += ".cpp";
 
-  // CascObjekt öffnen zum Schreiben.
+  // CascObjekt Ã¶ffnen zum Schreiben.
   iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
   // write headrows in cpp header file
@@ -417,8 +419,6 @@ int sstCppGenFncLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
   std::string oLocFncClsNam;   // Local func class name
   std::string sCppFilNam;      // code class file name
 
-  std::string oAddIncFilNam = "tonNis01TypLib.h";
-
   dREC04RECNUMTYP lSatzNr = 0;
   dREC04RECNUMTYP lSatzNrBlc = 0;
 
@@ -427,6 +427,9 @@ int sstCppGenFncLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
 //-----------------------------------------------------------------------------
   // if ( iKey != 0) return -1;
   if ( iKey < 0 || iKey > 1) return -1;
+
+  // std::string oAddIncFilNam = "tonNis01TypLib.h";
+  std::string oAddIncFilNam = oCppTypClass->GetSysNam() + oCppTypClass->GetGrpNam() + "Lib.h";
 
   iStat = strlen(oCppTypClass->cClsNam);
   if(iStat <= 0) return -2;
@@ -450,7 +453,7 @@ int sstCppGenFncLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
   sCppFilNam += oCppTypClass->cClsNam;
   sCppFilNam += ".cpp";
 
-  // CascObjekt öffnen zum Schreiben.
+  // CascObjekt Ã¶ffnen zum Schreiben.
   iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
   // write headrows in cpp header file
@@ -694,7 +697,7 @@ int sstCppGenFncLibCls::sst_WrtBaseClsData (int               iKey,
   sCppFilNam += oCppTypClass->cClsNam;
   sCppFilNam += ".cpp";
 
-  // CascObjekt öffnen zum Schreiben.
+  // CascObjekt Ã¶ffnen zum Schreiben.
   iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
   // write headrows in cpp header file
@@ -766,4 +769,3 @@ int sstCppGenFncLibCls::sst_WrtBaseClsData (int               iKey,
   return iRet;
 }
 //=============================================================================
-

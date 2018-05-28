@@ -390,7 +390,8 @@ int sstCpp01_Cls_WrtInc (int                  iKey,
 
   // write class include
   // typ include or typ/fnc include
-  cLocObjNam = sFncGrpNam + "Lib";
+  // cLocObjNam = sFncGrpNam + "Lib";
+  cLocObjNam = sFncGrpNam + oCppClass->GetGrpNam() + "Lib";
 
   // Write Casc-Line-Object to Casc-File.
   sFilRow = "#include \"";

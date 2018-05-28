@@ -140,7 +140,7 @@ int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int          iKey,
   sCppFilNam = sCppFilNam + sGrpNam;
   sCppFilNam = sCppFilNam + ".cpp";
 
-  // CascObjekt �ffnen zum Schreiben.
+  // CascObjekt öffnen zum Schreiben.
   iStat = sHedFil.fopenWr( 0, sHedFilNam.c_str());
   // iStat = sCppFil.fopenWr( 0, sCppFilNam.c_str());
 
@@ -164,7 +164,7 @@ int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int          iKey,
 
   //===========================================================================
 
-  // Datensatz-Verwaltung anlegen / �ffnen.
+  // Datensatz-Verwaltung anlegen / öffnen.
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypBaseClass);
 
   oCppTypBaseClass.SetDate( 0, sDateStr);
@@ -193,10 +193,10 @@ int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int          iKey,
 
   //===========================================================================
 
-  // Datensatz-Verwaltung anlegen / �ffnen.
+  // Datensatz-Verwaltung anlegen / öffnen.
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
 
-  // Die Anzahl der aktuell gespeicherten Datensдtze zurückgeben.
+  // Die Anzahl der aktuell gespeicherten DatensÐŽtze zurÃŒckgeben.
   eTypeNum = DsVerw->count();
 
   // write all cpp header files
@@ -226,7 +226,7 @@ int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int          iKey,
       // Close list of class function definitions
       iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
 
-      // Datensatz-Verwaltung anlegen / цffnen.
+      // Datensatz-Verwaltung anlegen / Ñffnen.
       iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
 
     }
@@ -507,4 +507,3 @@ int sstCppGenTypLibCls::sst_WrtClsData_inPipe_toFilesT2 (int               iKey,
   return iRet;
 }
 //=============================================================================
-
