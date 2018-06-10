@@ -224,8 +224,9 @@ int FillBlc_Destructor(int                 iKey,
 * @date 02.08.17
 */
 //==============================================================================
-int FillBlc_LoadAllFromCsv (int               iKey,
+int FillBlc_LoadTabFromCsv (int               iKey,
 //                              sstStr01Cls      *oFormatInfo,
+//                             sstStr01VarDefCls  oClsMemDef,
                               sstCpp01_Class_Cls *oCppTypClass,
                               sstCpp01_Class_Cls *oCppFncClass,
                               dREC04RECNUMTYP  *lSatzNr);
@@ -255,8 +256,9 @@ int FillBlc_LoadAllFromCsv (int               iKey,
 * @date 02.08.17
 */
 //==============================================================================
-int FillBlc_SaveAllToCsv (int               iKey,
+int FillBlc_SaveTabToCsv (int               iKey,
 //                              sstStr01Cls      *oFormatInfo,
+//                           sstStr01VarDefCls  oClsMemDef,
                               sstCpp01_Class_Cls *oCppTypClass,
                               sstCpp01_Class_Cls *oCppFncClass,
                               dREC04RECNUMTYP  *lSatzNr);
@@ -321,15 +323,45 @@ int FillBlc_Write (int               iKey,
                               sstCpp01_Class_Cls *oCppFncClass,
                               dREC04RECNUMTYP  *lSatzNr);
 //==============================================================================
-int FillBlc_DatabaseRead (int                  iKey,
-                          sstStr01VarDefCls    oClsMemDef,
-                          sstCpp01_Class_Cls  *oCppFncClass,
-                          dREC04RECNUMTYP     *lSatzNr);
+int FillBlc_ReadDb (int                  iKey,
+                    sstStr01VarDefCls    oClsMemDef,
+                    sstCpp01_Class_Cls  *oCppFncClass,
+                    dREC04RECNUMTYP     *lSatzNr);
+//==============================================================================
+int FillBlc_WriteDb (int                  iKey,
+                    sstStr01VarDefCls    oClsMemDef,
+                    sstCpp01_Class_Cls  *oCppFncClass,
+                    dREC04RECNUMTYP     *lSatzNr);
+//==============================================================================
+int FillBlc_CountDb (int                  iKey,
+                     sstStr01VarDefCls    oClsMemDef,
+                     sstCpp01_Class_Cls  *oCppFncClass,
+                     dREC04RECNUMTYP     *lSatzNr);
 //==============================================================================
 int FillBlc_DatabaseWrite (int                  iKey,
                            sstStr01VarDefCls    oClsMemDef,
                            sstCpp01_Class_Cls  *oCppFncClass,
                            dREC04RECNUMTYP     *lSatzNr);
+//==============================================================================
+int FillBlc_LoadFromCsvFiles (int                  iKey,
+                              sstStr01VarDefCls    oClsMemDef,
+                              sstCpp01_Class_Cls  *oCppFncClass,
+                              dREC04RECNUMTYP     *lSatzNr);
+//==============================================================================
+int FillBlc_SaveToCsvFiles (int                  iKey,
+                            sstStr01VarDefCls    oClsMemDef,
+                            sstCpp01_Class_Cls  *oCppFncClass,
+                            dREC04RECNUMTYP     *lSatzNr);
+//==============================================================================
+int FillBlc_LoadAllFromMainFile (int                  iKey,
+                                 sstStr01VarDefCls    oClsMemDef,
+                                 sstCpp01_Class_Cls  *oCppFncClass,
+                                 dREC04RECNUMTYP     *lSatzNr);
+//==============================================================================
+int FillBlc_SaveAllToMainFile (int                  iKey,
+                               sstStr01VarDefCls    oClsMemDef,
+                               sstCpp01_Class_Cls  *oCppFncClass,
+                               dREC04RECNUMTYP     *lSatzNr);
 //==============================================================================
 /**
 * @brief // Shortstory <BR>

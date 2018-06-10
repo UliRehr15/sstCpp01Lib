@@ -43,3 +43,5 @@ Versions <BR>
 20180504: Vers. 1.12: Tool -Generate_qttab_lib- extended. <BR>
                       Tool -Generate_csv_lib- removed and replaced by -typ- and -fnc-. <BR>
 20180528: Vers. 1.13: Small improvements in generate_typ, generate_fnc. <BR>
+20180610: Vers. 1.14: Tool -Generate_qttab_Lib- extended for general, not dxf case. <BR>
+                      Tool -Generate_fnc_lib- extended for general, not dxf case. <BR>

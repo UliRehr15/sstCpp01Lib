@@ -103,7 +103,6 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
   sstCpp01_ClsTyp_Cls oCppClsTyp1;  // one class member object in type class
   dREC04RECNUMTYP eTypeNum = 0;
   dREC04RECNUMTYP SatzNr = 0;
-  // std::string oAddIncFilNam = "tonNis01TypLib.h";
 
   int iRet  = 0;
   int iStat = 0;
@@ -262,15 +261,52 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
       sstCpp01_ClsFnc_Cls oCppClsFnc;  // for func class
       dREC04RECNUMTYP lSatzNr = 0;
 
+      // Database method -ReadDbTyp-
       oCppClsFnc.lBlcStart = lSatzNrBlc+1;
-      iStat = this->FillBlc_DatabaseRead( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+      iStat = this->FillBlc_ReadDb( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
       oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
 
       strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
       strncpy( oCppClsFnc.cFncNam, (char*)"ReadDb", dSST_STR01_VAR_NAM_LEN);
       strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
+      // strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+      strncpy(oCppClsFnc.cFncPar,"int iKey, dREC04RECNUMTYP dRecNo, void *vRecAdr", dCPPFILROWLENGTH);
+      strncpy(oCppClsFnc.cFncCom,"Read Record from Db Tab", dCPPFILROWLENGTH);
+      // oCppClsFnc.eClsVisiTyp = myClsPrivate;
+      oCppClsFnc.eClsVisiTyp = myClsPublic;
+      oCppClsFnc.eCppType = sstStr01Int;
+      // oCppClsFnc.lBlcStart = 0;
+      // oCppClsFnc.lBlcRows = 0;
+      iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+      // Database method -WriteDbTyp-
+      oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+      iStat = this->FillBlc_WriteDb( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+      oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+      strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+      strncpy( oCppClsFnc.cFncNam, (char*)"WriteDb", dSST_STR01_VAR_NAM_LEN);
+      strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
+      // strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+      strncpy(oCppClsFnc.cFncPar,"int iKey, void *vRecAdr, dREC04RECNUMTYP *pdRecNo", dCPPFILROWLENGTH);
+      strncpy(oCppClsFnc.cFncCom,"Write Record to Db Tab", dCPPFILROWLENGTH);
+      // oCppClsFnc.eClsVisiTyp = myClsPrivate;
+      oCppClsFnc.eClsVisiTyp = myClsPublic;
+      oCppClsFnc.eCppType = sstStr01Int;
+      // oCppClsFnc.lBlcStart = 0;
+      // oCppClsFnc.lBlcRows = 0;
+      iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+      // Database method -CountDbTyp-
+      oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+      iStat = this->FillBlc_CountDb( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+      oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+      strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+      strncpy( oCppClsFnc.cFncNam, (char*)"CountDb", dSST_STR01_VAR_NAM_LEN);
+      strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
       strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
-      strncpy(oCppClsFnc.cFncCom,"Database Read", dCPPFILROWLENGTH);
+      strncpy(oCppClsFnc.cFncCom,"Count Records from Db Tab", dCPPFILROWLENGTH);
       // oCppClsFnc.eClsVisiTyp = myClsPrivate;
       oCppClsFnc.eClsVisiTyp = myClsPublic;
       oCppClsFnc.eCppType = sstStr01Int;
@@ -283,12 +319,11 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
       sstCpp01_ClsTyp_Cls oCppVarUserDef;  // for type class, extended var type
       sstStr01VarDefCls oStrTypeDb;        // next TypDef Record
       oStrTypeDb.Set_Type(sstStr01Custom);
-      oStrTypeDb.Set_ObjNam("tonNis01FncAbzwCls oTabAbzw");
-      // oStrTypeDb.Set_EleNam("tonNis01Fnc" + oEleNamStr + "Cls oTab" + oEleNamStr);
-      oStrTypeDb.Set_EleNam(oStrTypeAct.Get_SysNam() + sGrpNam + oEleNamStr + "Cls oTab" + oEleNamStr);
-      oStrTypeDb.Set_ObjInfo("Test");
+      oStrTypeDb.Set_ObjNam(oCppFncClass.GetClsNam());
+      oStrTypeDb.Set_EleNam(oStrTypeAct.Get_SysNam() + sGrpNam + oEleNamStr + "Cls *poTab" + oEleNamStr);
+      oStrTypeDb.Set_ObjInfo(oStrTypeAct.Get_ObjInfo());
       oStrTypeDb.Set_SysNam(oStrTypeAct.Get_SysNam());
-      oStrTypeDb.Set_SysInfo("");
+      oStrTypeDb.Set_SysInfo(oStrTypeAct.Get_SysInfo());
 
       oCppVarUserDef.sClsMem = oStrTypeDb;
       // oCppVarUserDef.eClsVisiTyp = myClsPrivate;
@@ -307,36 +342,152 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
     // iStat = oCppTypClass.ClsTypDsVerw->WritNew( 0, &oCppClsTyp1, &SatzNr);
   }
 
-
   sstCpp01_ClsFnc_Cls oCppClsFnc;  // for func class
   dREC04RECNUMTYP lSatzNr = 0;
 
   oCppClsFnc.lBlcStart = lSatzNrBlc+1;
-  iStat = this->FillBlc_DatabaseRead( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+  iStat = this->FillBlc_ReadDb( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
   oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
 
   strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
   strncpy( oCppClsFnc.cFncNam, (char*) "ReadDb", dSST_STR01_VAR_NAM_LEN);
   strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
-  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
-  strncpy(oCppClsFnc.cFncCom,"Database Read", dCPPFILROWLENGTH);
+  // strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncPar,"int iKey, dREC04RECNUMTYP dRecNo, void *vRecAdr", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"Read Record from Db Tab", dCPPFILROWLENGTH);
   // oCppClsFnc.eClsVisiTyp = myClsPrivate;
   oCppClsFnc.eClsVisiTyp = myClsPublic;
   oCppClsFnc.eCppType = sstStr01Int;
   // oCppClsFnc.lBlcStart = 0;
   // oCppClsFnc.lBlcRows = 0;
+
+  // Write Function to Class
   iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  iStat = this->FillBlc_WriteDb( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cFncNam, (char*) "WriteDb", dSST_STR01_VAR_NAM_LEN);
+  strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
+  // strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncPar,"int iKey, void *vRecAdr, dREC04RECNUMTYP *pdRecNo", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"Write Record to Db Tab", dCPPFILROWLENGTH);
+  // oCppClsFnc.eClsVisiTyp = myClsPrivate;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.eCppType = sstStr01Int;
+  // oCppClsFnc.lBlcStart = 0;
+  // oCppClsFnc.lBlcRows = 0;
+
+  // Write Function to Class
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  iStat = this->FillBlc_CountDb( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cFncNam, (char*) "CountDb", dSST_STR01_VAR_NAM_LEN);
+  strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"Count Records from Db Tab", dCPPFILROWLENGTH);
+  // oCppClsFnc.eClsVisiTyp = myClsPrivate;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.eCppType = sstStr01Int;
+  // oCppClsFnc.lBlcStart = 0;
+  // oCppClsFnc.lBlcRows = 0;
+
+  // Write Function to Class
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  // === Write Function LoadFromCsvFiless
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  iStat = this->FillBlc_LoadFromCsvFiles( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cFncNam, (char*) "LoadFromCsvFiles", dSST_STR01_VAR_NAM_LEN);
+  // strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"Read Database from Csv Files", dCPPFILROWLENGTH);
+  // oCppClsFnc.eClsVisiTyp = myClsPrivate;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.eCppType = sstStr01Int;
+  // oCppClsFnc.lBlcStart = 0;
+  // oCppClsFnc.lBlcRows = 0;
+
+  // Write Function to Class
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  // === Write Function SaveToCsvFiles
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  iStat = this->FillBlc_SaveToCsvFiles( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cFncNam, (char*) "SaveToCsvFiles", dSST_STR01_VAR_NAM_LEN);
+  // strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"Write Database to Csv Files", dCPPFILROWLENGTH);
+  // oCppClsFnc.eClsVisiTyp = myClsPrivate;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.eCppType = sstStr01Int;
+  // oCppClsFnc.lBlcStart = 0;
+  // oCppClsFnc.lBlcRows = 0;
+
+  // Write Function to Class
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  // === Write Function LoadAllFromMainFile
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  iStat = this->FillBlc_LoadAllFromMainFile( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cFncNam, (char*) "LoadAllFromMainFile", dSST_STR01_VAR_NAM_LEN);
+  // strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"Read Database from format main file", dCPPFILROWLENGTH);
+  // oCppClsFnc.eClsVisiTyp = myClsPrivate;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.eCppType = sstStr01Int;
+  // oCppClsFnc.lBlcStart = 0;
+  // oCppClsFnc.lBlcRows = 0;
+
+  // Write Function to Class
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  // === Write Function SaveAllToMainFile
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  iStat = this->FillBlc_SaveAllToMainFile( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cFncNam, (char*) "SaveAllToMainFile", dSST_STR01_VAR_NAM_LEN);
+  // strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncCom,"Write Database to format main file", dCPPFILROWLENGTH);
+  // oCppClsFnc.eClsVisiTyp = myClsPrivate;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.eCppType = sstStr01Int;
+  // oCppClsFnc.lBlcStart = 0;
+  // oCppClsFnc.lBlcRows = 0;
+
+  // Write Function to Class
+  iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  //---------------------------------------------------------------------------
 
   std::string oEleNamStr = oStrType.Get_ObjNam();
 
   sstCpp01_ClsTyp_Cls oCppVarUserDef;  // for type class, extended var type
   sstStr01VarDefCls oStrTypeDb;        // next TypDef Record
   oStrTypeDb.Set_Type(sstStr01Custom);
-  oStrTypeDb.Set_ObjNam("tonNis01FncAbzwCls oAbzw");
-  // oStrTypeDb.Set_EleNam("tonNis01FncAbzwCls oAbzw");
-  // oStrTypeDb.Set_EleNam("tonNis01Fnc" + oEleNamStr + "Cls oTab" + oEleNamStr);
+  oStrTypeDb.Set_ObjNam("");  // Empty because costum
   oStrTypeDb.Set_EleNam(oStrTypeAct.Get_SysNam() + sGrpNam + oEleNamStr + "Cls oTab" + oEleNamStr);
-  oStrTypeDb.Set_ObjInfo("Test");
+  oStrTypeDb.Set_ObjInfo("Database class for type records");
   oStrTypeDb.Set_SysNam(oStrTypeAct.Get_SysNam());
   oStrTypeDb.Set_SysInfo("");
 
@@ -344,6 +495,7 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
   // oCppVarUserDef.eClsVisiTyp = myClsPrivate;
   oCppVarUserDef.eClsVisiTyp = myClsPublic;
 
+  // Write Element to Class
   iStat = oCppFncClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &lSatzNr);
 
   // write doxy/class information to cpp header file of function class
@@ -367,7 +519,7 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
   std::string oLocDatStr;
   oCppFncClass.GetDate(0,&oLocDatStr);
   iStat = sstCpp01_Fil_wrt_head ( 0, &sCppFil, &oLocDatStr);
-  std::string oAddIncFilNam = "tonNis01TypLib.h";
+  std::string oAddIncFilNam = oCppTypClass.GetSysNam() + "TypLib.h";
 
   // Write comment and includes to base cls file
   iStat = sstCpp01_Cls_WrtInc( 1, &sCppFil, &oCppFncClass, oAddIncFilNam);
@@ -381,7 +533,6 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppFncClass);
 
   //=== End of definition database class ======================================
-
 
   // write define end rows in cpp header file
   iStat = sstCpp01_Hed_wrt_def_close ( 0, &sHedFil);
@@ -428,7 +579,6 @@ int sstCppGenFncLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
   // if ( iKey != 0) return -1;
   if ( iKey < 0 || iKey > 1) return -1;
 
-  // std::string oAddIncFilNam = "tonNis01TypLib.h";
   std::string oAddIncFilNam = oCppTypClass->GetSysNam() + oCppTypClass->GetGrpNam() + "Lib.h";
 
   iStat = strlen(oCppTypClass->cClsNam);
@@ -471,9 +621,8 @@ int sstCppGenFncLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
 
   // Define Database Class Element
   sstStr01VarDefCls oVarUserDef;
-  std::string oClsNam = "tonNis01Db" + (std::string) oCppTypClass->cClsNam + "Cls";
-  // oVarUserDef.Set_EleNam("sstStr01Cls oDataTable");  // tonNis01FncANSWCls
-  oVarUserDef.Set_EleNam(oClsNam + " oDataTable");  // tonNis01FncANSWCls
+  std::string oClsNam = oCppTypClass->GetSysNam() + "Db" + (std::string) oCppTypClass->cClsNam + "Cls";
+  oVarUserDef.Set_EleNam(oClsNam + " oDataTable");
   oVarUserDef.Set_EleInfo("sstStr01Cls oDataTable");
   oVarUserDef.Set_Type(sstStr01Custom);
 
@@ -484,9 +633,8 @@ int sstCppGenFncLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
 
   iStat = oCppFncClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &lSatzNr);
 
-  oClsNam = "tonNis01Typ" + (std::string) oCppTypClass->cClsNam + "Cls";
-  // oVarUserDef.Set_EleNam("sstStr01Cls oDataTable");  // tonNis01FncANSWCls
-  oVarUserDef.Set_EleNam(oClsNam + " oTypeRec");  // tonNis01FncANSWCls
+  oClsNam = oCppTypClass->GetSysNam() + "Typ" + (std::string) oCppTypClass->cClsNam + "Cls";
+  oVarUserDef.Set_EleNam(oClsNam + " oTypeRec");
   oVarUserDef.Set_EleInfo("sstStr01Cls oDataTable");
   oVarUserDef.Set_Type(sstStr01Custom);
 
@@ -543,7 +691,7 @@ int sstCppGenFncLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
   iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
-  // define new FUNCTION class set: LoadAllFromCsv
+  // define new FUNCTION class set: LoadTabFromCsv
 
   oCppClsFnc.eCppType = sstStr01Int;
   oCppClsFnc.eClsVisiTyp = myClsPublic;
@@ -551,28 +699,28 @@ int sstCppGenFncLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
   // oCppClsFnc.lBlcStart = 1;
 
   // Fill Function Block Read
-  iStat = this->FillBlc_LoadAllFromCsv ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+  iStat = this->FillBlc_LoadTabFromCsv ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
 
   oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
 
-  strncpy(oCppClsFnc.cFncNam,"LoadAllFromCsv", dSST_STR01_VAR_NAM_LEN );
+  strncpy(oCppClsFnc.cFncNam,"LoadTabFromCsv", dSST_STR01_VAR_NAM_LEN );
   strncpy(oCppClsFnc.cFncPar,"int iKey, const std::string oCsvFilNam, std::string *sErrTxt", dCPPFILROWLENGTH);
 
   strncpy(oCppClsFnc.cFncCom,"Load all records from csv file into datatable", dCPPFILROWLENGTH);
   iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
-  // define new FUNCTION class set: SaveAllToCsv
+  // define new FUNCTION class set: SaveTabToCsv
 
   oCppClsFnc.eCppType = sstStr01Int;
   oCppClsFnc.eClsVisiTyp = myClsPublic;
   oCppClsFnc.lBlcStart = lSatzNrBlc+1;
 
-  iStat = this->FillBlc_SaveAllToCsv ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
+  iStat = this->FillBlc_SaveTabToCsv ( 0, oCppTypClass, &oCppFncClass, &lSatzNrBlc);
 
   oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
 
-  strncpy(oCppClsFnc.cFncNam,"SaveAllToCsv", dSST_STR01_VAR_NAM_LEN );
+  strncpy(oCppClsFnc.cFncNam,"SaveTabToCsv", dSST_STR01_VAR_NAM_LEN );
 
   strncpy(oCppClsFnc.cFncPar,"int iKey, const std::string oCsvFilNam, std::string *sErrTxt", dCPPFILROWLENGTH);
 

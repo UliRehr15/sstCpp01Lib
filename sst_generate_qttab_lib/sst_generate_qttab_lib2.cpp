@@ -60,9 +60,12 @@ int sstCppGenQtTabLibCls::FillBlc_constructor(int                 iKey,
 
   // Build EntityCount Call
   std::string oEntityCountStr;
-  oEntityCountStr = "  dREC04RECNUMTYP dRecNum = this->poDatabase->EntityCount(RS2::Entity";
+//  oEntityCountStr = "  dREC04RECNUMTYP dRecNum = this->poDatabase->EntityCount(RS2::Entity";
+//  oEntityCountStr += oCppTypClass->cClsNam;
+//  oEntityCountStr += ");";
+  oEntityCountStr = "  dREC04RECNUMTYP dRecNum = this->poDatabase->CountDb";
   oEntityCountStr += oCppTypClass->cClsNam;
-  oEntityCountStr += ");";
+  oEntityCountStr += "();";
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,oEntityCountStr);
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,"  ");
 
@@ -74,10 +77,10 @@ int sstCppGenQtTabLibCls::FillBlc_constructor(int                 iKey,
   return iStat;
 }
 //=============================================================================
-int sstCppGenQtTabLibCls::FillBlc_rowCount (int               iKey,
-                             sstCpp01_Class_Cls *oCppTypClass,
+int sstCppGenQtTabLibCls::FillBlc_rowCount (int                 iKey,
+                                            sstCpp01_Class_Cls *oCppTypClass,
                                             sstCpp01_Class_Cls *oCppFncClass,
-                                            dREC04RECNUMTYP     *lSatzNr)
+                                            dREC04RECNUMTYP    *lSatzNr)
 
 //-----------------------------------------------------------------------------
 {
@@ -101,9 +104,12 @@ int sstCppGenQtTabLibCls::FillBlc_rowCount (int               iKey,
   iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
 
   // Build EntityCount Call
-  oEntityCountStr = "  iStat = this->poDatabase->EntityCount(RS2::Entity";
+//  oEntityCountStr = "  iStat = this->poDatabase->EntityCount(RS2::Entity";
+//  oEntityCountStr += oCppTypClass->cClsNam;
+//  oEntityCountStr += ");";
+  oEntityCountStr = "  iStat = this->poDatabase->CountDb";
   oEntityCountStr += oCppTypClass->cClsNam;
-  oEntityCountStr += ");";
+  oEntityCountStr += "();";
   iStat = oCppFncClass->writeBlcRow(0,lSatzNr,oEntityCountStr);
 
   sBlcRow.setRow("//  Bloc Code Generation End");
@@ -211,21 +217,23 @@ int sstCppGenQtTabLibCls::FillBlc_data (int               iKey,
   // sBlcRow.setRow("//  Bloc Code Generation Start");
   // iStat = oCppFncClass->ClsBlcDsVerw->WritNew( 0, &sBlcRow, lSatzNr);
 
-//  oCallStr  = "  ";
-//  oCallStr += oCppTypClass->GetSysNam();
-//  oCallStr += oCppTypClass->GetGrpNam();
-//  oCallStr += oCppTypClass->GetClsNam();
-//  oCallStr += "Cls oTypRec;";
+  oCallStr  = "  ";
+  oCallStr += oCppTypClass->GetSysNam();
+  oCallStr += oCppTypClass->GetGrpNam();
+  oCallStr += oCppTypClass->GetClsNam();
+  oCallStr += "Cls oTypRec;";
 
-  // oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_LineData oTypRec(0,0,0,0,0,0);");
-  oCppFncClass->writeBlcRow( 0, lSatzNr, "  " + this->GetDxfConstructStr(oCppFncClass->GetClsNam()));
+  // oCppFncClass->writeBlcRow( 0, lSatzNr, "  " + this->GetDxfConstructStr(oCppFncClass->GetClsNam()));  // DXF
+  oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);  // OTHER
 
-  oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);
+  // oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);
   oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_Attributes oDLAttributes;");
 
-  oCallStr = "  int iStat = this->poDatabase->Read";
+  // oCallStr = "  int iStat = this->poDatabase->Read";  // DXF
+  oCallStr = "  int iStat = this->poDatabase->ReadDb";
   oCallStr += oCppTypClass->GetClsNam();
-  oCallStr += "( 0, this->sstTabVector[index.row()], &oTypRec, &oDLAttributes);";
+  // oCallStr += "( 0, this->sstTabVector[index.row()], &oTypRec, &oDLAttributes);";  // DXF
+  oCallStr += "( 0, this->sstTabVector[index.row()], &oTypRec);";
 
   oCppFncClass->writeBlcRow( 0, lSatzNr, " ");
   oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);
@@ -270,7 +278,8 @@ int sstCppGenQtTabLibCls::FillBlc_data (int               iKey,
     case (sstStr01Char):
     {
       // sBlcRowStr += "QString::fromUtf8(oTypeRec." + oCppClsTypRec.sClsMem.Get_EleNam() +");";
-      sBlcRowStr += "QString::fromUtf8(" + sEleFncNam +".c_str());";
+      // sBlcRowStr += "QString::fromUtf8(" + sEleFncNam +".c_str());";
+      sBlcRowStr += "QString::fromUtf8(" + sEleFncNam + ");";
       break;
     }
     case (sstStr01Date):
@@ -525,17 +534,26 @@ int sstCppGenQtTabLibCls::FillBlc_setData (int               iKey,
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"if (role == Qt::EditRole)");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"{");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  //save value from editor to oTestRecDss");
-  // iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  sstRec04TestRec2Cls oTabRec;");  // general
-  //oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_LineData oTypRec(0,0,0,0,0,0);");       // dxf
-  oCppFncClass->writeBlcRow( 0, lSatzNr, "  " + this->GetDxfConstructStr(oCppFncClass->GetClsNam()));
+
+  oCallStr  = "  ";
+  oCallStr += oCppTypClass->GetSysNam();
+  oCallStr += oCppTypClass->GetGrpNam();
+  oCallStr += oCppTypClass->GetClsNam();
+  oCallStr += "Cls oTypRec;";
+
+  // oCppFncClass->writeBlcRow( 0, lSatzNr, "  " + this->GetDxfConstructStr(oCppFncClass->GetClsNam()));  // DXF
+  oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);  // OTHER
+
   oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_Attributes oDLAttributes;");
   oCppFncClass->writeBlcRow( 0, lSatzNr, "  dREC04RECNUMTYP dMainRecNo = 0;");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr," ");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  dREC04RECNUMTYP dRecNo = index.row() +1;");
   // iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  this->poDatabase.Read ( 0, this->sstTabVector[index.row()], &oTypRec);");
-  oCallStr = "  this->poDatabase->Read";
+  // oCallStr = "  this->poDatabase->Read";  // DXF
+  oCallStr = "  this->poDatabase->ReadDb";
   oCallStr += oCppTypClass->GetClsNam();
-  oCallStr += "( 0, this->sstTabVector[index.row()], &oTypRec, &oDLAttributes);";
+  // oCallStr += "( 0, this->sstTabVector[index.row()], &oTypRec, &oDLAttributes);";  // DXF
+  oCallStr += "( 0, this->sstTabVector[index.row()], &oTypRec);";
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr," ");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  bool bOK = 1;");
@@ -582,7 +600,9 @@ int sstCppGenQtTabLibCls::FillBlc_setData (int               iKey,
       sLocRowStr.clear();
       sLocRowStr += "        QString locStr = value.toString();";
       iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,sLocRowStr);
-      sBlcRowStr += sEleFncNam + "locStr.toStdString()";
+      // strncpy(oTestRec2.cVal, locStr.toUtf8(),10);
+      // sBlcRowStr += sEleFncNam + "locStr.toStdString()";
+      sBlcRowStr += "        strncpy(oTypRec." + oCppClsTypRec.sClsMem.Get_EleNam() + ", locStr.toUtf8(),10)";
       break;
     }
     case (sstStr01Date):
@@ -664,9 +684,11 @@ int sstCppGenQtTabLibCls::FillBlc_setData (int               iKey,
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  }");
   // iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  if (bOK) this->oDataTable.Writ( 0, &oTypeRec, dRecNo);");
   // iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  if (bOK) this->poDatabase->Writ( 0, &oTypeRec, dRecNo);");
-  oCallStr ="  if (bOK) this->poDatabase->Write";
+  // oCallStr ="  if (bOK) this->poDatabase->Write";  // DXF
+  oCallStr ="  if (bOK) this->poDatabase->WriteDb";
   oCallStr += oCppTypClass->GetClsNam();
-  oCallStr += "( 0, oTypRec, oDLAttributes, &dRecNo, &dMainRecNo);";
+  // oCallStr += "( 0, oTypRec, oDLAttributes, &dRecNo, &dMainRecNo);";  // DXF
+  oCallStr += "( 0, &oTypRec, &dRecNo);";
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,oCallStr);
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr," ");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  }");

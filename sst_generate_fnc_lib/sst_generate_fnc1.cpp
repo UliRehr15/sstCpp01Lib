@@ -44,8 +44,9 @@ int sstCppGenFncLibCls::FillBlc_Destructor(int iKey,
   return 0;
 }
 //=============================================================================
-int sstCppGenFncLibCls::FillBlc_LoadAllFromCsv (int               iKey,
+int sstCppGenFncLibCls::FillBlc_LoadTabFromCsv (int               iKey,
 //                                    sstStr01Cls *oFormatInfo,
+//                                                sstStr01VarDefCls  oClsMemDef,
                                     sstCpp01_Class_Cls *oCppTypClass,
                                     sstCpp01_Class_Cls *oCppFncClass,
                                     dREC04RECNUMTYP     *lSatzNr)
@@ -55,6 +56,7 @@ int sstCppGenFncLibCls::FillBlc_LoadAllFromCsv (int               iKey,
   int iStat = 0;
   std::string oTypNamStr;
   oTypNamStr = oCppTypClass->GetSysNam() + oCppTypClass->GetGrpNam() + oCppTypClass->GetClsNam() + "Cls";
+  //oTypNamStr = oClsMemDef.Get_SysNam() + "Typ" + oClsMemDef.Get_ObjNam() + "Cls";
 
   oCppFncClass->writeBlcRow(0,lSatzNr,"  " + oTypNamStr + " oDatRec;");
   oCppFncClass->writeBlcRow(0,lSatzNr,"  sstMisc01AscFilCls oCsvFil;");
@@ -96,8 +98,9 @@ int sstCppGenFncLibCls::FillBlc_LoadAllFromCsv (int               iKey,
   return iStat;
 }
 //=============================================================================
-int sstCppGenFncLibCls::FillBlc_SaveAllToCsv (int               iKey,
+int sstCppGenFncLibCls::FillBlc_SaveTabToCsv (int               iKey,
 //                                    sstStr01Cls *oFormatInfo,
+//                                              sstStr01VarDefCls  oClsMemDef,
                                     sstCpp01_Class_Cls *oCppTypClass,
                                     sstCpp01_Class_Cls *oCppFncClass,
                                     dREC04RECNUMTYP     *lSatzNr)
@@ -108,6 +111,7 @@ int sstCppGenFncLibCls::FillBlc_SaveAllToCsv (int               iKey,
 
   std::string oTypNamStr;
   oTypNamStr = oCppTypClass->GetSysNam() + oCppTypClass->GetGrpNam() + oCppTypClass->GetClsNam() + "Cls";
+  // oTypNamStr = oClsMemDef.Get_SysNam() + "Typ" + oClsMemDef.Get_ObjNam() + "Cls";
 
   oCppFncClass->writeBlcRow(0,lSatzNr,"  " + oTypNamStr + " oDatRec;  // object data record");
   oCppFncClass->writeBlcRow(0,lSatzNr,"  std::string oFrmtVersStr;");
@@ -196,10 +200,64 @@ int sstCppGenFncLibCls::FillBlc_Write (int               iKey,
   return iStat;
 }
 //=============================================================================
-int sstCppGenFncLibCls::FillBlc_DatabaseRead (int                  iKey,
-                                              sstStr01VarDefCls  oClsMemDef,
-                                              sstCpp01_Class_Cls  *oCppFncClass,
-                                              dREC04RECNUMTYP     *lSatzNr)
+int sstCppGenFncLibCls::FillBlc_ReadDb (int                  iKey,
+                                        sstStr01VarDefCls    oClsMemDef,
+                                        sstCpp01_Class_Cls  *oCppFncClass,
+                                        dREC04RECNUMTYP     *lSatzNr)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  int iStat = 0;
+
+  oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = -1;");
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenFncLibCls::FillBlc_WriteDb (int                  iKey,
+                                        sstStr01VarDefCls    oClsMemDef,
+                                        sstCpp01_Class_Cls  *oCppFncClass,
+                                        dREC04RECNUMTYP     *lSatzNr)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  int iStat = 0;
+
+  oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = -1;");
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenFncLibCls::FillBlc_CountDb (int                  iKey,
+                                        sstStr01VarDefCls    oClsMemDef,
+                                        sstCpp01_Class_Cls  *oCppFncClass,
+                                        dREC04RECNUMTYP     *lSatzNr)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  int iStat = 0;
+
+  oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = -1;");
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenFncLibCls::FillBlc_DatabaseWrite (int                  iKey,
+                                               sstStr01VarDefCls  oClsMemDef,
+                                               sstCpp01_Class_Cls  *oCppFncClass,
+                                               dREC04RECNUMTYP     *lSatzNr)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  int iStat = 0;
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenFncLibCls::FillBlc_LoadFromCsvFiles (int                  iKey,
+                                                  sstStr01VarDefCls  oClsMemDef,
+                                                  sstCpp01_Class_Cls  *oCppFncClass,
+                                                  dREC04RECNUMTYP     *lSatzNr)
 //-----------------------------------------------------------------------------
 {
   if ( iKey != 0) return -1;
@@ -210,10 +268,36 @@ int sstCppGenFncLibCls::FillBlc_DatabaseRead (int                  iKey,
   return iStat;
 }
 //=============================================================================
-int sstCppGenFncLibCls::FillBlc_DatabaseWrite (int                  iKey,
-                                               sstStr01VarDefCls  oClsMemDef,
-                                               sstCpp01_Class_Cls  *oCppFncClass,
-                                               dREC04RECNUMTYP     *lSatzNr)
+int sstCppGenFncLibCls::FillBlc_SaveToCsvFiles (int                  iKey,
+                                                sstStr01VarDefCls  oClsMemDef,
+                                                sstCpp01_Class_Cls  *oCppFncClass,
+                                                dREC04RECNUMTYP     *lSatzNr)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  int iStat = 0;
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenFncLibCls::FillBlc_LoadAllFromMainFile (int                  iKey,
+                                                     sstStr01VarDefCls  oClsMemDef,
+                                                     sstCpp01_Class_Cls  *oCppFncClass,
+                                                     dREC04RECNUMTYP     *lSatzNr)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  int iStat = 0;
+
+  oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = 1;");
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenFncLibCls::FillBlc_SaveAllToMainFile (int                  iKey,
+                                                   sstStr01VarDefCls  oClsMemDef,
+                                                   sstCpp01_Class_Cls  *oCppFncClass,
+                                                   dREC04RECNUMTYP     *lSatzNr)
 //-----------------------------------------------------------------------------
 {
   if ( iKey != 0) return -1;

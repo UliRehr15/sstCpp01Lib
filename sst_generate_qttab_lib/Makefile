@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -D_REENTRANT -Wall -W -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=c++0x -D_REENTRANT -Wall -W -fPIC $(DEFINES)
-INCPATH       = -I. -I../../sstMath01Lib/Header -I../../sstLibreCAD2Lib/Header -I../../dxflib/Header -I../../sst_str01_lib/Header -I../../sst_misc01_lib/Header -I../../sst_rec04_lib/Header -I../../sstQt01Lib/Header -I../../sstQtDxf01Lib/Header -I../../sst_dxf03_lib/Header -isystem /usr/include/i386-linux-gnu/qt5 -isystem /usr/include/i386-linux-gnu/qt5/QtWidgets -isystem /usr/include/i386-linux-gnu/qt5/QtGui -isystem /usr/include/i386-linux-gnu/qt5/QtCore -I. -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I. -I../../sstMath01Lib/Header -I../../sstLibreCAD2Lib/Header -I../../dxflib/Header -I../../sst_str01_lib/Header -I../../sst_misc01_lib/Header -I../../sst_rec04_lib/Header -I../../sstQt01Lib/Header -I../../sstQtDxf01Lib/Header -I../../sst_dxf03_lib/Header -I../Header -isystem /usr/include/i386-linux-gnu/qt5 -isystem /usr/include/i386-linux-gnu/qt5/QtWidgets -isystem /usr/include/i386-linux-gnu/qt5/QtGui -isystem /usr/include/i386-linux-gnu/qt5/QtCore -I. -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/i386-linux-gnu/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -48,25 +48,111 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = sstQt01LibTestTab2.cpp \
-		TabTest2_Dialog.cpp \
-		sstQtDxf01TabMdlLine.cpp \
-		sstQtDxf01TabMdlPoint.cpp \
-		sstQtDxf01TabMdlCircle.cpp \
-		sstQtDxf01TabMdlMText.cpp \
-		sstQtDxf01TabMdlText.cpp \
-		sstQtDxf01TabViewAll.cpp moc_sstQt01LibTestTab2.cpp \
-		moc_sstQtDxf01QtTab.cpp
-OBJECTS       = sstQt01LibTestTab2.o \
-		TabTest2_Dialog.o \
-		sstQtDxf01TabMdlLine.o \
-		sstQtDxf01TabMdlPoint.o \
-		sstQtDxf01TabMdlCircle.o \
-		sstQtDxf01TabMdlMText.o \
-		sstQtDxf01TabMdlText.o \
-		sstQtDxf01TabViewAll.o \
-		moc_sstQt01LibTestTab2.o \
-		moc_sstQtDxf01QtTab.o
+SOURCES       = sst_generate_qttab_test.cpp \
+		sst_generate_qttab_dialog.cpp \
+		PtssFncBase.cpp \
+		PtssFncDatabase.cpp \
+		PtssFncEN.cpp \
+		PtssFncFN.cpp \
+		PtssFncHA.cpp \
+		PtssFncHE.cpp \
+		PtssFncLE.cpp \
+		PtssFncLN.cpp \
+		PtssFncML.cpp \
+		PtssFncOD.cpp \
+		PtssFncOE.cpp \
+		PtssFncON.cpp \
+		PtssFncPK.cpp \
+		PtssFncPR.cpp \
+		PtssFncTE.cpp \
+		PtssFncTN.cpp \
+		PtssFncTT.cpp \
+		PtssTypBase.cpp \
+		PtssTypEN.cpp \
+		PtssTypFN.cpp \
+		PtssTypHA.cpp \
+		PtssTypHE.cpp \
+		PtssTypLE.cpp \
+		PtssTypLN.cpp \
+		PtssTypML.cpp \
+		PtssTypOD.cpp \
+		PtssTypOE.cpp \
+		PtssTypON.cpp \
+		PtssTypPK.cpp \
+		PtssTypPR.cpp \
+		PtssTypTE.cpp \
+		PtssTypTN.cpp \
+		PtssTypTT.cpp \
+		PtssTabMdlBase.cpp \
+		PtssTabMdlEN.cpp \
+		PtssTabMdlFN.cpp \
+		PtssTabMdlHA.cpp \
+		PtssTabMdlLN.cpp \
+		PtssTabMdlML.cpp \
+		PtssTabMdlOD.cpp \
+		PtssTabMdlON.cpp \
+		PtssTabMdlPK.cpp \
+		PtssTabMdlPR.cpp \
+		PtssTabMdlTE.cpp \
+		PtssTabMdlTN.cpp \
+		PtssTabMdlTT.cpp \
+		PtssTabMdlOE.cpp \
+		PtssTabMdlLE.cpp \
+		PtssTabMdlHE.cpp moc_sst_generate_qttab_test.cpp \
+		moc_PtssTabMdlLib.cpp
+OBJECTS       = sst_generate_qttab_test.o \
+		sst_generate_qttab_dialog.o \
+		PtssFncBase.o \
+		PtssFncDatabase.o \
+		PtssFncEN.o \
+		PtssFncFN.o \
+		PtssFncHA.o \
+		PtssFncHE.o \
+		PtssFncLE.o \
+		PtssFncLN.o \
+		PtssFncML.o \
+		PtssFncOD.o \
+		PtssFncOE.o \
+		PtssFncON.o \
+		PtssFncPK.o \
+		PtssFncPR.o \
+		PtssFncTE.o \
+		PtssFncTN.o \
+		PtssFncTT.o \
+		PtssTypBase.o \
+		PtssTypEN.o \
+		PtssTypFN.o \
+		PtssTypHA.o \
+		PtssTypHE.o \
+		PtssTypLE.o \
+		PtssTypLN.o \
+		PtssTypML.o \
+		PtssTypOD.o \
+		PtssTypOE.o \
+		PtssTypON.o \
+		PtssTypPK.o \
+		PtssTypPR.o \
+		PtssTypTE.o \
+		PtssTypTN.o \
+		PtssTypTT.o \
+		PtssTabMdlBase.o \
+		PtssTabMdlEN.o \
+		PtssTabMdlFN.o \
+		PtssTabMdlHA.o \
+		PtssTabMdlLN.o \
+		PtssTabMdlML.o \
+		PtssTabMdlOD.o \
+		PtssTabMdlON.o \
+		PtssTabMdlPK.o \
+		PtssTabMdlPR.o \
+		PtssTabMdlTE.o \
+		PtssTabMdlTN.o \
+		PtssTabMdlTT.o \
+		PtssTabMdlOE.o \
+		PtssTabMdlLE.o \
+		PtssTabMdlHE.o \
+		moc_sst_generate_qttab_test.o \
+		moc_PtssTabMdlLib.o
 DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -125,16 +211,60 @@ DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/lex.prf \
-		sst_generate_qttab_test.pro sstQt01LibTestTab2.h \
-		sstQtDxf01TabTest.h \
-		sstQtDxf01QtTab.h sstQt01LibTestTab2.cpp \
-		TabTest2_Dialog.cpp \
-		sstQtDxf01TabMdlLine.cpp \
-		sstQtDxf01TabMdlPoint.cpp \
-		sstQtDxf01TabMdlCircle.cpp \
-		sstQtDxf01TabMdlMText.cpp \
-		sstQtDxf01TabMdlText.cpp \
-		sstQtDxf01TabViewAll.cpp
+		sst_generate_qttab_test.pro sst_generate_qttab_test.h \
+		PtssFncLib.h \
+		PtssTypLib.h \
+		PtssTabMdlLib.h sst_generate_qttab_test.cpp \
+		sst_generate_qttab_dialog.cpp \
+		PtssFncBase.cpp \
+		PtssFncDatabase.cpp \
+		PtssFncEN.cpp \
+		PtssFncFN.cpp \
+		PtssFncHA.cpp \
+		PtssFncHE.cpp \
+		PtssFncLE.cpp \
+		PtssFncLN.cpp \
+		PtssFncML.cpp \
+		PtssFncOD.cpp \
+		PtssFncOE.cpp \
+		PtssFncON.cpp \
+		PtssFncPK.cpp \
+		PtssFncPR.cpp \
+		PtssFncTE.cpp \
+		PtssFncTN.cpp \
+		PtssFncTT.cpp \
+		PtssTypBase.cpp \
+		PtssTypEN.cpp \
+		PtssTypFN.cpp \
+		PtssTypHA.cpp \
+		PtssTypHE.cpp \
+		PtssTypLE.cpp \
+		PtssTypLN.cpp \
+		PtssTypML.cpp \
+		PtssTypOD.cpp \
+		PtssTypOE.cpp \
+		PtssTypON.cpp \
+		PtssTypPK.cpp \
+		PtssTypPR.cpp \
+		PtssTypTE.cpp \
+		PtssTypTN.cpp \
+		PtssTypTT.cpp \
+		PtssTabMdlBase.cpp \
+		PtssTabMdlEN.cpp \
+		PtssTabMdlFN.cpp \
+		PtssTabMdlHA.cpp \
+		PtssTabMdlLN.cpp \
+		PtssTabMdlML.cpp \
+		PtssTabMdlOD.cpp \
+		PtssTabMdlON.cpp \
+		PtssTabMdlPK.cpp \
+		PtssTabMdlPR.cpp \
+		PtssTabMdlTE.cpp \
+		PtssTabMdlTN.cpp \
+		PtssTabMdlTT.cpp \
+		PtssTabMdlOE.cpp \
+		PtssTabMdlLE.cpp \
+		PtssTabMdlHE.cpp
 QMAKE_TARGET  = sstQt01LibTestTab2
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = sstQt01LibTestTab2
@@ -304,8 +434,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents sstQt01LibTestTab2.h sstQtDxf01TabTest.h sstQtDxf01QtTab.h $(DISTDIR)/
-	$(COPY_FILE) --parents sstQt01LibTestTab2.cpp TabTest2_Dialog.cpp sstQtDxf01TabMdlLine.cpp sstQtDxf01TabMdlPoint.cpp sstQtDxf01TabMdlCircle.cpp sstQtDxf01TabMdlMText.cpp sstQtDxf01TabMdlText.cpp sstQtDxf01TabViewAll.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents sst_generate_qttab_test.h PtssFncLib.h PtssTypLib.h PtssTabMdlLib.h $(DISTDIR)/
+	$(COPY_FILE) --parents sst_generate_qttab_test.cpp sst_generate_qttab_dialog.cpp PtssFncBase.cpp PtssFncDatabase.cpp PtssFncEN.cpp PtssFncFN.cpp PtssFncHA.cpp PtssFncHE.cpp PtssFncLE.cpp PtssFncLN.cpp PtssFncML.cpp PtssFncOD.cpp PtssFncOE.cpp PtssFncON.cpp PtssFncPK.cpp PtssFncPR.cpp PtssFncTE.cpp PtssFncTN.cpp PtssFncTT.cpp PtssTypBase.cpp PtssTypEN.cpp PtssTypFN.cpp PtssTypHA.cpp PtssTypHE.cpp PtssTypLE.cpp PtssTypLN.cpp PtssTypML.cpp PtssTypOD.cpp PtssTypOE.cpp PtssTypON.cpp PtssTypPK.cpp PtssTypPR.cpp PtssTypTE.cpp PtssTypTN.cpp PtssTypTT.cpp PtssTabMdlBase.cpp PtssTabMdlEN.cpp PtssTabMdlFN.cpp PtssTabMdlHA.cpp PtssTabMdlLN.cpp PtssTabMdlML.cpp PtssTabMdlOD.cpp PtssTabMdlON.cpp PtssTabMdlPK.cpp PtssTabMdlPR.cpp PtssTabMdlTE.cpp PtssTabMdlTN.cpp PtssTabMdlTT.cpp PtssTabMdlOE.cpp PtssTabMdlLE.cpp PtssTabMdlHE.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -328,10 +458,10 @@ check: first
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all: moc_sstQt01LibTestTab2.cpp moc_sstQtDxf01QtTab.cpp
+compiler_moc_header_make_all: moc_sst_generate_qttab_test.cpp moc_PtssTabMdlLib.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_sstQt01LibTestTab2.cpp moc_sstQtDxf01QtTab.cpp
-moc_sstQt01LibTestTab2.cpp: ../../dxflib/Header/dl_dxf.h \
+	-$(DEL_FILE) moc_sst_generate_qttab_test.cpp moc_PtssTabMdlLib.cpp
+moc_sst_generate_qttab_test.cpp: ../../dxflib/Header/dl_dxf.h \
 		../../dxflib/Header/dl_global.h \
 		../../dxflib/Header/dl_attributes.h \
 		../../dxflib/Header/dl_codes.h \
@@ -347,16 +477,15 @@ moc_sstQt01LibTestTab2.cpp: ../../dxflib/Header/dl_dxf.h \
 		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../Header/sstCpp01Lib.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
-		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
-		../../sstQtDxf01Lib/Header/sstQtDxf01Lib.h \
-		sstQtDxf01TabTest.h \
-		sstQtDxf01QtTab.h \
-		sstDxf03TypLib.h \
-		sstQt01LibTestTab2.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/uli-le/Entwicklung/sstCpp01Lib/sst_generate_qttab_lib -I/home/uli-le/Entwicklung/sstMath01Lib/Header -I/home/uli-le/Entwicklung/sstLibreCAD2Lib/Header -I/home/uli-le/Entwicklung/dxflib/Header -I/home/uli-le/Entwicklung/sst_str01_lib/Header -I/home/uli-le/Entwicklung/sst_misc01_lib/Header -I/home/uli-le/Entwicklung/sst_rec04_lib/Header -I/home/uli-le/Entwicklung/sstQt01Lib/Header -I/home/uli-le/Entwicklung/sstQtDxf01Lib/Header -I/home/uli-le/Entwicklung/sst_dxf03_lib/Header -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/5 -I/usr/include/i386-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/i686-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/5/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include sstQt01LibTestTab2.h -o moc_sstQt01LibTestTab2.cpp
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h \
+		sst_generate_qttab_test.h
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/uli-le/Entwicklung/sstCpp01Lib/sst_generate_qttab_lib -I/home/uli-le/Entwicklung/sstMath01Lib/Header -I/home/uli-le/Entwicklung/sstLibreCAD2Lib/Header -I/home/uli-le/Entwicklung/dxflib/Header -I/home/uli-le/Entwicklung/sst_str01_lib/Header -I/home/uli-le/Entwicklung/sst_misc01_lib/Header -I/home/uli-le/Entwicklung/sst_rec04_lib/Header -I/home/uli-le/Entwicklung/sstQt01Lib/Header -I/home/uli-le/Entwicklung/sstQtDxf01Lib/Header -I/home/uli-le/Entwicklung/sst_dxf03_lib/Header -I/home/uli-le/Entwicklung/sstCpp01Lib/Header -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/5 -I/usr/include/i386-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/i686-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/5/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include sst_generate_qttab_test.h -o moc_sst_generate_qttab_test.cpp
 
-moc_sstQtDxf01QtTab.cpp: ../../sst_str01_lib/Header/sstStr01Lib.h \
+moc_PtssTabMdlLib.cpp: ../../sst_str01_lib/Header/sstStr01Lib.h \
 		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
@@ -373,10 +502,10 @@ moc_sstQtDxf01QtTab.cpp: ../../sst_str01_lib/Header/sstStr01Lib.h \
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
-		sstDxf03TypLib.h \
-		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
-		sstQtDxf01QtTab.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/uli-le/Entwicklung/sstCpp01Lib/sst_generate_qttab_lib -I/home/uli-le/Entwicklung/sstMath01Lib/Header -I/home/uli-le/Entwicklung/sstLibreCAD2Lib/Header -I/home/uli-le/Entwicklung/dxflib/Header -I/home/uli-le/Entwicklung/sst_str01_lib/Header -I/home/uli-le/Entwicklung/sst_misc01_lib/Header -I/home/uli-le/Entwicklung/sst_rec04_lib/Header -I/home/uli-le/Entwicklung/sstQt01Lib/Header -I/home/uli-le/Entwicklung/sstQtDxf01Lib/Header -I/home/uli-le/Entwicklung/sst_dxf03_lib/Header -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/5 -I/usr/include/i386-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/i686-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/5/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include sstQtDxf01QtTab.h -o moc_sstQtDxf01QtTab.cpp
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/uli-le/Entwicklung/sstCpp01Lib/sst_generate_qttab_lib -I/home/uli-le/Entwicklung/sstMath01Lib/Header -I/home/uli-le/Entwicklung/sstLibreCAD2Lib/Header -I/home/uli-le/Entwicklung/dxflib/Header -I/home/uli-le/Entwicklung/sst_str01_lib/Header -I/home/uli-le/Entwicklung/sst_misc01_lib/Header -I/home/uli-le/Entwicklung/sst_rec04_lib/Header -I/home/uli-le/Entwicklung/sstQt01Lib/Header -I/home/uli-le/Entwicklung/sstQtDxf01Lib/Header -I/home/uli-le/Entwicklung/sst_dxf03_lib/Header -I/home/uli-le/Entwicklung/sstCpp01Lib/Header -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/5 -I/usr/include/i386-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/i686-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/5/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include PtssTabMdlLib.h -o moc_PtssTabMdlLib.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -392,7 +521,7 @@ compiler_clean: compiler_moc_header_clean
 
 ####### Compile
 
-sstQt01LibTestTab2.o: sstQt01LibTestTab2.cpp ../../dxflib/Header/dl_dxf.h \
+sst_generate_qttab_test.o: sst_generate_qttab_test.cpp ../../dxflib/Header/dl_dxf.h \
 		../../dxflib/Header/dl_global.h \
 		../../dxflib/Header/dl_attributes.h \
 		../../dxflib/Header/dl_codes.h \
@@ -410,14 +539,14 @@ sstQt01LibTestTab2.o: sstQt01LibTestTab2.cpp ../../dxflib/Header/dl_dxf.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
 		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
-		sstQtDxf01TabTest.h \
-		sstQtDxf01QtTab.h \
-		sstDxf03TypLib.h \
-		sstQt01LibTestTab2.h \
-		../../sstQtDxf01Lib/Header/sstQtDxf01Lib.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQt01LibTestTab2.o sstQt01LibTestTab2.cpp
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h \
+		sst_generate_qttab_test.h \
+		../Header/sstCpp01Lib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sst_generate_qttab_test.o sst_generate_qttab_test.cpp
 
-TabTest2_Dialog.o: TabTest2_Dialog.cpp ../../dxflib/Header/dl_dxf.h \
+sst_generate_qttab_dialog.o: sst_generate_qttab_dialog.cpp ../../dxflib/Header/dl_dxf.h \
 		../../dxflib/Header/dl_global.h \
 		../../dxflib/Header/dl_attributes.h \
 		../../dxflib/Header/dl_codes.h \
@@ -433,16 +562,284 @@ TabTest2_Dialog.o: TabTest2_Dialog.cpp ../../dxflib/Header/dl_dxf.h \
 		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../Header/sstCpp01Lib.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
-		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
-		../../sstQtDxf01Lib/Header/sstQtDxf01Lib.h \
-		sstQtDxf01TabTest.h \
-		sstQtDxf01QtTab.h \
-		sstDxf03TypLib.h \
-		sstQt01LibTestTab2.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o TabTest2_Dialog.o TabTest2_Dialog.cpp
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h \
+		sst_generate_qttab_test.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sst_generate_qttab_dialog.o sst_generate_qttab_dialog.cpp
 
-sstQtDxf01TabMdlLine.o: sstQtDxf01TabMdlLine.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+PtssFncBase.o: PtssFncBase.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncBase.o PtssFncBase.cpp
+
+PtssFncDatabase.o: PtssFncDatabase.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncDatabase.o PtssFncDatabase.cpp
+
+PtssFncEN.o: PtssFncEN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncEN.o PtssFncEN.cpp
+
+PtssFncFN.o: PtssFncFN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncFN.o PtssFncFN.cpp
+
+PtssFncHA.o: PtssFncHA.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncHA.o PtssFncHA.cpp
+
+PtssFncHE.o: PtssFncHE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncHE.o PtssFncHE.cpp
+
+PtssFncLE.o: PtssFncLE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncLE.o PtssFncLE.cpp
+
+PtssFncLN.o: PtssFncLN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncLN.o PtssFncLN.cpp
+
+PtssFncML.o: PtssFncML.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncML.o PtssFncML.cpp
+
+PtssFncOD.o: PtssFncOD.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncOD.o PtssFncOD.cpp
+
+PtssFncOE.o: PtssFncOE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncOE.o PtssFncOE.cpp
+
+PtssFncON.o: PtssFncON.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncON.o PtssFncON.cpp
+
+PtssFncPK.o: PtssFncPK.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncPK.o PtssFncPK.cpp
+
+PtssFncPR.o: PtssFncPR.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncPR.o PtssFncPR.cpp
+
+PtssFncTE.o: PtssFncTE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncTE.o PtssFncTE.cpp
+
+PtssFncTN.o: PtssFncTN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncTN.o PtssFncTN.cpp
+
+PtssFncTT.o: PtssFncTT.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssFncTT.o PtssFncTT.cpp
+
+PtssTypBase.o: PtssTypBase.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypBase.o PtssTypBase.cpp
+
+PtssTypEN.o: PtssTypEN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypEN.o PtssTypEN.cpp
+
+PtssTypFN.o: PtssTypFN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypFN.o PtssTypFN.cpp
+
+PtssTypHA.o: PtssTypHA.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypHA.o PtssTypHA.cpp
+
+PtssTypHE.o: PtssTypHE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypHE.o PtssTypHE.cpp
+
+PtssTypLE.o: PtssTypLE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypLE.o PtssTypLE.cpp
+
+PtssTypLN.o: PtssTypLN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypLN.o PtssTypLN.cpp
+
+PtssTypML.o: PtssTypML.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypML.o PtssTypML.cpp
+
+PtssTypOD.o: PtssTypOD.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypOD.o PtssTypOD.cpp
+
+PtssTypOE.o: PtssTypOE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypOE.o PtssTypOE.cpp
+
+PtssTypON.o: PtssTypON.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypON.o PtssTypON.cpp
+
+PtssTypPK.o: PtssTypPK.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypPK.o PtssTypPK.cpp
+
+PtssTypPR.o: PtssTypPR.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypPR.o PtssTypPR.cpp
+
+PtssTypTE.o: PtssTypTE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypTE.o PtssTypTE.cpp
+
+PtssTypTN.o: PtssTypTN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypTN.o PtssTypTN.cpp
+
+PtssTypTT.o: PtssTypTT.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTypLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTypTT.o PtssTypTT.cpp
+
+PtssTabMdlBase.o: PtssTabMdlBase.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		PtssTabMdlLib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlBase.o PtssTabMdlBase.cpp
+
+PtssTabMdlEN.o: PtssTabMdlEN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
 		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
@@ -459,12 +856,12 @@ sstQtDxf01TabMdlLine.o: sstQtDxf01TabMdlLine.cpp ../../sst_str01_lib/Header/sstS
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
-		sstDxf03TypLib.h \
-		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
-		sstQtDxf01QtTab.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabMdlLine.o sstQtDxf01TabMdlLine.cpp
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlEN.o PtssTabMdlEN.cpp
 
-sstQtDxf01TabMdlPoint.o: sstQtDxf01TabMdlPoint.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+PtssTabMdlFN.o: PtssTabMdlFN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
 		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
@@ -481,12 +878,12 @@ sstQtDxf01TabMdlPoint.o: sstQtDxf01TabMdlPoint.cpp ../../sst_str01_lib/Header/ss
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
-		sstDxf03TypLib.h \
-		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
-		sstQtDxf01QtTab.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabMdlPoint.o sstQtDxf01TabMdlPoint.cpp
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlFN.o PtssTabMdlFN.cpp
 
-sstQtDxf01TabMdlCircle.o: sstQtDxf01TabMdlCircle.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+PtssTabMdlHA.o: PtssTabMdlHA.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
 		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
@@ -503,12 +900,12 @@ sstQtDxf01TabMdlCircle.o: sstQtDxf01TabMdlCircle.cpp ../../sst_str01_lib/Header/
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
-		sstDxf03TypLib.h \
-		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
-		sstQtDxf01QtTab.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabMdlCircle.o sstQtDxf01TabMdlCircle.cpp
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlHA.o PtssTabMdlHA.cpp
 
-sstQtDxf01TabMdlMText.o: sstQtDxf01TabMdlMText.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+PtssTabMdlLN.o: PtssTabMdlLN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
 		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
@@ -525,12 +922,12 @@ sstQtDxf01TabMdlMText.o: sstQtDxf01TabMdlMText.cpp ../../sst_str01_lib/Header/ss
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
-		sstDxf03TypLib.h \
-		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
-		sstQtDxf01QtTab.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabMdlMText.o sstQtDxf01TabMdlMText.cpp
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlLN.o PtssTabMdlLN.cpp
 
-sstQtDxf01TabMdlText.o: sstQtDxf01TabMdlText.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+PtssTabMdlML.o: PtssTabMdlML.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
 		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
@@ -547,12 +944,16 @@ sstQtDxf01TabMdlText.o: sstQtDxf01TabMdlText.cpp ../../sst_str01_lib/Header/sstS
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
-		sstDxf03TypLib.h \
-		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
-		sstQtDxf01QtTab.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabMdlText.o sstQtDxf01TabMdlText.cpp
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlML.o PtssTabMdlML.cpp
 
-sstQtDxf01TabViewAll.o: sstQtDxf01TabViewAll.cpp ../../dxflib/Header/dl_dxf.h \
+PtssTabMdlOD.o: PtssTabMdlOD.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
 		../../dxflib/Header/dl_global.h \
 		../../dxflib/Header/dl_attributes.h \
 		../../dxflib/Header/dl_codes.h \
@@ -564,23 +965,215 @@ sstQtDxf01TabViewAll.o: sstQtDxf01TabViewAll.cpp ../../dxflib/Header/dl_dxf.h \
 		../../dxflib/Header/dl_extrusion.h \
 		../../sstLibreCAD2Lib/Header/rs_vector.h \
 		../../sstLibreCAD2Lib/Header/rs.h \
-		../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlOD.o PtssTabMdlOD.cpp
+
+PtssTabMdlON.o: PtssTabMdlON.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
 		../../sstMath01Lib/Header/sstMath01Lib.h \
 		../../sst_misc01_lib/Header/sstMisc01Lib.h \
 		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
 		../../sstQt01Lib/Header/sstQt01Lib.h \
-		../../sst_dxf03_lib/Header/sstDxf03Lib.h \
-		../../sstQtDxf01Lib/Header/sstQtDxf01Lib.h \
-		sstQtDxf01TabTest.h \
-		sstQtDxf01QtTab.h \
-		sstDxf03TypLib.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstQtDxf01TabViewAll.o sstQtDxf01TabViewAll.cpp
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlON.o PtssTabMdlON.cpp
 
-moc_sstQt01LibTestTab2.o: moc_sstQt01LibTestTab2.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_sstQt01LibTestTab2.o moc_sstQt01LibTestTab2.cpp
+PtssTabMdlPK.o: PtssTabMdlPK.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlPK.o PtssTabMdlPK.cpp
 
-moc_sstQtDxf01QtTab.o: moc_sstQtDxf01QtTab.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_sstQtDxf01QtTab.o moc_sstQtDxf01QtTab.cpp
+PtssTabMdlPR.o: PtssTabMdlPR.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlPR.o PtssTabMdlPR.cpp
+
+PtssTabMdlTE.o: PtssTabMdlTE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlTE.o PtssTabMdlTE.cpp
+
+PtssTabMdlTN.o: PtssTabMdlTN.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlTN.o PtssTabMdlTN.cpp
+
+PtssTabMdlTT.o: PtssTabMdlTT.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlTT.o PtssTabMdlTT.cpp
+
+PtssTabMdlOE.o: PtssTabMdlOE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlOE.o PtssTabMdlOE.cpp
+
+PtssTabMdlLE.o: PtssTabMdlLE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlLE.o PtssTabMdlLE.cpp
+
+PtssTabMdlHE.o: PtssTabMdlHE.cpp ../../sst_str01_lib/Header/sstStr01Lib.h \
+		../../sstMath01Lib/Header/sstMath01Lib.h \
+		../../sst_misc01_lib/Header/sstMisc01Lib.h \
+		../../sst_rec04_lib/Header/sstRec04Lib.h \
+		../../dxflib/Header/dl_dxf.h \
+		../../dxflib/Header/dl_global.h \
+		../../dxflib/Header/dl_attributes.h \
+		../../dxflib/Header/dl_codes.h \
+		../../dxflib/Header/dl_entities.h \
+		../../dxflib/Header/dl_writer_ascii.h \
+		../../dxflib/Header/dl_writer.h \
+		../../dxflib/Header/dl_creationadapter.h \
+		../../dxflib/Header/dl_creationinterface.h \
+		../../dxflib/Header/dl_extrusion.h \
+		../../sstLibreCAD2Lib/Header/rs_vector.h \
+		../../sstLibreCAD2Lib/Header/rs.h \
+		../../sstQt01Lib/Header/sstQt01Lib.h \
+		PtssTypLib.h \
+		PtssFncLib.h \
+		PtssTabMdlLib.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o PtssTabMdlHE.o PtssTabMdlHE.cpp
+
+moc_sst_generate_qttab_test.o: moc_sst_generate_qttab_test.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_sst_generate_qttab_test.o moc_sst_generate_qttab_test.cpp
+
+moc_PtssTabMdlLib.o: moc_PtssTabMdlLib.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_PtssTabMdlLib.o moc_PtssTabMdlLib.cpp
 
 ####### Install
 

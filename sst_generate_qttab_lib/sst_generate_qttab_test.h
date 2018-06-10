@@ -14,11 +14,95 @@
 // sst_generate_qttab_lib.h   06.02.2018  Re.   06.02.2018  Re.
 //
 
-#ifndef   _SST_GENERATE_QTTAB_LIB_HEADER
-#define   _SST_GENERATE_QTTAB_LIB_HEADER
+#ifndef   _SST_GENERATE_QTTAB_TEST_HEADER
+#define   _SST_GENERATE_QTTAB_TEST_HEADER
+
+
+#include <QtWidgets>
+#include <QDialog>
+#include <QTreeView>
+#include <QStandardItemModel>
+#include <QItemSelectionModel>
+#include <QTextBrowser>
+
+#include <string>
+
+#include <list>
+#include <dl_dxf.h>
+#include <dl_creationadapter.h>
+#include <rs_vector.h>
+
+#include <sstStr01Lib.h>
+#include <sstMath01Lib.h>
+#include <sstMisc01Lib.h>
+#include <sstRec04Lib.h>
+#include <sstCpp01Lib.h>
+#include <sstQt01Lib.h>
+
+#include "PtssTypLib.h"
+#include "PtssFncLib.h"
+#include "PtssTabMdlLib.h"
+
+// #include <sstDxf03Lib.h>
+// #include <sstQtDxf01Lib.h>
+
 
 
 // Prototypen datei.c ----------------------------------------------------------
+QT_BEGIN_NAMESPACE
+class QAction;
+class QDialogButtonBox;
+class QGroupBox;
+class QLabel;
+class QLineEdit;
+class QMenu;
+class QMenuBar;
+class QPushButton;
+class QTextEdit;
+QT_END_NAMESPACE
+
+class Dialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    Dialog();
+    ~Dialog();
+
+private slots:
+    void selectionChangedSlot(const QItemSelection & newSelection, const QItemSelection & oldSelection);
+
+private:
+    void createMenu();
+    void createHorizontalGroupBox();
+
+    enum { NumGridRows = 3, NumButtons = 2 };
+
+    QMenuBar *menuBar;
+    QGroupBox *horizontalGroupBox;
+    QTextEdit *bigEditor;
+    QDialogButtonBox *buttonBox;
+
+    QMenu *fileMenu;
+    QAction *exitAction;
+
+    QTreeView *treeView;
+    QStandardItemModel *standardModel;
+    QTextBrowser *poTextWidget1;
+    QVBoxLayout *mainLayout;
+    QStackedWidget *stackedWidget;
+
+//    sstQtDxf01TabViewLineCls    *poTab1View;
+//    sstQtDxf01TabViewCircleCls  *poTab2View;
+//    sstQtDxf01TabViewMTextCls   *poTab3View;
+//    sstQtDxf01TabViewPointCls   *poTab4View;
+//    sstQtDxf01TabViewTextCls    *poTab5View;
+    sstMisc01PrtFilCls *poPrt;
+
+    // sstDxf03DbCls *poDxfDb;
+    PtssFncDatabaseCls *poDxfDb;
+
+};
 
 
 //==============================================================================

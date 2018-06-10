@@ -93,7 +93,8 @@ int main(int argc, char *argv [])
   }
 
   // Set Name of system
-  sFncSysNam = "sstQtDxf01";
+  sFncSysNam = "sstQtDxf01";  // DXF
+  sFncSysNam = oTypDefTab.getSysNam();  // OTHER
   oGenQtTab.setGrpNam("TabMdl");
 
     // Write all defintions in one header file
@@ -128,7 +129,12 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen3 (int          iKey,
 //-----------------------------------------------------------------------------
   if ( iKey != 0) return -1;
 
-  this->oAddCsvIncStr = "list;dl_dxf.h;dl_creationadapter.h;rs_vector.h;QtWidgets;sstQt01Lib.h;sstDxf03TypLib.h;sstDxf03Lib.h";
+  // this->oAddCsvIncStr = "list;dl_dxf.h;dl_creationadapter.h;rs_vector.h;QtWidgets;sstQt01Lib.h;sstDxf03TypLib.h;sstDxf03Lib.h";  // DXF
+  this->oAddCsvIncStr = "list;dl_dxf.h;dl_creationadapter.h;rs_vector.h;QtWidgets;sstQt01Lib.h";
+  std::string oTypFilNam = poTypDefTab->getSysNam() + "TypLib.h";
+  this->oAddCsvIncStr += ";"+ oTypFilNam;
+  std::string oFncFilNam = poTypDefTab->getSysNam() + "FncLib.h";
+  this->oAddCsvIncStr += ";" + oFncFilNam;
 
   // Set Date in typ class
   iStat = oCppTypClass.SetDate ( 0, sDateStr);
@@ -143,6 +149,7 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen3 (int          iKey,
 
   sHedFilNam = sFncSysNam;
 //  sHedFilNam = sHedFilNam + "_";
+  sHedFilNam = sHedFilNam + this->getGrpNam();
   sHedFilNam = sHedFilNam + "Lib";
   sHedFilNam = sHedFilNam + ".h";
 
@@ -221,7 +228,7 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen3 (int          iKey,
     dREC04RECNUMTYP dNumTypRecsAct = oCppTypClass.ClsTypDsVerw->count();
 
     // if (dStrPos == oStrType.Get_ObjNam().npos)
-    if (dStrPos != 0 && dNumTypRecsAct > 1)
+    if (dStrPos != 0 && dNumTypRecsAct >= 1)
     {
 
        // Class name in table changed: new Class !
@@ -347,7 +354,8 @@ int sstCppGenQtTabLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKe
 
   // Define Database Class Element
   sstStr01VarDefCls oVarUserDef;
-  std::string oClsNam = "sstDxf03DbCls";
+  // std::string oClsNam = "sstDxf03DbCls";  //  DXF
+  std::string oClsNam = oCppTypClass->GetSysNam() + "FncDatabaseCls";
   oVarUserDef.Set_EleNam(oClsNam + " *poDatabase");
   oVarUserDef.Set_EleInfo("Database with all tables");
   oVarUserDef.Set_Type(sstStr01Custom);
@@ -379,7 +387,11 @@ int sstCppGenQtTabLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKe
 
   strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
   strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
-  strncpy(oCppClsFnc.cFncPar,"QObject *parent, sstMisc01PrtFilCls *poTmpPrt, sstDxf03DbCls *poTmpDatabase", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  // strncpy( oCppClsFnc.cFncPar,"QObject *parent, sstMisc01PrtFilCls *poTmpPrt, sstDxf03DbCls *poTmpDatabase", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  std::string oLocStr = "QObject *parent, sstMisc01PrtFilCls *poTmpPrt, ";
+  oLocStr += oCppTypClass->GetSysNam();
+  oLocStr += "FncDatabaseCls *poTmpDatabase";
+  strncpy( oCppClsFnc.cFncPar, oLocStr.c_str(), dCPPFILROWLENGTH);  // Function Parameter without parenthis
 
   strncpy(oCppClsFnc.cFncCom,"// Constructor", dCPPFILROWLENGTH);  // Comment
   iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);

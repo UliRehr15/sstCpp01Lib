@@ -1,15 +1,25 @@
 TEMPLATE	  = app
 CONFIG	 	 += warn_on
-CONFIG       -= qt
-CONFIG       -= windows
+CONFIG       += qt
+CONFIG       += windows
+CONFIG       += c++11
+
+QT += widgets
 
 # CONFIG       -= debug  # RELEASE ist aktiv
 CONFIG       -= release  # DEBUG ist aktiv
 
-INCLUDEPATH +=  ../../sst_rec04_lib/Header
-INCLUDEPATH +=  ../../sst_misc01_lib/Header
+INCLUDEPATH +=  ../../sstMath01Lib/Header
+INCLUDEPATH +=  ../../sstLibreCAD2Lib/Header
+INCLUDEPATH +=  ../../dxflib/Header
 INCLUDEPATH +=  ../../sst_str01_lib/Header
+INCLUDEPATH +=  ../../sst_misc01_lib/Header
+INCLUDEPATH +=  ../../sst_rec04_lib/Header
+INCLUDEPATH +=  ../../sstQt01Lib/Header
+INCLUDEPATH +=  ../../sstQtDxf01Lib/Header
+INCLUDEPATH +=  ../../sst_dxf03_lib/Header
 INCLUDEPATH +=  ../Header
+
 
 debug{
   LIBS        += ../../libs/libsst_cpp01_lib_d.a
@@ -30,8 +40,7 @@ release{
   LIBS        += ../../libs/libsst_str01_lib_r.a
 }
 
-HEADERS    += sst_generate_\
-    sst_generate_qttab_lib.h
+HEADERS    +=  sst_generate_qttab_lib.h
 
 SOURCES    += \
     sst_generate_qttab_lib1.cpp \
