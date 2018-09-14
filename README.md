@@ -1,7 +1,7 @@
 # sstCpp01Lib
 sst C++ Code Creating Library
 
-This library should be build with QT 5.5 and qt creator 3.5.1.
+This Library is created with QtCreator 4.5.2 and gcc 7.3.0.
 
 Tool sst_generate_csv_lib
 
@@ -45,3 +45,4 @@ Versions <BR>
 20180528: Vers. 1.13: Small improvements in generate_typ, generate_fnc. <BR>
 20180610: Vers. 1.14: Tool -Generate_qttab_Lib- extended for general, not dxf case. <BR>
                       Tool -Generate_fnc_lib- extended for general, not dxf case. <BR>
+20180914: Vers. 1.15: Update to QtCreator 4.5.2 and gcc 7.3.0. <BR>
