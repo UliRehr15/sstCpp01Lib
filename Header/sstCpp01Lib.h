@@ -137,11 +137,23 @@ class sstCpp01_ClsFnc_Cls
 {
   public:
      sstCpp01_ClsFnc_Cls();  // Constructur
+     //==============================================================================
+     /**
+     * @brief // getIsConstFunc <BR>
+     * @return true/false
+     */
+     // ----------------------------------------------------------------------------
      bool getIsConstFunc() const;
+     //==============================================================================
+     /**
+     * @brief // setIsConstFunc <BR>
+     * @param value [in] value
+     */
+     // ----------------------------------------------------------------------------
      void setIsConstFunc(bool value);
 
      sstStr01VarType_enum      eCppType;                  /**< Return type of function      */
-     sstCpp01_ClassType_enum eClsVisiTyp;                       /**< public, protected or private */
+     sstCpp01_ClassType_enum eClsVisiTyp;                 /**< public, protected or private */
      char              cClsNam[dSST_STR01_VAR_NAM_LEN];   /**< Class Name         */
      char              cFncNam[dSST_STR01_VAR_NAM_LEN];   /**< Function Name      */
      char              cRetNam[dSST_STR01_VAR_NAM_LEN];   /**< User defined Return Var Type      */
@@ -420,28 +432,50 @@ private:  // Private Funktionen
 class sstCppTypDefTabCls
 {
   public:   // Public functions
-     sstCppTypDefTabCls(sstMisc01PrtFilCls *oSstPrt);   // Constructor
-    ~sstCppTypDefTabCls();   // Destructor
-     //==============================================================================
-     /**
-     * @brief // Shortstory <BR>
-     * iStat = oTest =  Func_1( iKey);
-     *
-     * @param iKey [in] For the moment 0
-     *
-     * @return Errorstate
-     *
-     * @retval   = 0: OK
-     * @retval   < 0: Unspecified Error
-     */
-     // ----------------------------------------------------------------------------
-int LoadTypDefFromFile (int iKey, const std::string sTypDefFilNam);
+  //==============================================================================
+  /**
+  * @brief // Constructor <BR>
+  * @param oSstPrt [in] Pointer to Protocol object
+  */
+  // ----------------------------------------------------------------------------
+  sstCppTypDefTabCls(sstMisc01PrtFilCls *oSstPrt);   // Constructor
+  ~sstCppTypDefTabCls();   // Destructor
+  //==============================================================================
+   /**
+   * @brief // LoadTypDefFromFile <BR>
+   *
+   * @param iKey          [in] For the moment 0
+   * @param sTypDefFilNam [in] sTypDefFilNam
+   *
+   * @return Errorstate
+   *
+   * @retval   = 0: OK
+   * @retval   < 0: Unspecified Error
+   */
+   // ----------------------------------------------------------------------------
+   int LoadTypDefFromFile (int iKey, const std::string sTypDefFilNam);
 //==============================================================================
 /**
-* @brief // Shortstory <BR>
-* iStat = oTest =  Func_1( iKey);
+* @brief // getSysNam <BR>
 *
-* @param iKey [in] For the moment 0
+* @return String Name of System
+*/
+// ----------------------------------------------------------------------------
+std::string getSysNam() const;
+//==============================================================================
+/**
+* @brief // count <BR>
+* @return Number of elements
+*/
+// ----------------------------------------------------------------------------
+dREC04RECNUMTYP count();
+//==============================================================================
+/**
+* @brief // Read <BR>
+*
+* @param iKey    [in] For the moment 0
+* @param dRecNo  [in] dRecNo
+* @param vRecAdr [in out] vRecAdr
 *
 * @return Errorstate
 *
@@ -449,12 +483,8 @@ int LoadTypDefFromFile (int iKey, const std::string sTypDefFilNam);
 * @retval   < 0: Unspecified Error
 */
 // ----------------------------------------------------------------------------
-std::string getSysNam() const;
-//==============================================================================
-dREC04RECNUMTYP count();
 int Read(int iKey, dREC04RECNUMTYP dRecNo, void *vRecAdr);
-
-
+//==============================================================================
 private:  // Private functions
   // int Dum;        /**< Dummy */
   // sstStr01VarDefCls oStrType;
