@@ -166,6 +166,40 @@ int sst_WrtClsData_inPipe_toFilesT2 (int                    iKey,
                                     std::string             sGrpNam,
                                     sstCpp01_Class_Cls     *oCppTypClass);
 //==============================================================================
+int WriteEnumCls (int iKey,
+                  sstMisc01AscFilCls  *sHedFil,
+                  sstCpp01_Class_Cls  *poCppEnumClass);
+//==============================================================================
+/**
+* @brief // Write constructor Code block to code table <BR>
+* iStat = sstCpp01_CsvLib_FillBlc_Constructor ( iKey, *oCppTypClass, *oCppFncClass, *lSatzNr);
+*
+* More Comment
+*
+* Changed: 09.08.16  Re.
+*
+* @ingroup sstCpp01Lib
+*
+* @param iKey         [in] For the moment 0
+* @param oCppTypClass [in] oCppTypClass
+* @param oCppFncClass [in] oCppFncClass
+* @param lSatzNr      [in] lSatzNr
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*
+* @author Re.
+*
+* @date 09.08.16
+*/
+//==============================================================================
+int sstCpp01_CsvLib_FillBlc_Constructor (int                 iKey,
+                                         sstCpp01_Class_Cls *oCppTypClass,
+                                         sstCpp01_Class_Cls *oCppFncClass,
+                                         dREC04RECNUMTYP    *lSatzNr);
+//==============================================================================
 /**
 * @brief // Write CSV_Read Code block to code table <BR>
 * iStat = sstCpp01_CsvLib_FillBlc_Read ( iKey, *oFormatInfo, *oCppTypClass, *oCppFncClass, *lSatzNr);

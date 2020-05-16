@@ -47,7 +47,7 @@ int main(int argc, char *argv [])
 //-----------------------------------------------------------------------------
 
   // Open Protocol with filename
-  iStat = oSstPrt.SST_PrtAuf ( 1, (char*) "sst_generate_csv_lib.prt");
+  iStat = oSstPrt.SST_PrtAuf ( 1, (char*) "sst_generate_typ_lib.prt");
   assert(iStat >= 0);
 
   if (argc <= 1)
@@ -87,11 +87,9 @@ int main(int argc, char *argv [])
   return 0;
 }
 //=============================================================================
-int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int          iKey,
-//                                                  sstRec04Cls *DsVerw,
-                                                  sstCppTypDefTabCls *DsVerw,
-  //                            std::string sSysNam,
-                              std::string sDateStr)
+int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int                 iKey,
+                                                  sstCppTypDefTabCls *oTypeDefTable,
+                                                  std::string         sDateStr)
 //-----------------------------------------------------------------------------
 {
   std::string sGrpNam;  // Nam of function group, f.e. Typ, Fnc or Dbs
@@ -100,14 +98,13 @@ int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int          iKey,
   std::string sHedFilNam;  // Nam of header file
   std::string sCppFilNam;  // Nam of cpp file
   sstMisc01AscFilCls sHedFil;
-  // sstMisc01AscFilCls sCppFil;
 
   sstStr01VarDefCls oStrType;
   sstStr01VarDefCls oStrTypeAct;  // actual class element
   sstCpp01_Class_Cls oCppTypClass;  // One Type Class with all Elements, functions and function code blocks
   sstCpp01_Class_Cls oCppTypBaseClass;  // One Type Class with all Elements, functions and function code blocks
   sstCpp01_ClsTyp_Cls oCppClsTyp1;  // for type class, extended var type
-  dREC04RECNUMTYP eTypeNum = 0;
+  dREC04RECNUMTYP dTypeDefTabRecNum = 0;
   dREC04RECNUMTYP SatzNr = 0;
 
   int iRet  = 0;
@@ -116,7 +113,7 @@ int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int          iKey,
   if ( iKey != 0) return -1;
 
   sGrpNam = this->getGrpNam();
-  sSysNam = DsVerw->getSysNam();
+  sSysNam = oTypeDefTable->getSysNam();
 
   // Set Date in typ class
   iStat = oCppTypClass.SetDate ( 0, sDateStr);
@@ -162,6 +159,47 @@ int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int          iKey,
   // iStat = sstCpp01_Hed_wrt_defgroup(0,&sHedFil, &sGrpNam);
   iStat = sstCpp01_Hed_wrt_defgroup(0,&sHedFil, oCppTypClass.GetSysNam());
 
+
+  //=== Write Enum Class to Header ============================================
+
+  // Return number of TypDef records from file
+  dTypeDefTabRecNum = oTypeDefTable->count();
+
+  {
+    sstCpp01_Class_Cls oCppEnumClass;
+    iStat = sstCpp01_ClassTab_Open ( 0, &oCppEnumClass);
+
+    oCppEnumClass.SetDate( 0, sDateStr);
+    oCppEnumClass.SetClsNam(0,"Base");
+    oCppEnumClass.SetSysNam(0,sSysNam);
+    oCppEnumClass.SetGrpNam(0,"Typ");
+
+    for (dREC04RECNUMTYP ii = 1; ii <= dTypeDefTabRecNum; ii++)
+    {
+
+      // Datensatz an absoluter Position lesen.
+      iStat = oTypeDefTable->Read( 0, ii, &oStrType);
+
+      // if object name is different to actual object name, open new object
+      size_t dStrPos = oStrTypeAct.Get_ObjNam().compare(oStrType.Get_ObjNam());
+
+      if (dStrPos != 0)
+      {
+
+        oCppClsTyp1.eClsVisiTyp = myClsPublic;
+        oCppClsTyp1.sClsMem = oStrType;
+
+        iStat = oCppEnumClass.ClsTypDsVerw->WritNew( 0, &oCppClsTyp1, &SatzNr);
+      }
+
+      oStrTypeAct = oStrType;
+
+    }
+
+    iStat = this->WriteEnumCls( 0, &sHedFil, &oCppEnumClass);
+    iStat = sstCpp01_ClassTab_Close ( 0, &oCppEnumClass);
+  }
+
   //===========================================================================
 
   // Datensatz-Verwaltung anlegen / öffnen.
@@ -170,7 +208,7 @@ int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int          iKey,
   oCppTypBaseClass.SetDate( 0, sDateStr);
 
   oCppTypBaseClass.SetClsNam(0,"Base");
-  oCppTypBaseClass.SetSysNam(0,DsVerw->getSysNam());
+  oCppTypBaseClass.SetSysNam(0,oTypeDefTable->getSysNam());
   oCppTypBaseClass.SetGrpNam(0,this->getGrpNam());
 
   sstStr01VarDefCls oVarUserDef;
@@ -196,15 +234,15 @@ int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int          iKey,
   // Datensatz-Verwaltung anlegen / öffnen.
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
 
-  // Die Anzahl der aktuell gespeicherten DatensÐŽtze zurÃŒckgeben.
-  eTypeNum = DsVerw->count();
+  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
+  dTypeDefTabRecNum = oTypeDefTable->count();
 
   // write all cpp header files
-  for (dREC04RECNUMTYP ii = 1; ii <= eTypeNum; ii++)
+  for (dREC04RECNUMTYP ii = 1; ii <= dTypeDefTabRecNum; ii++)
   {
 
     // Datensatz an absoluter Position lesen.
-    iStat = DsVerw->Read( 0, ii, &oStrType);
+    iStat = oTypeDefTable->Read( 0, ii, &oStrType);
 
     // if object name is different to actual object name, open new object
     size_t dPos1 = oStrTypeAct.Get_ObjNam().compare(oStrType.Get_ObjNam());
@@ -321,9 +359,12 @@ int sstCppGenTypLibCls::sst_WrtClsData_inPipe_toFilesT2 (int               iKey,
   oCppClsFnc.eCppType = sstStr01Unknown;
   oCppClsFnc.eClsVisiTyp = myClsPublic;
 
-  oCppClsFnc.lBlcStart=1;
+
+  lSatzNrBlc = 0;
   // Fill inside of typ constructor class function.
-  oCppClsFnc.lBlcRows = lSatzNr - oCppClsFnc.lBlcStart + 1;
+  iStat = this->sstCpp01_CsvLib_FillBlc_Constructor( 0,  oCppTypClass, oCppTypClass, &lSatzNrBlc);
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart;
+  oCppClsFnc.lBlcStart = lSatzNrBlc;
 
   oCppTypClass->SetGrpNam(0, sGrpNam);
   // oLocFncClsNam = oCppFncClass.GetLibClsNam();
@@ -505,5 +546,100 @@ int sstCppGenTypLibCls::sst_WrtClsData_inPipe_toFilesT2 (int               iKey,
   iRet = iStat;
 
   return iRet;
+}
+//=============================================================================
+int sstCppGenTypLibCls::WriteEnumCls (int iKey,
+                                      sstMisc01AscFilCls  *sHedFil,
+                                      sstCpp01_Class_Cls  *poCppEnumClass)
+//-----------------------------------------------------------------------------
+{
+  int iStat = 0;
+//-----------------------------------------------------------------------------
+  if ( iKey != 0) return -1;
+
+  // write doxy/class information to cpp header file of function class
+  //  iStat = sstCpp01_wrt2CppHedFil2 ( 0, sHedFil, poCppEnumClass);
+
+  // write class info/doxygen block in cpp header file
+  std::string oLibNam = "SysLib";
+  std::string oDateNam = "12.05.2020";
+  // iStat = sstCpp01_Hed_wrt_class_info ( 0, sHedFil, oLibNam.c_str(), poCppEnumClass, oDateNam.c_str());
+
+//  enum _PtssTyp_enm {ePtss_Error,
+//                     ePtss_HA,
+//                     ePtss_HE,
+//                     ePtss_ML,
+//                     ePtss_PK,
+//                     ePtss_LN,
+//                     ePtss_FN,
+//                     ePtss_PR,
+//                     ePtss_FE,
+//                     ePtss_SN,
+//                     ePtss_FR,
+//                     ePtss_SE,
+//                     ePtss_ZN,
+//                     ePtss_ZE,
+//                     ePtss_LE,
+//                     ePtss_TN,
+//                     ePtss_TT,
+//                     ePtss_TE,
+//                     ePtss_ON,
+//                     ePtss_OD,
+//                     ePtss_OE,
+//                     ePtss_EN,
+//                     ePtss_CM,
+//                     ePtss_YN,
+//                     ePtss_YE,
+//                     ePtss_YL,
+//                     ePtss_YA,
+//                     ePtss_YB,
+//                     ePtss_YD,
+//                     ePtss_YX,
+//                     ePtss_IN,
+//                     ePtss_IE,
+//                     ePtss_IL,
+//                     ePtss_IA,
+//                     ePtss_IB,
+//                     ePtss_ID
+//                    };
+//  typedef enum _PtssTyp_enm PtssTyp_enm;
+
+
+
+  std::string oEnumRowStart;
+  std::string oEnumRowType;
+  std::string oEnumRowEnd;
+  std::string oBlankRow;
+  std::string oTmpRow;
+  oTmpRow = poCppEnumClass->GetSysNam() + poCppEnumClass->GetGrpNam();
+  oEnumRowStart = "  enum _" + oTmpRow + "_enm {e" + poCppEnumClass->GetSysNam() + "_Error,";
+  oBlankRow     = " ";
+  oEnumRowEnd   = "  typedef enum _" + oTmpRow + "_enm " + oTmpRow + "_enm;";
+
+  iStat = sHedFil->Wr_StrDS1(0, &oBlankRow);
+  iStat = sHedFil->Wr_StrDS1(0, &oEnumRowStart);
+
+  sstCpp01_ClsTyp_Cls oCppClsTyp1;        // one class member object in type class
+  dREC04RECNUMTYP dMemTypeNum = poCppEnumClass->ClsTypDsVerw->count();
+
+  for (dREC04RECNUMTYP ll = 1; ll <= dMemTypeNum; ll++)
+  {
+
+    poCppEnumClass->ClsTypDsVerw->Read( 0, ll, &oCppClsTyp1);
+    std::string oTmpEleNam;
+    oTmpEleNam = oCppClsTyp1.sClsMem.Get_ObjNam();
+    oEnumRowType = "                     e" + poCppEnumClass->GetSysNam() + "_" + oTmpEleNam + ",";
+    iStat = sHedFil->Wr_StrDS1(0, &oEnumRowType);
+  }
+
+  oTmpRow = "                    };";
+  iStat = sHedFil->Wr_StrDS1(0, &oTmpRow);
+  iStat = sHedFil->Wr_StrDS1(0, &oEnumRowEnd);
+  iStat = sHedFil->Wr_StrDS1(0, &oBlankRow);
+
+  // Fatal Errors goes to an assert
+  assert(iStat >= 0);
+
+  return iStat;
 }
 //=============================================================================

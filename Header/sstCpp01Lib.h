@@ -147,8 +147,8 @@ class sstCpp01_ClsFnc_Cls
      char              cRetNam[dSST_STR01_VAR_NAM_LEN];   /**< User defined Return Var Type      */
      char              cFncPar[dCPPFILROWLENGTH];         /**< Function Parameter without parenthis */
      char              cFncCom[dCPPFILROWLENGTH];         /**< Function Comment   */
-     long              lBlcStart;                         /**< lBlcStart in Codeblock Table   */
-     long              lBlcRows;                          /**< lBlcRows in Codeblock Table    */
+     dREC04RECNUMTYP   lBlcStart;                         /**< lBlcStart in Codeblock Table   */
+     dREC04RECNUMTYP   lBlcRows;                          /**< lBlcRows in Codeblock Table    */
 
 private:
      bool              bIsConstFunc;                      /**< Is a const function    */

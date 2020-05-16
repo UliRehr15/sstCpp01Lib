@@ -45,6 +45,5 @@ TARGET = sst_generate_typ_lib
 # DESTDIR     = ../../../../local_deploy
 
 
-# DESTDIR     = ../libs
 
 

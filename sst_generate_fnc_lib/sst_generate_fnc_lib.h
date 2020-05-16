@@ -11,89 +11,28 @@
  * See the COPYING file for more information.
  *
  **********************************************************************/
-// sst_generate_qttab_lib.h   06.02.2018  Re.   06.02.2018  Re.
+// sst_generate_fnc_lib.h   06.02.2018  Re.   06.02.2018  Re.
 //
 
-#ifndef   _SST_GENERATE_TYP_LIB_HEADER
-#define   _SST_GENERATE_TYP_LIB_HEADER
+#ifndef   _SST_GENERATE_FNC_LIB_HEADER
+#define   _SST_GENERATE_FNC_LIB_HEADER
 
+#include <string>
 
-// Prototypen datei.c ----------------------------------------------------------
-
-////==============================================================================
-///**
-//* @brief Definition Class X
-//*
-//* More Comment
-//*
-//* Changed: 19.02.10  Re.
-//*
-//* @ingroup examples
-//*
-//* @author Re.
-//*
-//* @date 19.02.10
-//*/
-//// ----------------------------------------------------------------------------
-//class sstCppTypDefTabCls
-//{
-//  public:   // Public functions
-//     sstCppTypDefTabCls(sstMisc01PrtFilCls *oSstPrt);   // Constructor
-//    ~sstCppTypDefTabCls();   // Destructor
-//     //==============================================================================
-//     /**
-//     * @brief // Shortstory <BR>
-//     * iStat = oTest =  Func_1( iKey);
-//     *
-//     * @param iKey [in] For the moment 0
-//     *
-//     * @return Errorstate
-//     *
-//     * @retval   = 0: OK
-//     * @retval   < 0: Unspecified Error
-//     */
-//     // ----------------------------------------------------------------------------
-//int LoadTypDefFromFile (int iKey, const std::string sTypDefFilNam);
-////==============================================================================
-///**
-//* @brief // Shortstory <BR>
-//* iStat = oTest =  Func_1( iKey);
-//*
-//* @param iKey [in] For the moment 0
-//*
-//* @return Errorstate
-//*
-//* @retval   = 0: OK
-//* @retval   < 0: Unspecified Error
-//*/
-//// ----------------------------------------------------------------------------
-//std::string getSysNam() const;
-////==============================================================================
-//dREC04RECNUMTYP count();
-//int Read(int iKey, dREC04RECNUMTYP dRecNo, void *vRecAdr);
-
-
-//private:  // Private functions
-//  // int Dum;        /**< Dummy */
-//  // sstStr01VarDefCls oStrType;
-//  // sstStr01VarDefFncCls oVarDefFnc;
-//  sstRec04Cls  *DsVerw;   /**< sst Record Table storage */
-//  std::string  sSysNam;   /**< System Name (System Name of last TypeDef Record) */
-//  // dREC04RECNUMTYP dRecNo = 0;
-//  sstMisc01PrtFilCls *poPrt;
-//};
-////-----------------------------------------------------------------------------
-
+#include <sstStr01Lib.h>
+#include <sstMisc01Lib.h>
+#include <sstRec04Lib.h>
+#include <sstCpp01Lib.h>
 
 //==============================================================================
 /**
-* @brief Definition Class X
+* @brief Definition Class sstCppGenFncLibCls
 *
 * More Comment
 *
 * Changed: 19.02.10  Re.
 *
-* @ingroup examples
+* @ingroup sstCpp01Lib
 *
 * @author Re.
 *
@@ -164,8 +103,38 @@ int sst_WrtClsData_inPipe_toFilesF2 (int                   iKey,
                                     sstCpp01_Class_Cls     *oCppTypClass);
 //==============================================================================
 /**
-* @brief // sst_WrtClsData_inPipe_toFilesF2 <BR>
-* iStat = sst_WrtClsData_inPipe_toFilesF2 ( iKey, &sHedFil, &oCppTypClass);
+* @brief // Write Stuff for Functions ReadDb, WriteDb and CountDb into Pipe-Buffer <BR>
+* iStat = sst_WrtClsData_inPipe_toFilesF3 ( iKey, &sHedFil, &oCppTypClass);
+*
+* More Comment
+*
+* Changed: 07.05.20  Re.
+*
+* @ingroup sstCpp01Lib
+*
+* @param iKey          [in] For the moment 0
+* @param plSatzNrBlc   [in out] plSatzNrBlc
+* @param oStrType      [in] oStrType
+* @param poCppFncClass [in out] poCppFncClass
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*
+* @author Re.
+*
+* @date 07.05.20
+*/
+//------------------------------------------------------------------------------
+int sst_WrtClsData_inPipe_toFilesF3 (int                      iKey,
+                                     // dREC04RECNUMTYP         *plStzBlcNr,
+                                     const sstStr01VarDefCls  oStrType,
+                                     sstCpp01_Class_Cls      *poCppFncClass);
+//==============================================================================
+/**
+* @brief // Write base class data to class and header file without base class <BR>
+* iStat = sst_WrtBaseClsData ( iKey, &sHedFil, &oCppTypClass);
 *
 * More Comment
 *
@@ -190,6 +159,10 @@ int sst_WrtClsData_inPipe_toFilesF2 (int                   iKey,
 int sst_WrtBaseClsData (int                   iKey,
                                     sstMisc01AscFilCls   *sHedFil,
                                     sstCpp01_Class_Cls     *oCppTypClass);
+//==============================================================================
+int WriteEnumCls(int                  iKey,
+                 sstMisc01AscFilCls  *sHedFil,
+                 sstCpp01_Class_Cls  *oCppTypClass);
 //==============================================================================
 int FillBlc_Constructor(int                 iKey,
                         sstCpp01_Class_Cls *oCppFncClass,
@@ -256,12 +229,10 @@ int FillBlc_LoadTabFromCsv (int               iKey,
 * @date 02.08.17
 */
 //==============================================================================
-int FillBlc_SaveTabToCsv (int               iKey,
-//                              sstStr01Cls      *oFormatInfo,
-//                           sstStr01VarDefCls  oClsMemDef,
-                              sstCpp01_Class_Cls *oCppTypClass,
-                              sstCpp01_Class_Cls *oCppFncClass,
-                              dREC04RECNUMTYP  *lSatzNr);
+int FillBlc_SaveTabToCsv (int                 iKey,
+                          sstCpp01_Class_Cls *oCppTypClass,
+                          sstCpp01_Class_Cls *oCppFncClass,
+                          dREC04RECNUMTYP    *lSatzNr);
 //==============================================================================
 /**
 * @brief // Write Code Block for function -Count- <BR>
@@ -323,6 +294,42 @@ int FillBlc_Write (int               iKey,
                               sstCpp01_Class_Cls *oCppFncClass,
                               dREC04RECNUMTYP  *lSatzNr);
 //==============================================================================
+/**
+* @brief // Write Codebloc for function Constructor to Database Cls <BR>
+* iStat = oCppDatabaseGen.FillBlc_Constructor( iKey, oClsMemDef, oCppFncClass);
+*
+* @param iKey         [in] For the moment 0
+* @param oClsMemDef   [in] oClsMemDef
+* @param oCppFncClass [in out] Class Database Definition
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*/
+// ----------------------------------------------------------------------------
+int FillBlc_ConstructorDb (int                  iKey,
+                           sstStr01VarDefCls    oClsMemDef,
+                           sstCpp01_Class_Cls  *oCppFncClass);
+//==============================================================================
+/**
+* @brief // Write Codebloc for function Constructor to Database Cls <BR>
+* iStat = oCppDatabaseGen.FillBlc_Constructor( iKey, oClsMemDef, oCppFncClass);
+*
+* @param iKey          [in] For the moment 0
+* @param oClsMemDef   [in] oClsMemDef
+* @param oCppFncClass [in out] Class Database Definition
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*/
+// ----------------------------------------------------------------------------
+int FillBlc_DestructorDb (int                  iKey,
+                          sstStr01VarDefCls    oClsMemDef,
+                          sstCpp01_Class_Cls  *oCppFncClass);
+//==============================================================================
 int FillBlc_ReadDb (int                  iKey,
                     sstStr01VarDefCls    oClsMemDef,
                     sstCpp01_Class_Cls  *oCppFncClass,
@@ -362,6 +369,36 @@ int FillBlc_SaveAllToMainFile (int                  iKey,
                                sstStr01VarDefCls    oClsMemDef,
                                sstCpp01_Class_Cls  *oCppFncClass,
                                dREC04RECNUMTYP     *lSatzNr);
+//==============================================================================
+/**
+* @brief // Write definition and codebloc for function Constructor to Database Cls <BR>
+* iStat = oCppDatabaseGen.FillCls_Constructor( oClsMemDef, oCppFncClass);
+*
+* @param iKey [in] For the moment 0
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*/
+// ----------------------------------------------------------------------------
+int FillCls_ConstructorDB( sstStr01VarDefCls    oClsMemDef,
+                           sstCpp01_Class_Cls  *oCppFncClass);
+//==============================================================================
+/**
+* @brief // Write definition and codebloc for function Destructor to Database Cls <BR>
+* iStat = oCppDatabaseGen.FillCls_Destructor( oClsMemDef, oCppFncClass);
+*
+* @param iKey [in] For the moment 0
+*
+* @return Errorstate
+*
+* @retval   = 0: OK
+* @retval   < 0: Unspecified Error
+*/
+// ----------------------------------------------------------------------------
+int FillCls_DestructorDB( sstStr01VarDefCls    oClsMemDef,
+                          sstCpp01_Class_Cls  *oCppFncClass);
 //==============================================================================
 /**
 * @brief // Shortstory <BR>

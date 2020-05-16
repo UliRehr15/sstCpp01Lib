@@ -23,11 +23,10 @@ sstCppGenTypLibCls::sstCppGenTypLibCls()
 
 }
 //=============================================================================
-int sstCppGenTypLibCls::sstCpp01_CsvLib_FillBlc_Read (int               iKey,
-                             sstStr01Cls *oFormatInfo,
-                             sstCpp01_Class_Cls *oCppTypClass,
-                             sstCpp01_Class_Cls *oCppFncClass,
-                             dREC04RECNUMTYP     *lSatzNr)
+int sstCppGenTypLibCls::sstCpp01_CsvLib_FillBlc_Constructor (int                  iKey,
+                                                             sstCpp01_Class_Cls  *oCppTypClass,
+                                                             sstCpp01_Class_Cls  *oCppFncClass,
+                                                             dREC04RECNUMTYP     *lSatzNr)
 
 //-----------------------------------------------------------------------------
 {
@@ -42,7 +41,45 @@ int sstCppGenTypLibCls::sstCpp01_CsvLib_FillBlc_Read (int               iKey,
 //-----------------------------------------------------------------------------
   if ( iKey != 0) return -1;
 
-  // Die Anzahl der aktuell gespeicherten Datensätze zurückgeben.
+  // Die Anzahl der aktuell gespeicherten Datens?tze zur?ckgeben.
+  lClsTypNum = oCppTypClass->ClsTypDsVerw->count();
+  if (lClsTypNum <= 0) return -2;
+
+  sstCpp01_ClsTyp_Cls oMemRec;
+
+  std::string oBlcStr;
+  std::string oObjNamStr;
+  iStat = oCppTypClass->ClsTypDsVerw->Read( 0, 1, &oMemRec);
+  oObjNamStr = oMemRec.sClsMem.Get_ObjNam();
+  if (oObjNamStr.length() > 0)
+  {  //   memset( this, 0, sizeof(PtssTypPKCls));
+    oBlcStr =  "   memset( this, 0, sizeof(" + oCppTypClass->GetSysNam() + oCppTypClass->GetGrpNam() + oObjNamStr +"Cls));";
+    iStat = oCppFncClass->writeBlcRow(0, lSatzNr, oBlcStr);
+  }
+
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenTypLibCls::sstCpp01_CsvLib_FillBlc_Read (int                  iKey,
+                                                      sstStr01Cls         *oFormatInfo,
+                                                      sstCpp01_Class_Cls  *oCppTypClass,
+                                                      sstCpp01_Class_Cls  *oCppFncClass,
+                                                      dREC04RECNUMTYP     *lSatzNr)
+//-----------------------------------------------------------------------------
+{
+  std::string sBlcTxt;  // one row inside function block
+  sstCpp01_FilRowCls sBlcRow;
+  std::string sLocStr;  // one row inside function block
+  dREC04RECNUMTYP lClsTypNum = 0;
+  sstCpp01_ClsTyp_Cls oClsTyp;
+
+  int iRet  = 0;
+  int iStat = 0;
+  //-----------------------------------------------------------------------------
+  if ( iKey != 0) return -1;
+
+  // Die Anzahl der aktuell gespeicherten Datens?tze zur?ckgeben.
   lClsTypNum = oCppTypClass->ClsTypDsVerw->count();
   if (lClsTypNum <= 0) return -2;
 
@@ -282,7 +319,7 @@ int sstCppGenTypLibCls::sstCpp01_CsvLib_FillBlc_Write (int               iKey,
 //-----------------------------------------------------------------------------
   if ( iKey != 0) return -1;
 
-  // Die Anzahl der aktuell gespeicherten DatensÐ´tze zurÑŒckgeben.
+  // Die Anzahl der aktuell gespeicherten Datens?tze zur?ckgeben.
   lClsTypNum = oCppTypClass->ClsTypDsVerw->count();
   if (lClsTypNum <= 0) return -2;
   // Fill Function Block

@@ -38,7 +38,10 @@ HEADERS   += sst_generate_fnc_lib.h
 SOURCES		+= sst_generate_fnc_lib.cpp \
              sst_generate_fnc1.cpp
 
-TARGET = ss_generate_fnc_lib
-# DESTDIR     = ../libs
+TARGET = sst_generate_fnc_lib
+
+# copy to deployment directory
+# DESTDIR     = ../../../../local_deploy
+
 
 

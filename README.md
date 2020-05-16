@@ -46,3 +46,4 @@ Versions <BR>
 20180610: Vers. 1.14: Tool -Generate_qttab_Lib- extended for general, not dxf case. <BR>
                       Tool -Generate_fnc_lib- extended for general, not dxf case. <BR>
 20180914: Vers. 1.15: Update to QtCreator 4.5.2 and gcc 7.3.0. <BR>
+20200516: Vers. 1.16: Fill functions ReadDB, WriteDB, CountDB. <BR>

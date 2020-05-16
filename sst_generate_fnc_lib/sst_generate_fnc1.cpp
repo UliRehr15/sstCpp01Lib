@@ -45,18 +45,15 @@ int sstCppGenFncLibCls::FillBlc_Destructor(int iKey,
 }
 //=============================================================================
 int sstCppGenFncLibCls::FillBlc_LoadTabFromCsv (int               iKey,
-//                                    sstStr01Cls *oFormatInfo,
-//                                                sstStr01VarDefCls  oClsMemDef,
-                                    sstCpp01_Class_Cls *oCppTypClass,
-                                    sstCpp01_Class_Cls *oCppFncClass,
-                                    dREC04RECNUMTYP     *lSatzNr)
+                                                sstCpp01_Class_Cls *oCppTypClass,
+                                                sstCpp01_Class_Cls *oCppFncClass,
+                                                dREC04RECNUMTYP     *lSatzNr)
 //-----------------------------------------------------------------------------
 {
   if ( iKey != 0) return -1;
   int iStat = 0;
   std::string oTypNamStr;
   oTypNamStr = oCppTypClass->GetSysNam() + oCppTypClass->GetGrpNam() + oCppTypClass->GetClsNam() + "Cls";
-  //oTypNamStr = oClsMemDef.Get_SysNam() + "Typ" + oClsMemDef.Get_ObjNam() + "Cls";
 
   oCppFncClass->writeBlcRow(0,lSatzNr,"  " + oTypNamStr + " oDatRec;");
   oCppFncClass->writeBlcRow(0,lSatzNr,"  sstMisc01AscFilCls oCsvFil;");
@@ -200,6 +197,78 @@ int sstCppGenFncLibCls::FillBlc_Write (int               iKey,
   return iStat;
 }
 //=============================================================================
+int sstCppGenFncLibCls::FillBlc_ConstructorDb (int                  iKey,
+                                               sstStr01VarDefCls    oClsMemDef,
+                                               sstCpp01_Class_Cls  *oCppFncClass)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  int iStat = 0;
+  dREC04RECNUMTYP lSatzNr = 0;
+
+  // for example:
+  // this->poTabObj = new  SysGrpObjCls ();
+
+  sstCpp01_ClsTyp_Cls oCppClsTyp1;        // one class member object in type class
+  dREC04RECNUMTYP dMemTypeNum = oCppFncClass->ClsTypDsVerw->count();
+
+  for (dREC04RECNUMTYP ll = 1; ll <= dMemTypeNum; ll++)
+  {
+    oCppFncClass->ClsTypDsVerw->Read( 0, ll, &oCppClsTyp1);
+    std::string oBlcRow;
+    std::string oTmpEleNam;
+    std::string oDefinition;
+    oTmpEleNam = oCppClsTyp1.sClsMem.Get_EleNam();  // if type is custom, in string elenam is definition and name
+
+    std::size_t pos = oTmpEleNam.find(" ");      // find end of definition
+    oDefinition = oTmpEleNam.substr ( 0, pos);   // extract definition
+
+    oBlcRow = "  this->p" + oCppClsTyp1.sClsMem.Get_EleInfo() + " = new " + oDefinition + "();";
+    oCppFncClass->writeBlcRow( 0, &lSatzNr, oBlcRow);
+  }
+
+  // oCppFncClass->writeBlcRow( 0, &lSatzNr,"  iStat = -1;");
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenFncLibCls::FillBlc_DestructorDb (int                  iKey,
+                                              sstStr01VarDefCls    oClsMemDef,
+                                              sstCpp01_Class_Cls  *oCppFncClass)
+//-----------------------------------------------------------------------------
+{
+  if ( iKey != 0) return -1;
+  int iStat = 0;
+  dREC04RECNUMTYP lSatzNr = 0;
+
+//  delete this->poTabEN;
+//  delete this->poTabZE;
+//  delete this->poTabZN;
+//  delete this->poTabFR;
+
+  sstCpp01_ClsTyp_Cls oCppClsTyp1;        // one class member object in type class
+  dREC04RECNUMTYP dMemTypeNum = oCppFncClass->ClsTypDsVerw->count();
+
+  for (dREC04RECNUMTYP ll = dMemTypeNum; ll >= 1; ll--)
+  {
+    oCppFncClass->ClsTypDsVerw->Read( 0, ll, &oCppClsTyp1);
+    std::string oBlcRow;
+/*    std::string oTmpEleNam;
+    std::string oDefinition;
+    oTmpEleNam = oCppClsTyp1.sClsMem.Get_EleNam();  // if type is custom, in string elenam is definition and name
+
+    std::size_t pos = oTmpEleNam.find(" ");      // find end of definition
+    oDefinition = oTmpEleNam.substr ( 0, pos);*/   // extract definition
+
+    oBlcRow = "  delete this->p" + oCppClsTyp1.sClsMem.Get_EleInfo() + ";";
+    oCppFncClass->writeBlcRow( 0, &lSatzNr, oBlcRow);
+  }
+
+  // oCppFncClass->writeBlcRow( 0, &lSatzNr,"  iStat = -1;");
+
+  return iStat;
+}
+//=============================================================================
 int sstCppGenFncLibCls::FillBlc_ReadDb (int                  iKey,
                                         sstStr01VarDefCls    oClsMemDef,
                                         sstCpp01_Class_Cls  *oCppFncClass,
@@ -209,7 +278,18 @@ int sstCppGenFncLibCls::FillBlc_ReadDb (int                  iKey,
   if ( iKey != 0) return -1;
   int iStat = 0;
 
-  oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = -1;");
+//  if ( iKey != 0) return -1;
+
+//  int iStat = 0;
+//  iStat = -1;
+//  iStat = this->poTab[Obj]->Read( 0, dRecNo, vRecAdr);
+//  return iStat;
+
+  std::string oBlcRow;
+  oBlcRow = "  iStat = this->poTab" + oClsMemDef.Get_ObjNam() + "->Read( 0, dRecNo, vRecAdr);";
+
+  oCppFncClass->writeBlcRow(0,lSatzNr,"  if ( iKey != 0) return -1;");
+  oCppFncClass->writeBlcRow( 0, lSatzNr, oBlcRow);
 
   return iStat;
 }
@@ -223,7 +303,52 @@ int sstCppGenFncLibCls::FillBlc_WriteDb (int                  iKey,
   if ( iKey != 0) return -1;
   int iStat = 0;
 
-  oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = -1;");
+//  if ( iKey != 0) return -1;
+
+//  int iStat = 0;
+
+//  if(*pdRecNo == 0) {
+//    // Add Record
+//    iStat = this->poTabObj->Write( 0, pdRecNo ,vRecAdr);
+//    dREC04RECNUMTYP RecNo = 0;
+//    [Sys][Grp][Obj]Cls oMainRec;
+//    oMainRec.d[Grp]TabRecNo = *pdRecNo;
+//    oMainRec.eSysGrp = eSys_Obj;
+//    iStat = this->WriteDbMain(0,&oMainRec, &RecNo);
+//  }
+//  else {
+//    // Update Record
+//    iStat = this->poTab[Obj]->Write( 0, pdRecNo ,vRecAdr);
+//  }
+
+  std::string oWriteStr;
+  std::string oTypeStr;
+  std::string oWriteNewStr;
+  std::string oSysGrpStr;
+
+  oSysGrpStr = oCppFncClass->GetSysNam() + oCppFncClass->GetGrpNam();
+  oWriteStr    = "    iStat = this->poTab" + oClsMemDef.Get_ObjNam() + "->Write( 0, pdRecNo ,vRecAdr);";
+  oTypeStr     = "    oMainRec.e" + oSysGrpStr + " = e" + oCppFncClass->GetSysNam() +
+                 "_" + oClsMemDef.Get_ObjNam() +";";
+  oWriteNewStr = "    iStat = this->poTab" + oClsMemDef.Get_ObjNam() + "->Write( 0, pdRecNo ,vRecAdr);";
+
+
+  oCppFncClass->writeBlcRow( 0, lSatzNr," ");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  if ( iKey != 0) return -1;");
+  oCppFncClass->writeBlcRow( 0, lSatzNr," ");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  if(*pdRecNo == 0) {");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"    // Add Record");
+  oCppFncClass->writeBlcRow( 0, lSatzNr, oWriteStr.c_str());
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"    dREC04RECNUMTYP RecNo = 0;");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"    " + oSysGrpStr + "MainCls oMainRec;");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"    oMainRec.dTypTabRecNo = *pdRecNo;");
+  oCppFncClass->writeBlcRow( 0, lSatzNr, oTypeStr.c_str());
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"    iStat = this->WriteDbMain(0,&oMainRec, &RecNo);");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  }");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  else {");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"    // Update Record");
+  oCppFncClass->writeBlcRow( 0, lSatzNr, oWriteNewStr.c_str());
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  }  ");
 
   return iStat;
 }
@@ -237,7 +362,14 @@ int sstCppGenFncLibCls::FillBlc_CountDb (int                  iKey,
   if ( iKey != 0) return -1;
   int iStat = 0;
 
-  oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = -1;");
+  // return this->poTab[Obj]->Count();
+
+  std::string oCountRow;
+  oCountRow = " return this->poTab" + oClsMemDef.Get_ObjNam() + "->Count();";
+
+  oCppFncClass->writeBlcRow( 0, lSatzNr, oCountRow.c_str());
+
+  // oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = -1;");
 
   return iStat;
 }
@@ -302,6 +434,71 @@ int sstCppGenFncLibCls::FillBlc_SaveAllToMainFile (int                  iKey,
 {
   if ( iKey != 0) return -1;
   int iStat = 0;
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenFncLibCls::FillCls_ConstructorDB( sstStr01VarDefCls    oClsMemDef,
+                                               sstCpp01_Class_Cls  *oCppFncClass)
+{
+  sstCpp01_ClsFnc_Cls oCppClsFnc;  // function definition for database class
+  int iStat = 0;
+  dREC04RECNUMTYP lSatzNrBlc = 0;
+  dREC04RECNUMTYP lSatzNr = 0;
+  std::string oLocFncClsNam;  // full class name
+
+  oLocFncClsNam = oCppFncClass->GetSysNam() + oCppFncClass->GetGrpNam() + "DatabaseCls";
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
+
+  // define new function set and write: constructor
+  oCppClsFnc.eCppType = sstStr01Unknown;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  oCppClsFnc.lBlcRows = 0;
+
+  // Fill Codebloc for actual function
+  iStat = this->FillBlc_ConstructorDb( 0, oClsMemDef, oCppFncClass);
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1;
+
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);              // Parameter infos
+  strncpy(oCppClsFnc.cFncCom,"Constructor", dCPPFILROWLENGTH);   // function comment
+  iStat = oCppFncClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenFncLibCls::FillCls_DestructorDB( sstStr01VarDefCls    oClsMemDef,
+                                              sstCpp01_Class_Cls  *oCppFncClass)
+{
+  sstCpp01_ClsFnc_Cls oCppClsFnc;  // for func class
+  int iStat = 0;
+  dREC04RECNUMTYP lSatzNrBlc = 0;
+  dREC04RECNUMTYP lSatzNr = 0;
+  std::string oLocFncClsNam;  // full class name
+
+  oLocFncClsNam = oCppFncClass->GetSysNam() + oCppFncClass->GetGrpNam() + "DatabaseCls";
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count(); // Get end of code block
+
+  // define new function set and write: destructor
+  oCppClsFnc.eCppType = sstStr01Unknown;
+  oCppClsFnc.eClsVisiTyp = myClsPublic;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  oCppClsFnc.lBlcRows = 0;
+
+  // Fill Codebloc for actual function
+  iStat = this->FillBlc_DestructorDb( 0, oClsMemDef, oCppFncClass);
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
+
+  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy( oCppClsFnc.cFncNam, (char*)"~", dSST_STR01_VAR_NAM_LEN);
+  strncat( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);            // Parameter infos
+  strncpy(oCppClsFnc.cFncCom,"Destructor", dCPPFILROWLENGTH);  // function comment
+  iStat = oCppFncClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   return iStat;
 }

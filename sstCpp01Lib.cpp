@@ -44,6 +44,8 @@ sstCpp01_ClsFnc_Cls::sstCpp01_ClsFnc_Cls()
   memset(this->cFncPar,0,sizeof(this->cFncPar));
   memset(this->cFncCom,0,sizeof(this->cFncCom));
   this->bIsConstFunc = false;
+  lBlcStart = 0;                         /**< lBlcStart in Codeblock Table   */
+  lBlcRows  = 0;
 }
 //=============================================================================
 bool sstCpp01_ClsFnc_Cls::getIsConstFunc() const
