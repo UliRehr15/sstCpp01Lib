@@ -17,6 +17,12 @@
 #ifndef   _SST_GENERATE_QTTAB_LIB_HEADER
 #define   _SST_GENERATE_QTTAB_LIB_HEADER
 
+#include <string>
+
+#include <sstStr01Lib.h>
+#include <sstMisc01Lib.h>
+#include <sstRec04Lib.h>
+#include <sstCpp01Lib.h>
 
 // Prototypen datei.c ----------------------------------------------------------
 
@@ -72,6 +78,36 @@ class sstCppGenQtTabLibCls
                                    sstCppTypDefTabCls *poTypDefTab,
                                    std::string  sSysNam,
                                    std::string  sDateStr);
+     //==============================================================================
+     /**
+     * @brief // Write CSV Function classes to system header and fnc class file
+     * iStat = sstcsv_FilWrtClsFncOpen2 ( iKey, *DsVerw, sSysNam, sDateStr);
+     *
+     * More Comment
+     *
+     * Changed: 09.08.16  Re.
+     *
+     * @ingroup sstRec04Lib
+     *
+     * @param iKey     [in] For the moment 0
+     * @param DsVerw   [in] sst table with var def types
+     * @param sSysNam  [in] System Name
+     * @param sDateStr [in] Code Generation date
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     *
+     * @author Re.
+     *
+     * @date 09.08.16
+     */
+     //------------------------------------------------------------------------------
+     int sstcsv_FilWrtClsFncOpen4 (int                 iKey,
+                                   sstCppTypDefTabCls *poTypDefTab,
+                                   std::string         sSysNam,
+                                   std::string         sDateStr);
      //==============================================================================
      /**
      * @brief // sst_WrtClsData_inPipe_toFilesF <BR>
@@ -156,8 +192,20 @@ class sstCppGenQtTabLibCls
                                   sstCpp01_Class_Cls *oCppTypClass,
                                   sstCpp01_Class_Cls *oCppFncClass,
                                   dREC04RECNUMTYP     *lSatzNr);
-     //==============================================================================
-  void setGrpNam(const std::string &value);
+  //==============================================================================
+     int FillBlc_ViewConstructor( sstCpp01_Class_Cls *oCppFncClass);
+     int FillBlc_ViewDestructor ( sstCpp01_Class_Cls *oCppFncClass);
+     int FillBlc_ViewSlotChangeTab ( sstCpp01_Class_Cls *oCppFncClass);
+     int FillBlc_ViewSlotUpdateTab ( sstCpp01_Class_Cls *oCppFncClass);
+     int FillCls_ViewConstructor(sstCpp01_Class_Cls *oCppTypClass,
+                                 sstCpp01_Class_Cls *oCppFncClass);
+     int FillCls_ViewDestructor(sstCpp01_Class_Cls *oCppTypClass,
+                                sstCpp01_Class_Cls *oCppFncClass);
+     int FillCls_ViewSlotChangeTab(sstCpp01_Class_Cls *oCppTypClass,
+                                   sstCpp01_Class_Cls *oCppFncClass);
+     int FillCls_ViewSlotUpdateTab(sstCpp01_Class_Cls *oCppTypClass,
+                                   sstCpp01_Class_Cls *oCppFncClass);
+     void setGrpNam(const std::string &value);
   //==============================================================================
   std::string getGrpNam() const;
   //==============================================================================

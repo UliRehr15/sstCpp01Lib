@@ -34,7 +34,7 @@
 int main(int argc, char *argv [])
 {
 
-  sstCppGenQtTabLibCls oGenQtTab;
+  sstCppGenQtTabLibCls oGenQtTab;  // Generating object
 
   sstMisc01AscFilCls sImpFile;
   sstMisc01FilNamCls oFilNam;
@@ -78,16 +78,15 @@ int main(int argc, char *argv [])
   iStat = oFilNam.SplitExtension( 0, &cTypFilNamEnd, &cTypFilEnd, &cTypFilNam);
 
   // Set Date of all source and header files
-  sDateStr = "06.07.16";
-
+  sstMisc01DateTimeCls oDateTimeHdl;
+  sDateStr = oDateTimeHdl.getActualDate();
 
   sstCppTypDefTabCls oTypDefTab(&oSstPrt);
-
-  sDateStr = "21.03.18";
 
   iStat = oTypDefTab.LoadTypDefFromFile(0,cTypFilNamEnd);
   if (iStat < 0)
   {
+    oSstPrt.SST_PrtWrt( 1, (char*)"Error loading Def-File");
     oSstPrt.SST_PrtZu(1);
     assert(0);
   }
@@ -97,9 +96,13 @@ int main(int argc, char *argv [])
   sFncSysNam = oTypDefTab.getSysNam();  // OTHER
   oGenQtTab.setGrpNam("TabMdl");
 
-    // Write all defintions in one header file
-    // Write typ  and fnc code in one class code file
+  // Write all definitions in one header file
+  // Write all model tab classes to code files
   iStat = oGenQtTab.sstcsv_FilWrtClsFncOpen3 ( 0, &oTypDefTab, sFncSysNam, sDateStr);
+
+  // Write all definitions in one header file
+  // Write all ViewTab Classes in single code-file
+  iStat = oGenQtTab.sstcsv_FilWrtClsFncOpen4 ( 0, &oTypDefTab, sFncSysNam, sDateStr);
 
   // Close protocol file
   oSstPrt.SST_PrtZu(1);
@@ -107,10 +110,10 @@ int main(int argc, char *argv [])
   return 0;
 }
 //=============================================================================
-int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen3 (int          iKey,
-                              sstCppTypDefTabCls *poTypDefTab,
-                              std::string sFncSysNam,
-                              std::string sDateStr)
+int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen3 (int                 iKey,
+                                                    sstCppTypDefTabCls *poTypDefTab,
+                                                    std::string         sFncSysNam,
+                                                    std::string         sDateStr)
 //-----------------------------------------------------------------------------
 {
   std::string sHedFilNam;  // Nam of header file
@@ -163,7 +166,7 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen3 (int          iKey,
    iStat = sstCpp01_Fil_wrt_head ( 0, &sHedFil, &sDateStr);
 
    // Write comment to cpp header file
-   iStat = sstCpp01_Hed_WrtCom ( 0, &sHedFil, &sFncSysNam);
+   iStat = sstCpp01_Hed_WrtCom ( 0, &sHedFil, sFncSysNam, oCppTypClass.GetGrpNam());
 
    // write define open rows in cpp header file
    iStat = sstCpp01_Hed_wrt_def_open ( 0, &sHedFil, "SST", sFncSysNam,
@@ -210,7 +213,7 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen3 (int          iKey,
   // Return number of TypDef records from file
   eTypeNum = poTypDefTab->count();
 
-  // Datensatz-Verwaltung anlegen / \D6ffnen.
+  // Datensatz-Verwaltung anlegen / öffnen.
   // Open Dss Set 1 for Class Group 2
   // Open Dss Set 2 for Class Group 2
   iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
@@ -289,10 +292,195 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen3 (int          iKey,
   return iRet;
 }
 //=============================================================================
-int sstCppGenQtTabLibCls::sst_WrtClsData_inPipe_toFilesF2 (int               iKey,
-                                     sstMisc01AscFilCls   *sHedFil,
-                                     std::string      sFncSysNam,
-                                     sstCpp01_Class_Cls *oCppTypClass)
+int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen4 (int                 iKey,
+                                                    sstCppTypDefTabCls *poTypDefTab,
+                                                    std::string         oSysNam,
+                                                    std::string         oDateStr)
+//-----------------------------------------------------------------------------
+{
+  // All TabView Classes in one Header /one Class - file.
+
+  int iStat = 0;
+
+  std::string oHedFilNam;  // Name of header file
+  sstMisc01AscFilCls oHedFil;
+
+  std::string oClsFilNam;  // Name of Class file
+  sstMisc01AscFilCls oClsFil;
+
+  sstCpp01_Class_Cls oCppTypClass;  // Class with typedef information
+  sstCpp01_Class_Cls oCppFncClass;  // Function class to work with
+
+  sstStr01VarDefCls oStrType;
+  sstStr01VarDefCls oStrTypeAct;
+
+  sstCpp01_ClsTyp_Cls oClsTypRec;  // Element record for cpp class
+  sstCpp01_ClsFnc_Cls oClsFncRec;  // Function record for cpp class
+
+  dREC04RECNUMTYP dRecNo = 0;
+
+  //-----------------------------------------------------------------------------
+  if ( iKey != 0) return -1;
+
+  //=== Open Header and Class file
+  //=== Write Start sections into files
+
+  // Collect additional files in INCLUDE-Statement
+  this->oAddCsvIncStr = "list;QtWidgets;sstQt01Lib.h";
+  std::string oTypFilNam = poTypDefTab->getSysNam() + "TypLib.h";
+  this->oAddCsvIncStr += ";"+ oTypFilNam;
+  std::string oFncFilNam = poTypDefTab->getSysNam() + "FncLib.h";
+  this->oAddCsvIncStr += ";" + oFncFilNam;
+
+  // Set Date in typ class
+  iStat = oCppTypClass.SetDate ( 0, oDateStr);
+
+  // Reset values
+  strncpy(oCppTypClass.cClsNam,"",dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppTypClass.cGrpNam,"Typ",dSST_STR01_VAR_NAM_LEN);
+  strncpy(oCppTypClass.cSysNam,poTypDefTab->getSysNam().c_str(),dSST_STR01_VAR_NAM_LEN);
+
+  // sGrpNam = "FncOpen";
+  this->setGrpNam("TabView");
+
+  oHedFilNam = oSysNam;
+//  sHedFilNam = sHedFilNam + "_";
+  oHedFilNam = oHedFilNam + this->getGrpNam();
+  oHedFilNam = oHedFilNam + "Lib";
+  oClsFilNam = oHedFilNam;
+
+  oHedFilNam = oHedFilNam + ".h";
+  oClsFilNam = oClsFilNam + ".cpp";
+
+  // CascObjekt öffnen zum Schreiben.
+  iStat = oHedFil.fopenWr( 0, oHedFilNam.c_str());
+  iStat = oClsFil.fopenWr( 0, oClsFilNam.c_str());
+
+  oCppFncClass.SetSysNam( 0, oSysNam);
+  oCppFncClass.SetGrpNam( 0, "TabView");
+  oCppFncClass.SetClsNam( 0, oStrTypeAct.Get_ObjNam());
+  oCppFncClass.SetDate( 0, oDateStr);
+  oCppFncClass.setExtBaseCls("sstQt01TabViewCls");  // Base Class for all
+  oCppFncClass.setQtMocMacroStr("Q_OBJECT");        // Allow Qt Mocing
+
+  //===========================================================================
+
+  // write headrows with filename and create/edit Date in cpp file
+  iStat = sstCpp01_Fil_wrt_head ( 0, &oHedFil, &oDateStr);
+  iStat = sstCpp01_Fil_wrt_head ( 0, &oClsFil, &oDateStr);
+
+  // Write general comment "Definitions of class ..." to header file
+  iStat = sstCpp01_Hed_WrtCom ( 0, &oHedFil, oCppFncClass.GetSysNam(), oCppFncClass.GetGrpNam());
+  // iStat = sstCpp01_Cls_WrtCom ( 0, &oHedFil, oCppFncClass.GetSysNam(), oCppFncClass.GetGrpNam());
+
+  // write DEFINE open rows in cpp header file
+  iStat = sstCpp01_Hed_wrt_def_open ( 0, &oHedFil, "SST", oSysNam, sGrpNam, "");
+
+  // Write Include Information to header file
+  iStat = sstCpp01_Hed_wrt_inc( 0, &oHedFil, this->oAddCsvIncStr);
+  iStat = sstCpp01_Cls_WrtInc( 0, &oClsFil, &oCppFncClass, this->oAddCsvIncStr);
+
+  // write doxygen def group to header file
+  iStat = sstCpp01_Hed_wrt_defgroup( 0, &oHedFil, oCppTypClass.GetSysNam());
+
+  // Open Typ Class with typedef information of every class
+  iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
+  oCppTypClass.SetSysNam( 0, oSysNam);
+  oCppTypClass.SetGrpNam( 0, "Typ");
+
+  dREC04RECNUMTYP dTypRecNo = 0;
+
+  // Loop over all entries in TypeDef File
+  // and separate all classes
+  for (dREC04RECNUMTYP ll= 1; ll <= poTypDefTab->count(); ll++)
+  {
+    // Datensatz an absoluter Position lesen.
+    iStat = poTypDefTab->Read( 0, ll, &oStrType);
+
+    // if object name is different to actual object name, open new object
+    size_t dStrPos = oStrTypeAct.Get_ObjNam().compare(oStrType.Get_ObjNam());
+
+    if (dStrPos != 0 && dTypRecNo >= 1)
+    {
+      oCppTypClass.SetClsNam( 0, oStrTypeAct.Get_ObjNam());
+
+      // open function TabView class
+      iStat = sstCpp01_ClassTab_Open ( 0, &oCppFncClass);
+
+      oCppFncClass.SetSysNam( 0, oSysNam);
+      oCppFncClass.SetGrpNam( 0, "TabView");
+      oCppFncClass.SetClsNam( 0, oStrTypeAct.Get_ObjNam());
+      oCppFncClass.SetDate( 0, oDateStr);
+      oCppFncClass.setExtBaseCls("sstQt01TabViewCls");  // Base Class for all
+      oCppFncClass.setQtMocMacroStr("Q_OBJECT");        // Allow Qt Mocing
+
+      iStat = this->FillCls_ViewConstructor( &oCppTypClass, &oCppFncClass);
+      assert(iStat >= 0);
+
+      iStat = this->FillCls_ViewDestructor( &oCppTypClass, &oCppFncClass);
+      assert(iStat >= 0);
+
+      iStat = this->FillCls_ViewSlotChangeTab( &oCppTypClass, &oCppFncClass);
+      assert(iStat >= 0);
+
+      iStat = this->FillCls_ViewSlotUpdateTab( &oCppTypClass, &oCppFncClass);
+      assert(iStat >= 0);
+
+      // Write to existing header and class File
+      iStat = strncmp(oStrTypeAct.Get_ObjNam().c_str(),"ML",2);
+      if (iStat == 0)
+      {
+        // Write to header file with base class
+        iStat = sstCpp01_wrt2CppHedFil2 ( 1, &oHedFil, &oCppFncClass);
+        assert(iStat >= 0);
+
+        // Write to class file with base class
+        iStat = sstCpp01_wrt2CppClsFil2 ( 1, &oClsFil, &oCppFncClass);
+        assert(iStat >= 0);
+      }
+
+      // close function TabView class
+      iStat = sstCpp01_ClassTab_Close( 0, &oCppFncClass);
+
+      // Start next typ class with typedef information
+      iStat = sstCpp01_ClassTab_Close( 0, &oCppTypClass);
+      iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
+
+    }
+
+    oStrTypeAct = oStrType;
+
+    // write new type definition to class list
+    oClsTypRec.eClsVisiTyp = myClsPublic;
+    oClsTypRec.sClsMem = oStrType;
+
+    iStat = oCppTypClass.ClsTypDsVerw->WritNew( 0, &oClsTypRec, &dTypRecNo);
+  }
+
+  iStat = sstCpp01_ClassTab_Close( 0, &oCppTypClass);
+
+  // Write ending sections to files
+  // Header and Class file close
+
+  // write define end rows in cpp header file
+  iStat = sstCpp01_Hed_wrt_def_close ( 0, &oHedFil);
+
+  // write information to cpp class file of function class
+  // iStat = sstCpp01_wrt2CppClsFil2 ( iKey, &oClsFil, &oCppFncClass);
+
+  iStat = oHedFil.fcloseFil ( 0);
+  iStat = oClsFil.fcloseFil ( 0);
+
+  // Fatal Errors goes to an assert
+  assert(iStat >= 0);
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenQtTabLibCls::sst_WrtClsData_inPipe_toFilesF2 (int                  iKey,
+                                                           sstMisc01AscFilCls  *sHedFil,
+                                                           std::string          sFncSysNam,
+                                                           sstCpp01_Class_Cls  *oCppTypClass)
 //-----------------------------------------------------------------------------
 {
   sstCpp01_Class_Cls oCppFncClass;

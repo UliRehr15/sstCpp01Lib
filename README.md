@@ -10,7 +10,7 @@ record definition comes from file with type def data.
 
 - Tool Generate_Typ_Lib generates Record/Csv Objects from TypeDef File.
 - Tool Generate_Fnc_Lib generates Database Objects from TypeDef File.
-- Tool Generate_QtTab_Lib generates Qt Table Model Objects from TypeDef File.
+- Tool Generate_QtTab_Lib generates Qt Table Model Objects, Table View Objects from TypeDef File.
 
 Structure of coding projects should be:
 
@@ -47,3 +47,4 @@ Versions <BR>
                       Tool -Generate_fnc_lib- extended for general, not dxf case. <BR>
 20180914: Vers. 1.15: Update to QtCreator 4.5.2 and gcc 7.3.0. <BR>
 20200516: Vers. 1.16: Fill functions ReadDB, WriteDB, CountDB. <BR>
+20200605: Vers. 1.17: Fill functions Constructor, Destructor, SlotChangeTab, SlotUpdateTab for group QtTabView.

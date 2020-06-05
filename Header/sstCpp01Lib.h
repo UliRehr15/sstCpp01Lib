@@ -17,6 +17,12 @@
 #ifndef   _SST_CPP01_LIB_HEADER
 #define   _SST_CPP01_LIB_HEADER
 
+#include <string>
+
+#include <sstStr01Lib.h>
+#include <sstMisc01Lib.h>
+#include <sstRec04Lib.h>
+
 /**
  * @defgroup sstCpp01Lib sstCpp01Lib: sst cpp code generating library (Version 1)
  *
@@ -151,6 +157,77 @@ class sstCpp01_ClsFnc_Cls
      */
      // ----------------------------------------------------------------------------
      void setIsConstFunc(bool value);
+     //==============================================================================
+     /**
+     * @brief // get String <BR>
+     * @return String
+     */
+     // ----------------------------------------------------------------------------
+     std::string getClsNam();
+     //==============================================================================
+     /**
+     * @brief // get String <BR>
+     * @return String
+     */
+     // ----------------------------------------------------------------------------
+     std::string getFncNam();
+     //==============================================================================
+     /**
+     * @brief // get String <BR>
+     * @return String
+     */
+     // ----------------------------------------------------------------------------
+     std::string getRetNam();
+     //==============================================================================
+     /**
+     * @brief // get String <BR>
+     * @return String
+     */
+     // ----------------------------------------------------------------------------
+     std::string getFncPar();
+     //==============================================================================
+     /**
+     * @brief // get String <BR>
+     * @return String
+     */
+     // ----------------------------------------------------------------------------
+     std::string getFncCom();
+     //==============================================================================
+     /**
+     * @brief // set value <BR>
+     * @param oClsNamStr [in] oClsNamStr
+     */
+     // ----------------------------------------------------------------------------
+     void setClsNam(const std::string oClsNamStr);
+     //==============================================================================
+     /**
+     * @brief // set value <BR>
+     * @param oFncNamStr [in] oFncNamStr
+     */
+     // ----------------------------------------------------------------------------
+     void setFncNam(const std::string oFncNamStr);
+     //==============================================================================
+     /**
+     * @brief // set value <BR>
+     * @param oRetNamStr [in] oRetNamStr
+     */
+     // ----------------------------------------------------------------------------
+     void setRetNam(const std::string oRetNamStr);
+     //==============================================================================
+     /**
+     * @brief // set value <BR>
+     * @param oFncParStr [in] oFncParStr
+     */
+     // ----------------------------------------------------------------------------
+     void setFncPar(const std::string oFncParStr);
+     //==============================================================================
+     /**
+     * @brief // set value <BR>
+     * @param oFncComStr [in] oFncComStr
+     */
+     // ----------------------------------------------------------------------------
+     void setFncCom(const std::string oFncComStr);
+     //==============================================================================
 
      sstStr01VarType_enum      eCppType;                  /**< Return type of function      */
      sstCpp01_ClassType_enum eClsVisiTyp;                 /**< public, protected or private */
@@ -531,32 +608,37 @@ int sstCpp01_Fil_wrt_head (int                 iKey,
                          std::string        *cFilDat);
 //==============================================================================
 /**
-* @brief // write comment to cpp header file <BR>
+* @brief // write head comment to cpp header file <BR>
 * iStat = sstCpp01_Hed_WrtCom ( iKey, *sExpFile, *cObjNam);
 *
-* Row: Definitions of class "XXX"
+* Example Row: Definitions of class "SysGrp"
 *
 * Changed: 29.06.12  Re.
 *
 * @ingroup sstCpp01Lib
 *
 * @param iKey      [in]  For the moment 0
-* @param sExpFile  [in]  sExpFile
-* @param cObjNam   [out] cObjNam
+* @param poExpFile [in]  sExpFile
+* @param oSysNam   [in]  System Name
+* @param oGrpNam   [in]  Group Name
 *
 * @return Errorstate
 *
-* @retval   = 0: OK
-* @retval   < 0: Unspecified Error
+* @retval    0  OK
+* @retval   -1  Wrong Key
+* @retval   -2  System Name empty
+* @retval   -3  Group name empty
+* @retval   <0  Unspecified Error
 *
 * @author Re.
 *
 * @date 29.06.12
 */
 //------------------------------------------------------------------------------
-int sstCpp01_Hed_WrtCom (int                 iKey,
-                       sstMisc01AscFilCls *sExpFile,
-                       std::string        *cObjNam);
+int sstCpp01_Hed_WrtCom (int                  iKey,
+                         sstMisc01AscFilCls  *poExpFile,
+                         const std::string    oSysNam,
+                         const std::string    oGrpNam);
 //==============================================================================
 /**
 * @brief // write define open rows in cpp header file  <BR>

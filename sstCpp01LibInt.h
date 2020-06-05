@@ -69,7 +69,8 @@ int sstCpp01_Hed_wrt_class_info (int                 iKey,
 *
 * Class name is generated from Sys+Grp+Cls Name.
 *
-* iKey = 1: Write with SysNam+GrpNam+Base Class
+* iKey = 1: Write with Base Class
+* if sExtBaseCls is empty: Base Class Name = SysNam+GrpNam+Base Class
 *
 *      class X:
 *      {

@@ -58,6 +58,56 @@ void sstCpp01_ClsFnc_Cls::setIsConstFunc(bool value)
     bIsConstFunc = value;
 }
 //=============================================================================
+std::string sstCpp01_ClsFnc_Cls::getClsNam()
+{
+  return this->cClsNam;
+}
+//=============================================================================
+std::string sstCpp01_ClsFnc_Cls::getFncNam()
+{
+  return this->cFncNam;
+}
+//=============================================================================
+std::string sstCpp01_ClsFnc_Cls::getRetNam()
+{
+  return this->cRetNam;
+}
+//=============================================================================
+std::string sstCpp01_ClsFnc_Cls::getFncPar()
+{
+  return this->cFncPar;
+}
+//=============================================================================
+std::string sstCpp01_ClsFnc_Cls::getFncCom()
+{
+  return this->cFncCom;
+}
+//=============================================================================
+void sstCpp01_ClsFnc_Cls::setClsNam(const std::string oClsNamStr)
+{
+  strncpy( this->cClsNam, oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+}
+//=============================================================================
+void sstCpp01_ClsFnc_Cls::setFncNam(const std::string oFncNamStr)
+{
+  strncpy( this->cFncNam, oFncNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+}
+//=============================================================================
+void sstCpp01_ClsFnc_Cls::setRetNam(const std::string oRetNamStr)
+{
+  strncpy( this->cRetNam, oRetNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
+}
+//=============================================================================
+void sstCpp01_ClsFnc_Cls::setFncPar(const std::string oFncParStr)
+{
+  strncpy( this->cFncPar, oFncParStr.c_str(), dCPPFILROWLENGTH);
+}
+//=============================================================================
+void sstCpp01_ClsFnc_Cls::setFncCom(const std::string oFncComStr)
+{
+  strncpy( this->cFncCom, oFncComStr.c_str(), dCPPFILROWLENGTH);
+}
+//=============================================================================
 sstCpp01_Class_Cls::sstCpp01_Class_Cls()
 {
     this->ClsBlcDsVerw = NULL;
@@ -261,8 +311,9 @@ int sstCpp01_Fil_wrt_head (int             iKey,
 }
 //=============================================================================
 int sstCpp01_Hed_WrtCom (int                 iKey,
-                       sstMisc01AscFilCls *sExpFile,
-                       std::string               *cObjNam)
+                         sstMisc01AscFilCls *poExpFile,
+                         const std::string   oSysNam,
+                         const std::string   oGrpNam)
 //-----------------------------------------------------------------------------
 {
   std::string sFilRow;
@@ -270,20 +321,22 @@ int sstCpp01_Hed_WrtCom (int                 iKey,
   int iStat = 0;
 //-----------------------------------------------------------------------------
   if ( iKey != 0) return -1;
+  if (oSysNam.length() == 0) return -2;
+  if (oGrpNam.length() == 0) return -3;
 
 
   // Write empty row to Asc-File.
-  iStat = sExpFile->wr_txt( 0, (char*)"//");
+  iStat = poExpFile->wr_txt( 0, (char*)"//");
 
   // Write Casc-Line-Object to Casc-File.
   sFilRow.clear();
   sFilRow = "//  Definitions of class \"";
-  sFilRow = sFilRow + *cObjNam;
+  sFilRow = sFilRow + oSysNam + oGrpNam;
   sFilRow = sFilRow + "\"";
-  iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
+  iStat = poExpFile->Wr_StrDS1( 0, &sFilRow);
 
   // Write comment row to Asc-File.
-  iStat = sExpFile->wr_txt( 0, (char*)"//");
+  iStat = poExpFile->wr_txt( 0, (char*)"//");
 
   // Fatal Errors goes to an assert
   if (iRet < 0)
@@ -312,6 +365,8 @@ int sstCpp01_Cls_WrtInc (int                  iKey,
   int iStat = 0;
 //-----------------------------------------------------------------------------
   if ( iKey < 0 || iKey > 1) return -1;
+  if(oCppClass->GetSysNam().length() == 0) return -2;
+  if(oCppClass->GetGrpNam().length() == 0) return -3;
 
 //  //
 //  // A lot of Function-Examples
@@ -341,7 +396,7 @@ int sstCpp01_Cls_WrtInc (int                  iKey,
     sFncGrpNam.erase(lPos,lPos+4);
   }
 
-  sFncGrpNam = oCppClass->cSysNam;
+  sFncGrpNam = oCppClass->cSysNam + oCppClass->GetGrpNam();
 
   // Write comment row to Asc-File.
   iStat = sExpFile->wr_txt(0,(char*) "//");
@@ -526,13 +581,11 @@ int sstCpp01_Hed_wrt_def_close (int             iKey,
   return iRet;
 }
 //=============================================================================
-int sstCpp01_Hed_wrt_class_info (int             iKey,
-                               sstMisc01AscFilCls *sExpFile,
-                               std::string           *cGrpNam,
-                                 sstCpp01_Class_Cls *poCppClass,
-                               //  sstRec04Cls    *poClsTypDsVerw,
-                               // char           *cObjNam,
-                               std::string           *cClsDat)
+int sstCpp01_Hed_wrt_class_info (int                  iKey,
+                                 sstMisc01AscFilCls  *sExpFile,
+                                 std::string         *cGrpNam,
+                                 sstCpp01_Class_Cls  *poCppClass,
+                                 std::string         *cClsDat)
 //-----------------------------------------------------------------------------
 {
   std::string sFilRow;
@@ -584,8 +637,8 @@ int sstCpp01_Hed_wrt_class_info (int             iKey,
   iStat = sExpFile->wr_txt( 0, (char*)"/**");
 
   // Write Casc-Line-Object to Casc-File.
-  sFilRow = "* @brief ";
-  sFilRow = sFilRow + cObjNam;
+  sFilRow = "* @brief "  + poCppClass->GetGrpNam() + " Class ";
+  sFilRow = sFilRow + poCppClass->GetSysNam() + poCppClass->GetGrpNam() + cObjNam + "Cls";
   iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
 
   iStat = sExpFile->wr_txt( 0, (char*)"*");
@@ -791,7 +844,7 @@ int sstCpp01_Hed_wrt_class (int               iKey,
 
   //=== PUBLIC ================================================================
 
-  iStat = sExpFile->wr_txt( 0, (char*)"  public:");
+  iStat = sExpFile->wr_txt( 0, (char*)"  public:  // Public functions");
 
   // write all class functions to header file
   for (dREC04RECNUMTYP ii = 1; ii <= lFuncNum; ii++)
@@ -817,7 +870,7 @@ int sstCpp01_Hed_wrt_class (int               iKey,
     */
     // ----------------------------------------------------------------------------
 
-    std::string oTmpStr = oCppClsFnc.cFncNam;
+    std::string oTmpStr = oCppClsFnc.getFncCom() + " " + oCppClsFnc.getFncNam();
     std::string oParPairStr;  // Parameter String
     std::string oParStr;  // Parameter String
     sExpFile->Wr_String(0,"    //==============================================================================");
@@ -1016,8 +1069,11 @@ int sstCpp01_WrtCls (int                 iKey,
 //-----------------------------------------------------------------------------
   if ( iKey != 0) return -1;
 
-  // Write emtpy row
-  iStat = sExpFile->wr_txt( 0, (char*)" ");
+  // Write empty row
+  // iStat = sExpFile->wr_txt( 0, (char*)" ");
+
+  // Write Line row
+  iStat = sExpFile->wr_txt( 0, (char*)"//==============================================================================");
 
   // Write comment row
   sFilRow = "// ";
@@ -1176,7 +1232,7 @@ int sstCpp01_wrt2CppHedFil (int               iKey,
   iStat = sstCpp01_Fil_wrt_head ( 0, &sExpFile, &sDateStr);
 
   // Write comment to cpp header file
-  iStat = sstCpp01_Hed_WrtCom ( 0, &sExpFile, &cClassNam);
+  iStat = sstCpp01_Hed_WrtCom ( 0, &sExpFile, oCppClass->GetSysNam(), oCppClass->GetGrpNam());
 
   // write define open rows in cpp header file
   iStat = sstCpp01_Hed_wrt_def_open ( 0, &sExpFile, (char*)"SST",oCppClass->cSysNam,
