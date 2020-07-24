@@ -227,7 +227,7 @@ int sstCppGenQtTabLibCls::FillBlc_data (int               iKey,
   oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);  // OTHER
 
   // oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);
-  oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_Attributes oDLAttributes;");
+  // oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_Attributes oDLAttributes;");
 
   // oCallStr = "  int iStat = this->poDatabase->Read";  // DXF
   oCallStr = "  int iStat = this->poDatabase->ReadDb";
@@ -544,7 +544,7 @@ int sstCppGenQtTabLibCls::FillBlc_setData (int               iKey,
   // oCppFncClass->writeBlcRow( 0, lSatzNr, "  " + this->GetDxfConstructStr(oCppFncClass->GetClsNam()));  // DXF
   oCppFncClass->writeBlcRow( 0, lSatzNr, oCallStr);  // OTHER
 
-  oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_Attributes oDLAttributes;");
+  // oCppFncClass->writeBlcRow( 0, lSatzNr, "  DL_Attributes oDLAttributes;");
   oCppFncClass->writeBlcRow( 0, lSatzNr, "  dREC04RECNUMTYP dMainRecNo = 0;");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr," ");
   iStat = oCppFncClass->writeBlcRow( 0, lSatzNr,"  dREC04RECNUMTYP dRecNo = index.row() +1;");
@@ -875,23 +875,205 @@ int sstCppGenQtTabLibCls::FillBlc_insertRows (int               iKey,
   return iRet;
 }
 //=============================================================================
-int sstCppGenQtTabLibCls::FillBlc_ViewConstructor( sstCpp01_Class_Cls  *oCppFncClass)
+int sstCppGenQtTabLibCls::FillBlc_SlotChangeTab( sstCpp01_Class_Cls  *oCppFncClass)
+{
+  dREC04RECNUMTYP dRecNo = 0;
+  std::string oBlcRow;
+
+//  emit this->sstSgnlTabMLChanged(oMapSignal);
+
+  oBlcRow = "  emit this->SgnlTabChanged" + oCppFncClass->GetClsNam() + "(oMapSignal);";
+  int iStat = oCppFncClass->writeBlcRow( 0, &dRecNo, oBlcRow);
+  return iStat;
+}
+//=============================================================================
+int sstCppGenQtTabLibCls::FillBlc_SlotUpdateTab( sstCpp01_Class_Cls  *oCppFncClass)
 {
   dREC04RECNUMTYP dRecNo = 0;
   std::string oBlcRow;
   int iStat = 0;
 
+//  emit this->poTabMdl->sstSgnlTabMLUpdated(oShapeItem);
+//  this->resizeRowsToContents();
+
+  oBlcRow = "  emit this->poTabMdl->SgnlTabUpdated" + oCppFncClass->GetClsNam() + "(oShapeItem);";
+  iStat = oCppFncClass->writeBlcRow( 0, &dRecNo, oBlcRow);
+  iStat = oCppFncClass->writeBlcRow( 0, &dRecNo,"  this->resizeRowsToContents();");
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenQtTabLibCls::FillCls_SlotChangeTab(sstCpp01_Class_Cls *oCppTypClass,
+                                                    sstCpp01_Class_Cls *oCppFncClass)
+{
+  int iStat = 0;
+  sstCpp01_ClsFnc_Cls oCppClsFnc;    // Next Function record for actual class
+  std::string oLocFncClsNam = "SlotChangeTab" + oCppFncClass->GetClsNam();
+  dREC04RECNUMTYP lSatzNr = 0;
+  dREC04RECNUMTYP lSatzNrBlc = 0;
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count(); // Get end of code block
+
+  std::string oFullClsNam;
+  oFullClsNam = oCppFncClass->GetSysNam()+oCppFncClass->GetGrpNam()+oCppFncClass->GetClsNam()+"Cls";
+
+  // define new class set and write: constructor
+  oCppClsFnc.eCppType = sstStr01Unknown;  // Return type
+  oCppClsFnc.eClsVisiTyp = myClsSlot;   // private or public function
+  // oCppClsFnc.lBlcStart = 1;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  oCppClsFnc.lBlcRows = 0;
+
+  iStat = this->FillBlc_SlotChangeTab( oCppFncClass);
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1;
+
+  strncpy( oCppClsFnc.cClsNam, oFullClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
+  // strncpy( oCppClsFnc.cFncPar,"QObject *parent, sstMisc01PrtFilCls *poTmpPrt, sstDxf03DbCls *poTmpDatabase", dCPPFILROWLENGTH);  // Function Parameter without parenthis
+  std::string oLocStr = "sstQt01MapSignalCls oMapSignal";
+  // oLocStr += oCppTypClass->GetSysNam();
+  // oLocStr += "FncDatabaseCls *poTmpDatabase";
+  strncpy( oCppClsFnc.cFncPar, oLocStr.c_str(), dCPPFILROWLENGTH);  // Function Parameter without parenthis
+
+  oCppClsFnc.setFncCom("Comment " + oLocFncClsNam);  // Comment
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.setRetNam("void");
+  iStat = oCppFncClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenQtTabLibCls::FillCls_SlotUpdateTab(sstCpp01_Class_Cls *oCppTypClass,
+                                                    sstCpp01_Class_Cls *oCppFncClass)
+{
+  int iStat = 0;
+  sstCpp01_ClsFnc_Cls oCppClsFnc;    // Next Function record for actual class
+  std::string oLocFncClsNam = "SlotUpdateTab" + oCppFncClass->GetClsNam();
+  dREC04RECNUMTYP lSatzNr = 0;
+  dREC04RECNUMTYP lSatzNrBlc = 0;
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count(); // Get end of code block
+
+  std::string oFullClsNam;
+  oFullClsNam = oCppFncClass->GetSysNam()+oCppFncClass->GetGrpNam()+oCppFncClass->GetClsNam()+"Cls";
+
+  // define new class set and write: constructor
+  oCppClsFnc.eCppType = sstStr01Unknown;  // Return type
+  oCppClsFnc.eClsVisiTyp = myClsSlot;   // private or public function
+  // oCppClsFnc.lBlcStart = 1;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  oCppClsFnc.lBlcRows = 0;
+
+  iStat = this->FillBlc_SlotUpdateTab( oCppFncClass);
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1;
+
+  strncpy( oCppClsFnc.cClsNam, oFullClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
+  std::string oLocStr = "sstQt01ShapeItem oShapeItem";
+  strncpy( oCppClsFnc.cFncPar, oLocStr.c_str(), dCPPFILROWLENGTH);  // Function Parameter without parenthis
+
+  oCppClsFnc.setFncCom("Comment " + oLocFncClsNam);  // Comment
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.setRetNam("void");
+  iStat = oCppFncClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenQtTabLibCls::FillCls_SgnlTabChanged(sstCpp01_Class_Cls *oCppTypClass,
+                                                     sstCpp01_Class_Cls *oCppFncClass)
+{
+  int iStat = 0;
+  sstCpp01_ClsFnc_Cls oCppClsFnc;    // Next Function record for actual class
+  std::string oLocFncClsNam = "SgnlTabChanged" + oCppFncClass->GetClsNam();
+  dREC04RECNUMTYP lSatzNr = 0;
+  dREC04RECNUMTYP lSatzNrBlc = 0;
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count(); // Get end of code block
+
+  std::string oFullClsNam;
+  oFullClsNam = oCppFncClass->GetSysNam()+oCppFncClass->GetGrpNam()+oCppFncClass->GetClsNam()+"Cls";
+
+  // define new class set and write: constructor
+  oCppClsFnc.eCppType = sstStr01Unknown;  // Return type
+  oCppClsFnc.eClsVisiTyp = myClsSignal;   // private or public function
+  // oCppClsFnc.lBlcStart = 1;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  oCppClsFnc.lBlcRows = 0;
+
+  // iStat = this->FillBlc_ViewSlotUpdateTab( oCppFncClass);
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1;
+
+  strncpy( oCppClsFnc.cClsNam, oFullClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
+  std::string oLocStr = "sstQt01MapSignalCls oMapSignal";
+  strncpy( oCppClsFnc.cFncPar, oLocStr.c_str(), dCPPFILROWLENGTH);  // Function Parameter without parenthis
+
+  oCppClsFnc.setFncCom("Comment " + oLocFncClsNam);  // Comment
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.setRetNam("void");
+  iStat = oCppFncClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenQtTabLibCls::FillCls_SgnlTabUpdated(sstCpp01_Class_Cls *oCppTypClass,
+                                                     sstCpp01_Class_Cls *oCppFncClass)
+{
+  int iStat = 0;
+  sstCpp01_ClsFnc_Cls oCppClsFnc;    // Next Function record for actual class
+  std::string oLocFncClsNam = "SgnlTabUpdated" + oCppFncClass->GetClsNam();
+  dREC04RECNUMTYP lSatzNr = 0;
+  dREC04RECNUMTYP lSatzNrBlc = 0;
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count(); // Get end of code block
+
+  std::string oFullClsNam;
+  oFullClsNam = oCppFncClass->GetSysNam()+oCppFncClass->GetGrpNam()+oCppFncClass->GetClsNam()+"Cls";
+
+  // define new class set and write: constructor
+  oCppClsFnc.eCppType = sstStr01Unknown;  // Return type
+  oCppClsFnc.eClsVisiTyp = myClsSignal;   // private or public function
+  // oCppClsFnc.lBlcStart = 1;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  oCppClsFnc.lBlcRows = 0;
+
+  // iStat = this->FillBlc_ViewSlotUpdateTab( oCppFncClass);
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1;
+
+  strncpy( oCppClsFnc.cClsNam, oFullClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
+  std::string oLocStr = "sstQt01ShapeItem oShapeItem";
+  strncpy( oCppClsFnc.cFncPar, oLocStr.c_str(), dCPPFILROWLENGTH);  // Function Parameter without parenthis
+
+  oCppClsFnc.setFncCom("Comment " + oLocFncClsNam);  // Comment
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.setRetNam("void");
+  iStat = oCppFncClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  return iStat;
+}
+//=============================================================================
+//=============================================================================
+int sstCppGenQtTabLibCls::FillBlc_ViewConstructor( sstCpp01_Class_Cls  *oCppFncClass)
+{
+  dREC04RECNUMTYP dRecNo = 0;
+  std::string oBlcRow;
+  int iStat = 0;
+  std::string oFullClsNam;
+  oFullClsNam = oCppFncClass->GetSysNam() + oCppFncClass->GetGrpNam() + oCppFncClass->GetClsNam();
+
 //  tonQtPtss01TabViewMLCls::tonQtPtss01TabViewMLCls(sstMisc01PrtFilCls *poTmpPrt,
 //                                                   PtssFncDatabaseCls *poPtssDb)
 //    : sstQt01TabViewCls(poTmpPrt)
 //  {
-//    poTabMdl = new PtssTabMdlMLCls( 0, poTmpPrt, poPtssDb);
+//    poTabMdl = new [SYS]QtTabMdl[CLS]Cls( 0, poTmpPrt, po[SYS]Db);
 //    this->setModel( poTabMdl );
 
-//    connect(this,SIGNAL(sstSgnlTabMLUpdated(sstQt01ShapeItem)),this,SLOT(sstSlotUpdateTabML(sstQt01ShapeItem)));
-//    connect(this->poTabMdl,SIGNAL(sstSgnlTabMLChanged(sstQt01MapSignalCls)),this,SLOT(sstSlotChangeTabML(sstQt01MapSignalCls)));
+//    connect(this,SIGNAL(sstSgnlTab[CLS]Updated(sstQt01ShapeItem)),this,SLOT(sstSlotUpdateTab[CLS](sstQt01ShapeItem)));
+//    connect(this->poTabMdl,SIGNAL(sstSgnlTab[CLS]Changed(sstQt01MapSignalCls)),this,SLOT(sstSlotChangeTab[CLS](sstQt01MapSignalCls)));
 
-  oBlcRow = "  poTabMdl = new PtssTabMdl" + oCppFncClass->GetClsNam() + "Cls( 0, poTmpPrt, poPtssDb);";
+  oBlcRow = "  poTabMdl = new " + oCppFncClass->GetSysNam() + "QtTabMdl" + oCppFncClass->GetClsNam() + "Cls( 0, poTmpPrt, poTmpDatabase);";
   iStat = oCppFncClass->writeBlcRow( 0, &dRecNo, oBlcRow);
   iStat = oCppFncClass->writeBlcRow( 0, &dRecNo,"  this->setModel( poTabMdl );");
   iStat = oCppFncClass->writeBlcRow( 0, &dRecNo,"  ");
@@ -922,7 +1104,7 @@ int sstCppGenQtTabLibCls::FillBlc_ViewSlotChangeTab( sstCpp01_Class_Cls  *oCppFn
 
 //  emit this->sstSgnlTabMLChanged(oMapSignal);
 
-  oBlcRow = "  emit this->sstSgnlTab" + oCppFncClass->GetClsNam() + "Changed(oMapSignal);";
+  oBlcRow = "  emit this->SgnlTabChanged" + oCppFncClass->GetClsNam() + "(oMapSignal);";
   int iStat = oCppFncClass->writeBlcRow( 0, &dRecNo, oBlcRow);
   return iStat;
 }
@@ -936,7 +1118,7 @@ int sstCppGenQtTabLibCls::FillBlc_ViewSlotUpdateTab( sstCpp01_Class_Cls  *oCppFn
 //  emit this->poTabMdl->sstSgnlTabMLUpdated(oShapeItem);
 //  this->resizeRowsToContents();
 
-  oBlcRow = "  emit this->poTabMdl->sstSgnlTab" + oCppFncClass->GetClsNam() + "Updated(oShapeItem);";
+  oBlcRow = "  emit this->poTabMdl->SgnlTabUpdated" + oCppFncClass->GetClsNam() + "(oShapeItem);";
   iStat = oCppFncClass->writeBlcRow( 0, &dRecNo, oBlcRow);
   iStat = oCppFncClass->writeBlcRow( 0, &dRecNo,"  this->resizeRowsToContents();");
 
@@ -1001,7 +1183,7 @@ int sstCppGenQtTabLibCls::FillCls_ViewDestructor(sstCpp01_Class_Cls *oCppTypClas
   lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
   oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1;
 
-  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cClsNam, oCppFncClass->GetLibClsNam().c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
   strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
 //  std::string oLocStr = "QObject *parent, sstMisc01PrtFilCls *poTmpPrt, ";
 //  oLocStr += oCppTypClass->GetSysNam();
@@ -1019,14 +1201,17 @@ int sstCppGenQtTabLibCls::FillCls_ViewSlotChangeTab(sstCpp01_Class_Cls *oCppTypC
 {
   int iStat = 0;
   sstCpp01_ClsFnc_Cls oCppClsFnc;    // Next Function record for actual class
-  std::string oLocFncClsNam = "SlotChangeTab" + oCppFncClass->GetClsNam();;
+  std::string oLocFncClsNam = "SlotChangeTab" + oCppFncClass->GetClsNam();
   dREC04RECNUMTYP lSatzNr = 0;
   dREC04RECNUMTYP lSatzNrBlc = 0;
   lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count(); // Get end of code block
 
+  std::string oFullClsNam;
+  oFullClsNam = oCppFncClass->GetSysNam()+oCppFncClass->GetGrpNam()+oCppFncClass->GetClsNam()+"Cls";
+
   // define new class set and write: constructor
   oCppClsFnc.eCppType = sstStr01Unknown;  // Return type
-  oCppClsFnc.eClsVisiTyp = myClsPublic;   // private or public function
+  oCppClsFnc.eClsVisiTyp = myClsSlot;   // private or public function
   // oCppClsFnc.lBlcStart = 1;
   oCppClsFnc.lBlcStart = lSatzNrBlc+1;
   oCppClsFnc.lBlcRows = 0;
@@ -1035,7 +1220,7 @@ int sstCppGenQtTabLibCls::FillCls_ViewSlotChangeTab(sstCpp01_Class_Cls *oCppTypC
   lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
   oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1;
 
-  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cClsNam, oFullClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
   strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
   // strncpy( oCppClsFnc.cFncPar,"QObject *parent, sstMisc01PrtFilCls *poTmpPrt, sstDxf03DbCls *poTmpDatabase", dCPPFILROWLENGTH);  // Function Parameter without parenthis
   std::string oLocStr = "sstQt01MapSignalCls oMapSignal";
@@ -1061,9 +1246,12 @@ int sstCppGenQtTabLibCls::FillCls_ViewSlotUpdateTab(sstCpp01_Class_Cls *oCppTypC
   dREC04RECNUMTYP lSatzNrBlc = 0;
   lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count(); // Get end of code block
 
+  std::string oFullClsNam;
+  oFullClsNam = oCppFncClass->GetSysNam()+oCppFncClass->GetGrpNam()+oCppFncClass->GetClsNam()+"Cls";
+
   // define new class set and write: constructor
   oCppClsFnc.eCppType = sstStr01Unknown;  // Return type
-  oCppClsFnc.eClsVisiTyp = myClsPublic;   // private or public function
+  oCppClsFnc.eClsVisiTyp = myClsSlot;   // private or public function
   // oCppClsFnc.lBlcStart = 1;
   oCppClsFnc.lBlcStart = lSatzNrBlc+1;
   oCppClsFnc.lBlcRows = 0;
@@ -1072,7 +1260,81 @@ int sstCppGenQtTabLibCls::FillCls_ViewSlotUpdateTab(sstCpp01_Class_Cls *oCppTypC
   lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
   oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1;
 
-  strncpy( oCppClsFnc.cClsNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cClsNam, oFullClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
+  std::string oLocStr = "sstQt01ShapeItem oShapeItem";
+  strncpy( oCppClsFnc.cFncPar, oLocStr.c_str(), dCPPFILROWLENGTH);  // Function Parameter without parenthis
+
+  oCppClsFnc.setFncCom("Comment " + oLocFncClsNam);  // Comment
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.setRetNam("void");
+  iStat = oCppFncClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenQtTabLibCls::FillCls_ViewSgnlTabChanged(sstCpp01_Class_Cls *oCppTypClass,
+                                                     sstCpp01_Class_Cls *oCppFncClass)
+{
+  int iStat = 0;
+  sstCpp01_ClsFnc_Cls oCppClsFnc;    // Next Function record for actual class
+  std::string oLocFncClsNam = "SgnlTabChanged" + oCppFncClass->GetClsNam();
+  dREC04RECNUMTYP lSatzNr = 0;
+  dREC04RECNUMTYP lSatzNrBlc = 0;
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count(); // Get end of code block
+
+  std::string oFullClsNam;
+  oFullClsNam = oCppFncClass->GetSysNam()+oCppFncClass->GetGrpNam()+oCppFncClass->GetClsNam()+"Cls";
+
+  // define new class set and write: constructor
+  oCppClsFnc.eCppType = sstStr01Unknown;  // Return type
+  oCppClsFnc.eClsVisiTyp = myClsSignal;   // private or public function
+  // oCppClsFnc.lBlcStart = 1;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  oCppClsFnc.lBlcRows = 0;
+
+  // iStat = this->FillBlc_ViewSlotUpdateTab( oCppFncClass);
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1;
+
+  strncpy( oCppClsFnc.cClsNam, oFullClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
+  strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
+  std::string oLocStr = "sstQt01MapSignalCls oMapSignal";
+  strncpy( oCppClsFnc.cFncPar, oLocStr.c_str(), dCPPFILROWLENGTH);  // Function Parameter without parenthis
+
+  oCppClsFnc.setFncCom("Comment " + oLocFncClsNam);  // Comment
+  oCppClsFnc.eCppType = sstStr01Custom;
+  oCppClsFnc.setRetNam("void");
+  iStat = oCppFncClass->ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
+
+  return iStat;
+}
+//=============================================================================
+int sstCppGenQtTabLibCls::FillCls_ViewSgnlTabUpdated(sstCpp01_Class_Cls *oCppTypClass,
+                                                     sstCpp01_Class_Cls *oCppFncClass)
+{
+  int iStat = 0;
+  sstCpp01_ClsFnc_Cls oCppClsFnc;    // Next Function record for actual class
+  std::string oLocFncClsNam = "SgnlTabUpdated" + oCppFncClass->GetClsNam();
+  dREC04RECNUMTYP lSatzNr = 0;
+  dREC04RECNUMTYP lSatzNrBlc = 0;
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count(); // Get end of code block
+
+  std::string oFullClsNam;
+  oFullClsNam = oCppFncClass->GetSysNam()+oCppFncClass->GetGrpNam()+oCppFncClass->GetClsNam()+"Cls";
+
+  // define new class set and write: constructor
+  oCppClsFnc.eCppType = sstStr01Unknown;  // Return type
+  oCppClsFnc.eClsVisiTyp = myClsSignal;   // private or public function
+  // oCppClsFnc.lBlcStart = 1;
+  oCppClsFnc.lBlcStart = lSatzNrBlc+1;
+  oCppClsFnc.lBlcRows = 0;
+
+  // iStat = this->FillBlc_ViewSlotUpdateTab( oCppFncClass);
+  lSatzNrBlc = oCppFncClass->ClsBlcDsVerw->count();  // Get end of code block
+  oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1;
+
+  strncpy( oCppClsFnc.cClsNam, oFullClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // class name
   strncpy( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
   std::string oLocStr = "sstQt01ShapeItem oShapeItem";
   strncpy( oCppClsFnc.cFncPar, oLocStr.c_str(), dCPPFILROWLENGTH);  // Function Parameter without parenthis

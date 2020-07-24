@@ -41,7 +41,7 @@
 *
 * All Cpp Class types.  <BR>
 *
-* Changed: 01.06.12  Re.
+* Changed: 24.06.20  Re.
 *
 * @ingroup sstCpp01Lib
 *
@@ -54,6 +54,8 @@ enum _sstCpp01_ClassType_enum
 { myClsPublic,       /**< public           */
   myClsProtected,    /**< protected        */
   myClsPrivate,      /**< private          */
+  myClsSlot,         /**< public slot      */
+  myClsSignal,       /**< public signal    */
   myClsUnknown,      /**< unknown          */
      };
 typedef enum _sstCpp01_ClassType_enum sstCpp01_ClassType_enum;

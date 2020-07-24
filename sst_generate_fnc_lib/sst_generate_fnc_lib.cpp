@@ -133,7 +133,7 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
    iStat = sstCpp01_Fil_wrt_head ( 0, &sHedFil, &sDateStr);
 
    // Write comment to cpp header file
-   iStat = sstCpp01_Hed_WrtCom ( 0, &sHedFil, &sSysNam);
+   iStat = sstCpp01_Hed_WrtCom ( 0, &sHedFil, sSysNam, sGrpNam);
 
    // write define open rows in cpp header file
    iStat = sstCpp01_Hed_wrt_def_open ( 0, &sHedFil, "SST", sSysNam,
@@ -223,6 +223,38 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
 
   // Datensatz-Verwaltung beenden.
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
+
+  // === Build Typ Class with all Classes from Def File =======================
+
+  // Datensatz-Verwaltung anlegen / öffnen.
+  iStat = sstCpp01_ClassTab_Open ( 0, &oCppTypClass);
+
+  oStrType.clear();
+  oStrTypeAct.clear();
+
+  // write all cpp header files
+  // loop over all entries in typedef file
+  for (dREC04RECNUMTYP ii = 1; ii <= oTypeDefTable->count(); ii++)
+  {
+
+    // Datensatz an absoluter Position lesen.
+    iStat = oTypeDefTable->Read( 0, ii, &oStrType);
+
+    // if object name is different to actual object name, open new object
+    size_t dStrPos = oStrTypeAct.Get_ObjNam().compare(oStrType.Get_ObjNam());
+
+    if (dStrPos != 0)
+    {
+
+      // write new type definition to class list
+      oCppClsTyp1.eClsVisiTyp = myClsPublic;
+      oCppClsTyp1.sClsMem = oStrType;
+
+      oStrTypeAct = oStrType;
+      iStat = oCppTypClass.ClsTypDsVerw->WritNew( 0, &oCppClsTyp1, &SatzNr);
+    }
+
+  }
 
   // === write database class =================================================
   // with all tables
@@ -320,13 +352,13 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
 
   // === Write class Function LoadFromCsvFiless
   oCppClsFnc.lBlcStart = lSatzNrBlc+1;
-  iStat = this->FillBlc_LoadFromCsvFiles( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+  iStat = this->FillBlc_LoadFromCsvFiles( 0, &oCppTypClass, &oCppFncClass, &lSatzNrBlc);
   oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
 
   strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
   strncpy( oCppClsFnc.cFncNam, (char*) "LoadFromCsvFiles", dSST_STR01_VAR_NAM_LEN);
   // strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
-  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncPar,"sstMisc01PrtFilCls *poPrt, const std::string oPtsFilNam", dCPPFILROWLENGTH);
   strncpy(oCppClsFnc.cFncCom,"Read Database from Csv Files", dCPPFILROWLENGTH);
   // oCppClsFnc.eClsVisiTyp = myClsPrivate;
   oCppClsFnc.eClsVisiTyp = myClsPublic;
@@ -339,13 +371,13 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
 
   // === Write class Function SaveToCsvFiles
   oCppClsFnc.lBlcStart = lSatzNrBlc+1;
-  iStat = this->FillBlc_SaveToCsvFiles( 0, oStrType, &oCppFncClass, &lSatzNrBlc);
+  iStat = this->FillBlc_SaveToCsvFiles( 0, &oCppTypClass, &oCppFncClass, &lSatzNrBlc);
   oCppClsFnc.lBlcRows = lSatzNrBlc - oCppClsFnc.lBlcStart +1 ;
 
   strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
   strncpy( oCppClsFnc.cFncNam, (char*) "SaveToCsvFiles", dSST_STR01_VAR_NAM_LEN);
   // strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
-  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncPar,"sstMisc01PrtFilCls *poPrt, const std::string oPtsFilNam", dCPPFILROWLENGTH);
   strncpy(oCppClsFnc.cFncCom,"Write Database to Csv Files", dCPPFILROWLENGTH);
   // oCppClsFnc.eClsVisiTyp = myClsPrivate;
   oCppClsFnc.eClsVisiTyp = myClsPublic;
@@ -364,7 +396,7 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
   strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
   strncpy( oCppClsFnc.cFncNam, (char*) "LoadAllFromMainFile", dSST_STR01_VAR_NAM_LEN);
   // strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
-  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncPar,"sstMisc01PrtFilCls *poPrt, const std::string oPtsFilNam", dCPPFILROWLENGTH);
   strncpy(oCppClsFnc.cFncCom,"Read Database from format main file", dCPPFILROWLENGTH);
   // oCppClsFnc.eClsVisiTyp = myClsPrivate;
   oCppClsFnc.eClsVisiTyp = myClsPublic;
@@ -383,7 +415,7 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
   strncpy( oCppClsFnc.cClsNam, (char*) oClsNamStr.c_str(), dSST_STR01_VAR_NAM_LEN);
   strncpy( oCppClsFnc.cFncNam, (char*) "SaveAllToMainFile", dSST_STR01_VAR_NAM_LEN);
   // strncat( oCppClsFnc.cFncNam, (char*) oStrTypeAct.Get_ObjNam().c_str(), dSST_STR01_VAR_NAM_LEN);
-  strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);
+  strncpy(oCppClsFnc.cFncPar,"sstMisc01PrtFilCls *poPrt, const std::string oPtsFilNam", dCPPFILROWLENGTH);
   strncpy(oCppClsFnc.cFncCom,"Write Database to format main file", dCPPFILROWLENGTH);
   // oCppClsFnc.eClsVisiTyp = myClsPrivate;
   oCppClsFnc.eClsVisiTyp = myClsPublic;
@@ -445,6 +477,9 @@ int sstCppGenFncLibCls::FilWrtClsFncOpen3 (int                 iKey,
 
   // close code class file
   iStat = sCppFil.fcloseFil(0);
+
+  // Datensatz-Verwaltung beenden.
+  iStat = sstCpp01_ClassTab_Close ( 0, &oCppTypClass);
 
   // Datensatz-Verwaltung beenden.
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppFncClass);

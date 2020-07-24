@@ -389,7 +389,7 @@ int sstCppGenTypLibCls::sstCpp01_CsvLib_FillBlc_Write (int               iKey,
     }
     case sstStr01Float:
     {
-      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_RealFrmt_2String ( 0, ",
+      iStat = sstCpp01_CsvLib_CreatePrtStrWr ( 0, (char*) "    iStat = oCsvRow.Csv_Real_2String ( 0, ",
                                           oCppTypClass,
                                           &oClsTyp.sClsMem,
                                           &sBlcTxt);

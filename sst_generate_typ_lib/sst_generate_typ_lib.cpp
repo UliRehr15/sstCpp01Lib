@@ -150,7 +150,7 @@ int sstCppGenTypLibCls::sstcsv_FilWrtClsTypOpen2 (int                 iKey,
   iStat = sstCpp01_Fil_wrt_head ( 0, &sHedFil, &sDateStr);
 
   // Write comment to cpp header file
-  iStat = sstCpp01_Hed_WrtCom ( 0, &sHedFil, &sSysNam);
+  iStat = sstCpp01_Hed_WrtCom ( 0, &sHedFil, sSysNam, sGrpNam);
 
   // write define open rows in cpp header file
   iStat = sstCpp01_Hed_wrt_def_open ( 0, &sHedFil, "SST", sSysNam,

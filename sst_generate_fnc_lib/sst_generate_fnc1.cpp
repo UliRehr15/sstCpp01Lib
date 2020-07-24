@@ -326,9 +326,13 @@ int sstCppGenFncLibCls::FillBlc_WriteDb (int                  iKey,
   std::string oWriteNewStr;
   std::string oSysGrpStr;
 
-  oSysGrpStr = oCppFncClass->GetSysNam() + oCppFncClass->GetGrpNam();
+  // oSysGrpStr = oCppFncClass->GetSysNam() + oCppFncClass->GetGrpNam();
+  oSysGrpStr = oCppFncClass->GetSysNam() + "Typ";
+  // oSysGrpStr = "RecTyp";
   oWriteStr    = "    iStat = this->poTab" + oClsMemDef.Get_ObjNam() + "->Write( 0, pdRecNo ,vRecAdr);";
-  oTypeStr     = "    oMainRec.e" + oSysGrpStr + " = e" + oCppFncClass->GetSysNam() +
+//  oTypeStr     = "    oMainRec.e" + oSysGrpStr + " = e" + oCppFncClass->GetSysNam() +
+//                 "_" + oClsMemDef.Get_ObjNam() +";";
+  oTypeStr     = "    oMainRec.eRecTyp = e" + oCppFncClass->GetSysNam() +
                  "_" + oClsMemDef.Get_ObjNam() +";";
   oWriteNewStr = "    iStat = this->poTab" + oClsMemDef.Get_ObjNam() + "->Write( 0, pdRecNo ,vRecAdr);";
 
@@ -387,7 +391,7 @@ int sstCppGenFncLibCls::FillBlc_DatabaseWrite (int                  iKey,
 }
 //=============================================================================
 int sstCppGenFncLibCls::FillBlc_LoadFromCsvFiles (int                  iKey,
-                                                  sstStr01VarDefCls  oClsMemDef,
+                                                  sstCpp01_Class_Cls  *oCppTypClass,
                                                   sstCpp01_Class_Cls  *oCppFncClass,
                                                   dREC04RECNUMTYP     *lSatzNr)
 //-----------------------------------------------------------------------------
@@ -395,19 +399,77 @@ int sstCppGenFncLibCls::FillBlc_LoadFromCsvFiles (int                  iKey,
   if ( iKey != 0) return -1;
   int iStat = 0;
 
-  oCppFncClass->writeBlcRow(0,lSatzNr,"  iStat = 1;");
+//  std::string oPtsFilNamShort;
+//  std::string oPtsFilNamCsv;
+//  sstMisc01FilNamCls oFilNamCnvt;
+//  iStat = oFilNamCnvt.RemoveExtension( 0, ".Ptss", oPtsFilNam, &oPtsFilNamShort);
+//  assert(iStat >= 0);
+//  sstMisc01AscFilCls oPtsCsvFil;
+
+//  oPtsFilNamCsv = oPtsFilNamShort + "_HA.Csv";
+//  iStat = this->poTabHA->LoadTabFromCsv( 0, oPtsFilNamCsv, &oErrStr);
+//  assert(iStat >= 0);  // Not found
+
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  std::string oPtsFilNamShort;");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  std::string oPtsFilNamCsv;");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  std::string oErrStr;");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  sstMisc01FilNamCls oFilNamCnvt;");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  iStat = oFilNamCnvt.RemoveExtension( 0, \".Ptss\", oPtsFilNam, &oPtsFilNamShort);");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  assert(iStat >= 0);");
+  oCppFncClass->writeBlcRow( 0, lSatzNr,"  sstMisc01AscFilCls oPtsCsvFil;");
+
+
+  for ( dREC04RECNUMTYP ll = 1; ll <=  oCppTypClass->ClsTypDsVerw->count(); ll++)
+  {
+    sstCpp01_ClsTyp_Cls oCppClsTyp1;
+    iStat = oCppTypClass->ClsTypDsVerw->Read( 0, ll, &oCppClsTyp1);
+    oCppFncClass->writeBlcRow( 0, lSatzNr,"  oPtsFilNamCsv = oPtsFilNamShort + \"_" + oCppClsTyp1.sClsMem.Get_ObjNam() + ".Csv\";");
+    oCppFncClass->writeBlcRow( 0, lSatzNr,"  iStat = this->poTab" + oCppClsTyp1.sClsMem.Get_ObjNam() + "->LoadTabFromCsv( 0, oPtsFilNamCsv, &oErrStr);");
+    oCppFncClass->writeBlcRow( 0, lSatzNr,"  assert(iStat >= 0);  // Error reading table");
+    oCppFncClass->writeBlcRow( 0, lSatzNr," ");
+  }
 
   return iStat;
 }
 //=============================================================================
 int sstCppGenFncLibCls::FillBlc_SaveToCsvFiles (int                  iKey,
-                                                sstStr01VarDefCls  oClsMemDef,
+                                                sstCpp01_Class_Cls  *oCppTypClass,
                                                 sstCpp01_Class_Cls  *oCppFncClass,
                                                 dREC04RECNUMTYP     *lSatzNr)
 //-----------------------------------------------------------------------------
 {
   if ( iKey != 0) return -1;
   int iStat = 0;
+
+  //  std::string oPtsFilNamShort;
+  //  std::string oPtsFilNamCsv;
+  //  sstMisc01FilNamCls oFilNamCnvt;
+  //  iStat = oFilNamCnvt.RemoveExtension( 0, ".Ptss", oPtsFilNam, &oPtsFilNamShort);
+  //  assert(iStat >= 0);
+  //  sstMisc01AscFilCls oPtsCsvFil;
+
+  //  oPtsFilNamCsv = oPtsFilNamShort + "_HA.Csv";
+  //  iStat = this->poTabHA->SaveTabToCsv( 0, oPtsFilNamCsv, &oErrStr);
+  //  assert(iStat >= 0);  // Not found
+
+    oCppFncClass->writeBlcRow( 0, lSatzNr,"  std::string oPtsFilNamShort;");
+    oCppFncClass->writeBlcRow( 0, lSatzNr,"  std::string oPtsFilNamCsv;");
+    oCppFncClass->writeBlcRow( 0, lSatzNr,"  std::string oErrStr;");
+    oCppFncClass->writeBlcRow( 0, lSatzNr,"  sstMisc01FilNamCls oFilNamCnvt;");
+    oCppFncClass->writeBlcRow( 0, lSatzNr,"  iStat = oFilNamCnvt.RemoveExtension( 0, \".Ptss\", oPtsFilNam, &oPtsFilNamShort);");
+    oCppFncClass->writeBlcRow( 0, lSatzNr,"  assert(iStat >= 0);");
+    oCppFncClass->writeBlcRow( 0, lSatzNr,"  sstMisc01AscFilCls oPtsCsvFil;");
+
+
+    for ( dREC04RECNUMTYP ll = 1; ll <=  oCppTypClass->ClsTypDsVerw->count(); ll++)
+    {
+      sstCpp01_ClsTyp_Cls oCppClsTyp1;
+      iStat = oCppTypClass->ClsTypDsVerw->Read( 0, ll, &oCppClsTyp1);
+      oCppFncClass->writeBlcRow( 0, lSatzNr,"  oPtsFilNamCsv = oPtsFilNamShort + \"_" + oCppClsTyp1.sClsMem.Get_ObjNam() + ".Csv\";");
+      oCppFncClass->writeBlcRow( 0, lSatzNr,"  iStat = this->poTab" + oCppClsTyp1.sClsMem.Get_ObjNam() + "->SaveTabToCsv( 0, oPtsFilNamCsv, &oErrStr);");
+      oCppFncClass->writeBlcRow( 0, lSatzNr,"  assert(iStat >= 0);  // Error writing table");
+      oCppFncClass->writeBlcRow( 0, lSatzNr," ");
+    }
 
   return iStat;
 }

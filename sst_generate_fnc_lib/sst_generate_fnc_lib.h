@@ -351,12 +351,12 @@ int FillBlc_DatabaseWrite (int                  iKey,
                            dREC04RECNUMTYP     *lSatzNr);
 //==============================================================================
 int FillBlc_LoadFromCsvFiles (int                  iKey,
-                              sstStr01VarDefCls    oClsMemDef,
+                              sstCpp01_Class_Cls  *oCppTypClass,
                               sstCpp01_Class_Cls  *oCppFncClass,
                               dREC04RECNUMTYP     *lSatzNr);
 //==============================================================================
 int FillBlc_SaveToCsvFiles (int                  iKey,
-                            sstStr01VarDefCls    oClsMemDef,
+                            sstCpp01_Class_Cls  *oCppTypClass,
                             sstCpp01_Class_Cls  *oCppFncClass,
                             dREC04RECNUMTYP     *lSatzNr);
 //==============================================================================

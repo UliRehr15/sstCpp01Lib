@@ -163,11 +163,13 @@ int sstCpp01_wrt2CppHedFil (int               iKey,
 *
 * iStat = sstCpp01_WrtCls ( iKey, &sExpFile, &sBlcDsVerw, &oCppClsFnc);
 *
+* iKey = 1: Has derived class
+*
 * Changed: 29.06.12  Re.
 *
 * @ingroup sstCpp01InternLib
 *
-* @param iKey        [in]  For the moment 0
+* @param iKey        [in]  0 or 1
 * @param sExpFile    [in]  File Row
 * @param sBlcDsVerw  [out] Interpretation Error at String
 * @param oCppClsFnc  [out] Result cpp type dataset

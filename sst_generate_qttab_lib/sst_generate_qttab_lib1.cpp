@@ -94,7 +94,7 @@ int main(int argc, char *argv [])
   // Set Name of system
   sFncSysNam = "sstQtDxf01";  // DXF
   sFncSysNam = oTypDefTab.getSysNam();  // OTHER
-  oGenQtTab.setGrpNam("TabMdl");
+  oGenQtTab.setGrpNam("QtTabMdl");
 
   // Write all definitions in one header file
   // Write all model tab classes to code files
@@ -133,7 +133,8 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen3 (int                 iKey,
   if ( iKey != 0) return -1;
 
   // this->oAddCsvIncStr = "list;dl_dxf.h;dl_creationadapter.h;rs_vector.h;QtWidgets;sstQt01Lib.h;sstDxf03TypLib.h;sstDxf03Lib.h";  // DXF
-  this->oAddCsvIncStr = "list;dl_dxf.h;dl_creationadapter.h;rs_vector.h;QtWidgets;sstQt01Lib.h";
+  // this->oAddCsvIncStr = "list;dl_dxf.h;dl_creationadapter.h;rs_vector.h;QtWidgets;sstQt01Lib.h";
+  this->oAddCsvIncStr = "list;QtWidgets;sstQt01Lib.h";
   std::string oTypFilNam = poTypDefTab->getSysNam() + "TypLib.h";
   this->oAddCsvIncStr += ";"+ oTypFilNam;
   std::string oFncFilNam = poTypDefTab->getSysNam() + "FncLib.h";
@@ -148,7 +149,7 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen3 (int                 iKey,
   strncpy(oCppTypClass.cSysNam,poTypDefTab->getSysNam().c_str(),dSST_STR01_VAR_NAM_LEN);
 
   // sGrpNam = "FncOpen";
-  sGrpNam = "TabMdl";
+  sGrpNam = "QtTabMdl";
 
   sHedFilNam = sFncSysNam;
 //  sHedFilNam = sHedFilNam + "_";
@@ -327,10 +328,13 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen4 (int                 iKey,
 
   // Collect additional files in INCLUDE-Statement
   this->oAddCsvIncStr = "list;QtWidgets;sstQt01Lib.h";
-  std::string oTypFilNam = poTypDefTab->getSysNam() + "TypLib.h";
-  this->oAddCsvIncStr += ";"+ oTypFilNam;
-  std::string oFncFilNam = poTypDefTab->getSysNam() + "FncLib.h";
-  this->oAddCsvIncStr += ";" + oFncFilNam;
+
+  std::string oAddIncFilNam = poTypDefTab->getSysNam() + "TypLib.h";
+  this->oAddCsvIncStr += ";"+ oAddIncFilNam;
+  oAddIncFilNam = poTypDefTab->getSysNam() + "FncLib.h";
+  this->oAddCsvIncStr += ";" + oAddIncFilNam;
+  oAddIncFilNam = poTypDefTab->getSysNam() + this->getGrpNam() + "Lib.h";
+  this->oAddCsvIncStr += ";" + oAddIncFilNam;
 
   // Set Date in typ class
   iStat = oCppTypClass.SetDate ( 0, oDateStr);
@@ -341,7 +345,7 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen4 (int                 iKey,
   strncpy(oCppTypClass.cSysNam,poTypDefTab->getSysNam().c_str(),dSST_STR01_VAR_NAM_LEN);
 
   // sGrpNam = "FncOpen";
-  this->setGrpNam("TabView");
+  this->setGrpNam("QtTabView");
 
   oHedFilNam = oSysNam;
 //  sHedFilNam = sHedFilNam + "_";
@@ -357,7 +361,7 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen4 (int                 iKey,
   iStat = oClsFil.fopenWr( 0, oClsFilNam.c_str());
 
   oCppFncClass.SetSysNam( 0, oSysNam);
-  oCppFncClass.SetGrpNam( 0, "TabView");
+  oCppFncClass.SetGrpNam( 0, this->getGrpNam());
   oCppFncClass.SetClsNam( 0, oStrTypeAct.Get_ObjNam());
   oCppFncClass.SetDate( 0, oDateStr);
   oCppFncClass.setExtBaseCls("sstQt01TabViewCls");  // Base Class for all
@@ -404,15 +408,37 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen4 (int                 iKey,
     {
       oCppTypClass.SetClsNam( 0, oStrTypeAct.Get_ObjNam());
 
-      // open function TabView class
+      // open next QtTabView class
       iStat = sstCpp01_ClassTab_Open ( 0, &oCppFncClass);
 
       oCppFncClass.SetSysNam( 0, oSysNam);
       oCppFncClass.SetGrpNam( 0, "TabView");
       oCppFncClass.SetClsNam( 0, oStrTypeAct.Get_ObjNam());
       oCppFncClass.SetDate( 0, oDateStr);
+      // oCppFncClass.setExtBaseCls("sstQt01TabViewCls(poTmpPrt)");  // Base Class for all
       oCppFncClass.setExtBaseCls("sstQt01TabViewCls");  // Base Class for all
       oCppFncClass.setQtMocMacroStr("Q_OBJECT");        // Allow Qt Mocing
+
+      // Add member to QtTabView Class ========================================
+
+      // PtssTabMdlMLCls  *poTabMdl; /**< PtssTabMdlMLCls */
+      std::string oMemberStr;
+      oMemberStr = " PtssQtTabMdl" + oStrTypeAct.Get_ObjNam() + "Cls  *poTabMdl;";
+
+
+      sstStr01VarDefCls oVarUserDef;
+      oVarUserDef.Set_EleNam(oMemberStr);
+      oVarUserDef.Set_EleInfo("Model Table");
+      oVarUserDef.Set_Type(sstStr01Custom);
+
+      sstCpp01_ClsTyp_Cls oCppVarUserDef;  // for type class, extended var type
+
+      oCppVarUserDef.sClsMem = oVarUserDef;
+      oCppVarUserDef.eClsVisiTyp = myClsPrivate;
+
+      iStat = oCppFncClass.ClsTypDsVerw->WritNew( 0, &oCppVarUserDef, &dRecNo);
+
+      // Add functions to QtTabView Class =====================================
 
       iStat = this->FillCls_ViewConstructor( &oCppTypClass, &oCppFncClass);
       assert(iStat >= 0);
@@ -426,20 +452,29 @@ int sstCppGenQtTabLibCls::sstcsv_FilWrtClsFncOpen4 (int                 iKey,
       iStat = this->FillCls_ViewSlotUpdateTab( &oCppTypClass, &oCppFncClass);
       assert(iStat >= 0);
 
-      // Write to existing header and class File
-      iStat = strncmp(oStrTypeAct.Get_ObjNam().c_str(),"ML",2);
-      if (iStat == 0)
-      {
-        // Write to header file with base class
-        iStat = sstCpp01_wrt2CppHedFil2 ( 1, &oHedFil, &oCppFncClass);
-        assert(iStat >= 0);
+      iStat = this->FillCls_ViewSgnlTabChanged( &oCppTypClass, &oCppFncClass);
+      assert(iStat >= 0);
 
-        // Write to class file with base class
-        iStat = sstCpp01_wrt2CppClsFil2 ( 1, &oClsFil, &oCppFncClass);
-        assert(iStat >= 0);
-      }
+      iStat = this->FillCls_ViewSgnlTabUpdated( &oCppTypClass, &oCppFncClass);
+      assert(iStat >= 0);
 
-      // close function TabView class
+      // Write to existing header and class File ==============================
+
+
+      oCppFncClass.setExtBaseCls("sstQt01TabViewCls");  // Base Class for all
+
+      // Write to header file with base class
+      iStat = sstCpp01_wrt2CppHedFil2 ( 1, &oHedFil, &oCppFncClass);
+      assert(iStat >= 0);
+
+      oCppFncClass.setExtBaseCls("sstQt01TabViewCls(poTmpPrt)");  // Base Class for all
+
+      // Write to class file with base class
+      iStat = sstCpp01_wrt2CppClsFil2 ( 1, &oClsFil, &oCppFncClass);
+      assert(iStat >= 0);
+
+
+      // close actual QtTabView class
       iStat = sstCpp01_ClassTab_Close( 0, &oCppFncClass);
 
       // Start next typ class with typedef information
@@ -511,6 +546,7 @@ int sstCppGenQtTabLibCls::sst_WrtClsData_inPipe_toFilesF2 (int                  
   strncpy(oCppFncClass.cSysNam, sFncSysNam.c_str(), dSST_STR01_VAR_NAM_LEN);
   strncpy(oCppFncClass.cGrpNam,this->getGrpNam().c_str(), dSST_STR01_VAR_NAM_LEN);
   strncpy(oCppFncClass.cClsNam,oCppTypClass->cClsNam, dSST_STR01_VAR_NAM_LEN);
+  // oCppFncClass.setExtBaseCls("sstQt01TabMdlCls(parent)");
   oCppFncClass.setExtBaseCls("sstQt01TabMdlCls");
   oCppFncClass.setQtMocMacroStr("Q_OBJECT");
 
@@ -581,7 +617,7 @@ int sstCppGenQtTabLibCls::sst_WrtClsData_inPipe_toFilesF2 (int                  
   oLocStr += "FncDatabaseCls *poTmpDatabase";
   strncpy( oCppClsFnc.cFncPar, oLocStr.c_str(), dCPPFILROWLENGTH);  // Function Parameter without parenthis
 
-  strncpy(oCppClsFnc.cFncCom,"// Constructor", dCPPFILROWLENGTH);  // Comment
+  strncpy(oCppClsFnc.cFncCom,"Constructor", dCPPFILROWLENGTH);  // Comment
   iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
@@ -594,7 +630,7 @@ int sstCppGenQtTabLibCls::sst_WrtClsData_inPipe_toFilesF2 (int                  
   strncpy( oCppClsFnc.cFncNam, (char*)"~", dSST_STR01_VAR_NAM_LEN);  // function name
   strncat( oCppClsFnc.cFncNam, oLocFncClsNam.c_str(), dSST_STR01_VAR_NAM_LEN);  // function name
   strncpy(oCppClsFnc.cFncPar,"", dCPPFILROWLENGTH);  // Function Parameter empty
-  strncpy(oCppClsFnc.cFncCom,"// Constructor", dCPPFILROWLENGTH);  // Comment
+  strncpy(oCppClsFnc.cFncCom,"Destructor", dCPPFILROWLENGTH);  // Comment
   iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
   //-----------------------------------------------------------------------------
@@ -757,12 +793,30 @@ int sstCppGenQtTabLibCls::sst_WrtClsData_inPipe_toFilesF2 (int                  
   strncpy(oCppClsFnc.cFncCom,"return number of table columns", dCPPFILROWLENGTH);  // Comment
   iStat = oCppFncClass.ClsFncDsVerw->WritNew( 0, &oCppClsFnc, &lSatzNr);
 
+
+  // no slots needed in table model
+
+  // iStat = this->FillCls_SlotChangeTab( oCppTypClass, &oCppFncClass);
+  // assert(iStat >= 0);
+
+  // iStat = this->FillCls_SlotUpdateTab( oCppTypClass, &oCppFncClass);
+  // assert(iStat >= 0);
+
+  iStat = this->FillCls_SgnlTabChanged( oCppTypClass, &oCppFncClass);
+  assert(iStat >= 0);
+
+  iStat = this->FillCls_SgnlTabUpdated( oCppTypClass, &oCppFncClass);
+
   //-----------------------------------------------------------------------------
 
   // write doxy/class information to cpp header file of function class
+  // oCppFncClass.setExtBaseCls("sstQt01TabMdlCls(parent)");
+  oCppFncClass.setExtBaseCls("sstQt01TabMdlCls");
   iStat = sstCpp01_wrt2CppHedFil2 ( iKey, sHedFil, &oCppFncClass);
 
   // write information to cpp class file of function class
+  oCppFncClass.setExtBaseCls("sstQt01TabMdlCls(parent)");
+  // oCppFncClass.setExtBaseCls("sstQt01TabMdlCls");
   iStat = sstCpp01_wrt2CppClsFil2 ( iKey, &oCppFil, &oCppFncClass);
 
   iStat = sstCpp01_ClassTab_Close ( 0, &oCppFncClass);

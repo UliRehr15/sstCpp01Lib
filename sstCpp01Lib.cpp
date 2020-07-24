@@ -447,8 +447,8 @@ int sstCpp01_Cls_WrtInc (int                  iKey,
 
   // write class include
   // typ include or typ/fnc include
-  // cLocObjNam = sFncGrpNam + "Lib";
-  cLocObjNam = sFncGrpNam + oCppClass->GetGrpNam() + "Lib";
+  cLocObjNam = sFncGrpNam + "Lib";
+  // cLocObjNam = sFncGrpNam + oCppClass->GetGrpNam() + "Lib";
 
   // Write Casc-Line-Object to Casc-File.
   sFilRow = "#include \"";
@@ -853,7 +853,9 @@ int sstCpp01_Hed_wrt_class (int               iKey,
     // Datensatz an absoluter Position lesen.
     iStat = oCppCls->ClsFncDsVerw->Read( 0, ii, &oCppClsFnc);
 
-    if (oCppClsFnc.eClsVisiTyp != myClsPublic) break;
+    if (oCppClsFnc.eClsVisiTyp != myClsSlot &&
+        oCppClsFnc.eClsVisiTyp != myClsSignal &&
+        oCppClsFnc.eClsVisiTyp != myClsPublic) break;
 
     //==============================================================================
     /**
@@ -899,6 +901,24 @@ int sstCpp01_Hed_wrt_class (int               iKey,
     sExpFile->Wr_String(0,"    */");
     sExpFile->Wr_String(0,"    // -----------------------------------------------------------------------------");
 
+    // Signal or Slot
+
+
+    if(oCppClsFnc.eClsVisiTyp == myClsSignal)
+    {
+      sFilRow = "  signals:";
+      iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
+      sFilRow = " ";
+      iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
+    }
+    if(oCppClsFnc.eClsVisiTyp == myClsSlot)
+    {
+      sFilRow = "  public slots:";
+      iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
+      sFilRow = " ";
+      iStat = sExpFile->Wr_StrDS1( 0, &sFilRow);
+    }
+
     // Fill Return Type
     sstStr01VarTypeCls oVarType;
     oVarType.Enm2FullStr( 0, oCppClsFnc.eCppType, &cTypeChar);
@@ -940,7 +960,9 @@ int sstCpp01_Hed_wrt_class (int               iKey,
     // Datensatz an absoluter Position lesen.
     iStat = oCppCls->ClsTypDsVerw->Read( 0, ii, &oCppClsTyp);
 
-    if (oCppClsTyp.eClsVisiTyp != myClsPublic) break;
+    if (oCppClsTyp.eClsVisiTyp != myClsPublic &&
+        oCppClsTyp.eClsVisiTyp != myClsSlot) break;
+    // if (oCppClsTyp.eClsVisiTyp != myClsSignal) break;
 
     sstStr01VarTypeCls oVarType;
     oVarType.Enm2FullStr( 0, oCppClsTyp.sClsMem.Get_Type(), &cTypeChar);
@@ -1052,22 +1074,23 @@ int sstCpp01_Hed_wrt_class (int               iKey,
   return iRet;
 }
 //=============================================================================
-int sstCpp01_WrtCls (int                 iKey,
-                       sstMisc01AscFilCls    *sExpFile,
-                       sstRec04Cls       *sBlcDsVerw,
-                       sstCpp01_ClsFnc_Cls *oCppClsFnc)
+int sstCpp01_WrtCls (int                  iKey,
+                     sstMisc01AscFilCls  *sExpFile,
+                     sstRec04Cls         *sBlcDsVerw,
+                     sstCpp01_ClsFnc_Cls *oCppClsFnc)
 //-----------------------------------------------------------------------------
 {
   std::string cTypeChar;      // int long char float double bool
-  std::string cTypeType;                     // i l c f d b
+  std::string cTypeType;      // i l c f d b
   std::string sFilRow;
   sstCpp01_FilRowCls sBlcTxt;  // one row inside function block
   std::string sBlcRow;
   std::string cRetVar;
+  // std::string sPara;  // Parameterstring
   int iRet  = 0;
   int iStat = 0;
 //-----------------------------------------------------------------------------
-  if ( iKey != 0) return -1;
+  if ( iKey < 0 || iKey > 1) return -1;
 
   // Write empty row
   // iStat = sExpFile->wr_txt( 0, (char*)" ");
@@ -1092,6 +1115,7 @@ int sstCpp01_WrtCls (int                 iKey,
   }
 
   // Write Casc-Line-Object to Casc-File.
+  // sPara = oCppClsFnc->getFncPar();
   sFilRow = cTypeChar;
   if (cTypeChar.length() > 0) sFilRow = sFilRow + " ";
   sFilRow = sFilRow + oCppClsFnc->cClsNam;
@@ -1099,7 +1123,10 @@ int sstCpp01_WrtCls (int                 iKey,
   sFilRow = sFilRow + oCppClsFnc->cFncNam;
   sFilRow = sFilRow + "(";
   sFilRow = sFilRow + oCppClsFnc->cFncPar;
-  sFilRow = sFilRow + ")";
+  // std::size_t found = sPara.find(":");  // is derived class?
+  // if (found == std::string::npos)
+  if (iKey == 0)
+    sFilRow = sFilRow + ")";
 
   // is const function ?
   if (oCppClsFnc->getIsConstFunc())
@@ -1344,12 +1371,15 @@ int sstCpp01_wrt2CppClsFil2 (int               iKey,
     { // if in constructor and extern base class
       strncat(oCppClsFnc.cFncPar,(char*)"):",dCPPFILROWLENGTH);
       strncat(oCppClsFnc.cFncPar,oCppClass->getExtBaseCls().c_str(),dCPPFILROWLENGTH);
-      strncat(oCppClsFnc.cFncPar,(char*)"(parent",dCPPFILROWLENGTH);
-
+      // Write one class function to file
+      iStat = sstCpp01_WrtCls ( 1, sCppClsFil, oCppClass->ClsBlcDsVerw, &oCppClsFnc);
+    }
+    else
+    {
+        // Write class function to code file, if not signal
+        if (oCppClsFnc.eClsVisiTyp != myClsSignal) iStat = sstCpp01_WrtCls ( 0, sCppClsFil, oCppClass->ClsBlcDsVerw, &oCppClsFnc);
     }
 
-    // Write one class function to file
-    iStat = sstCpp01_WrtCls ( 0, sCppClsFil, oCppClass->ClsBlcDsVerw, &oCppClsFnc);
 
   }
 
@@ -2213,6 +2243,10 @@ int sstCpp01_ClassTab_Close (int iKey, sstCpp01_Class_Cls *oCppClass)
     delete ( oCppClass->ClsFncDsVerw);
     delete ( oCppClass->ClsTypDsVerw);
     delete ( oCppClass->ClsBlcDsVerw);
+
+  oCppClass->ClsFncDsVerw = NULL;
+  oCppClass->ClsTypDsVerw = NULL;
+  oCppClass->ClsBlcDsVerw = NULL;
 
   // Fatal Errors goes to an assert
   if (iRet < 0)

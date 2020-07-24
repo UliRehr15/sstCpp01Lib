@@ -192,6 +192,16 @@ class sstCppGenQtTabLibCls
                                   sstCpp01_Class_Cls *oCppTypClass,
                                   sstCpp01_Class_Cls *oCppFncClass,
                                   dREC04RECNUMTYP     *lSatzNr);
+     int FillBlc_SlotChangeTab ( sstCpp01_Class_Cls *oCppFncClass);
+     int FillBlc_SlotUpdateTab ( sstCpp01_Class_Cls *oCppFncClass);
+     int FillCls_SlotChangeTab(sstCpp01_Class_Cls *oCppTypClass,
+                                   sstCpp01_Class_Cls *oCppFncClass);
+     int FillCls_SlotUpdateTab(sstCpp01_Class_Cls *oCppTypClass,
+                                   sstCpp01_Class_Cls *oCppFncClass);
+     int FillCls_SgnlTabChanged(sstCpp01_Class_Cls *oCppTypClass,
+                                    sstCpp01_Class_Cls *oCppFncClass);
+     int FillCls_SgnlTabUpdated(sstCpp01_Class_Cls *oCppTypClass,
+                                    sstCpp01_Class_Cls *oCppFncClass);
   //==============================================================================
      int FillBlc_ViewConstructor( sstCpp01_Class_Cls *oCppFncClass);
      int FillBlc_ViewDestructor ( sstCpp01_Class_Cls *oCppFncClass);
@@ -205,6 +215,10 @@ class sstCppGenQtTabLibCls
                                    sstCpp01_Class_Cls *oCppFncClass);
      int FillCls_ViewSlotUpdateTab(sstCpp01_Class_Cls *oCppTypClass,
                                    sstCpp01_Class_Cls *oCppFncClass);
+     int FillCls_ViewSgnlTabChanged(sstCpp01_Class_Cls *oCppTypClass,
+                                    sstCpp01_Class_Cls *oCppFncClass);
+     int FillCls_ViewSgnlTabUpdated(sstCpp01_Class_Cls *oCppTypClass,
+                                    sstCpp01_Class_Cls *oCppFncClass);
      void setGrpNam(const std::string &value);
   //==============================================================================
   std::string getGrpNam() const;
